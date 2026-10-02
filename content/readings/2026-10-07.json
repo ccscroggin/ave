@@ -1,23 +1,23 @@
 {"date": "2026-10-07", "title": "Memorial of Our Lady of the Rosary", "r": [
  {"l": "Reading 1", "c": "Galatians 2:1-2, 7-14", "b": "GAL", "t": [
-  [2, 1, "Then after a period of fourteen years I went up again to Jerusalem with Barnabas, taking Titus also with me."],
-  [2, 2, "I went up by revelation, and I laid before them the Good News which I preach among the Gentiles, but privately before those who were respected, for fear that I might be running, or had run, in vain."],
-  [2, 7, "but to the contrary, when they saw that I had been entrusted with the Good News for the uncircumcised, even as Peter with the Good News for the circumcised—"],
-  [2, 8, "for he who worked through Peter in the apostleship with the circumcised also worked through me with the Gentiles—"],
-  [2, 9, "and when they perceived the grace that was given to me, James and Cephas and John, those who were reputed to be pillars, gave to Barnabas and me the right hand of fellowship, that we should go to the Gentiles, and they to the circumcision."],
-  [2, 10, "They only asked us to remember the poor—which very thing I was also zealous to do."],
-  [2, 11, "But when Peter came to Antioch, I resisted him to his face, because he stood condemned."],
-  [2, 12, "For before some people came from James, he ate with the Gentiles. But when they came, he drew back and separated himself, fearing those who were of the circumcision."],
-  [2, 13, "And the rest of the Jews joined him in his hypocrisy, so that even Barnabas was carried away with their hypocrisy."],
-  [2, 14, "But when I saw that they didn’t walk uprightly according to the truth of the Good News, I said to Peter before them all, “If you, being a Jew, live as the Gentiles do, and not as the Jews do, why do you compel the Gentiles to live as the Jews do?"]]},
+  [2, 1, "Then after a period of fourteen years I went up again to Jerusalem with Barnabas, taking Titus also with me.", "2:1"],
+  [2, 2, "I went up by revelation, and I laid before them the Good News which I preach among the Gentiles, but privately before those who were respected, for fear that I might be running, or had run, in vain.", "2:2"],
+  [2, 7, "but to the contrary, when they saw that I had been entrusted with the Good News for the uncircumcised, even as Peter with the Good News for the circumcised—", "2:7"],
+  [2, 8, "for he who worked through Peter in the apostleship with the circumcised also worked through me with the Gentiles—", "2:8"],
+  [2, 9, "and when they perceived the grace that was given to me, James and Cephas and John, those who were reputed to be pillars, gave to Barnabas and me the right hand of fellowship, that we should go to the Gentiles, and they to the circumcision.", "2:9"],
+  [2, 10, "They only asked us to remember the poor—which very thing I was also zealous to do.", "2:10"],
+  [2, 11, "But when Peter came to Antioch, I resisted him to his face, because he stood condemned.", "2:11"],
+  [2, 12, "For before some people came from James, he ate with the Gentiles. But when they came, he drew back and separated himself, fearing those who were of the circumcision.", "2:12"],
+  [2, 13, "And the rest of the Jews joined him in his hypocrisy, so that even Barnabas was carried away with their hypocrisy.", "2:13"],
+  [2, 14, "But when I saw that they didn’t walk uprightly according to the truth of the Good News, I said to Peter before them all, “If you, being a Jew, live as the Gentiles do, and not as the Jews do, why do you compel the Gentiles to live as the Jews do?", "2:14"]]},
  {"l": "Responsorial Psalm", "c": "Psalm 117:1bc, 2", "b": "PSA", "t": [
-  [117, 1, "Praise the LORD, all you nations! Extol him, all you peoples!"],
-  [117, 2, "For his loving kindness is great toward us. The LORD’s faithfulness endures forever. Praise the LORD!"]]},
+  [117, 1, "Praise the LORD, all you nations! Extol him, all you peoples!", "117:1"],
+  [117, 2, "For his loving kindness is great toward us. The LORD’s faithfulness endures forever. Praise the LORD!", "117:2"]]},
  {"l": "Alleluia", "c": "Romans 8:15bc", "b": "ROM", "t": [
-  [8, 15, "For you didn’t receive the spirit of bondage again to fear, but you received the Spirit of adoption, by whom we cry, “Abba! Father!”"]]},
+  [8, 15, "For you didn’t receive the spirit of bondage again to fear, but you received the Spirit of adoption, by whom we cry, “Abba! Father!”", "8:15"]]},
  {"l": "Gospel", "c": "Luke 11:1-4", "b": "LUK", "t": [
-  [11, 1, "When he finished praying in a certain place, one of his disciples said to him, “Lord, teach us to pray, just as John also taught his disciples.”"],
-  [11, 2, "He said to them, “When you pray, say, ‘Our Father in heaven, may your name be kept holy. May your Kingdom come. May your will be done on earth, as it is in heaven."],
-  [11, 3, "Give us day by day our daily bread."],
-  [11, 4, "Forgive us our sins, for we ourselves also forgive everyone who is indebted to us. Bring us not into temptation, but deliver us from the evil one.’”"]]}
+  [11, 1, "When he finished praying in a certain place, one of his disciples said to him, “Lord, teach us to pray, just as John also taught his disciples.”", "11:1"],
+  [11, 2, "He said to them, “When you pray, say, ‘Our Father in heaven, may your name be kept holy. May your Kingdom come. May your will be done on earth, as it is in heaven.", "11:2"],
+  [11, 3, "Give us day by day our daily bread.", "11:3"],
+  [11, 4, "Forgive us our sins, for we ourselves also forgive everyone who is indebted to us. Bring us not into temptation, but deliver us from the evil one.’”", "11:4"]]}
 ]}

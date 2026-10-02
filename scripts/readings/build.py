@@ -18,6 +18,7 @@ import sys
 
 import assemble
 import citations
+import cpbjr
 import fetch
 import usccb
 import versification
@@ -80,6 +81,18 @@ def prototype_pages(proto, date):
     return [("prototype:" + date.isoformat(), p)]
 
 
+def cpbjr_pages(date):
+    """Present a cpbjr dataset day in usccb.parse's shape. The dataset has
+    no Alleluia citation, so none is emitted."""
+    got = cpbjr.day(date)
+    if got is None:
+        return []
+    title, items = got
+    p = {"title": title, "lectionary": None, "links": [],
+         "readings": [{"l": l, "c": c.rstrip(". "), "slugs": []} for l, c in items]}
+    return [("cpbjr:" + date.isoformat(), p)]
+
+
 def build_day(date, pages, bible, vs, log):
     chosen, others = choose_mass(pages)
     entry = {"date": date.isoformat(), "title": None, "r": []}
@@ -90,6 +103,8 @@ def build_day(date, pages, bible, vs, log):
     name, p = chosen
     day_log["page"] = name
     entry["title"] = p["title"]
+    if not p["title"]:
+        day_log["problems"].append("title missing in source")
     alt = []
     for n, op in others:
         alt.append("Other Mass. " + _summary(n, op))
@@ -99,6 +114,7 @@ def build_day(date, pages, bible, vs, log):
         if not cit:
             day_log["problems"].append(f"{label}: no citation on page")
             continue
+        cit, clean_notes = citations.clean(cit, label)
         options = citations.split_alternatives(cit)
         main_cit = options[0]
         # A repeated label is a second option for the same reading
@@ -112,7 +128,7 @@ def build_day(date, pages, bible, vs, log):
         for o in options[1:]:
             alt.append(f"{label}: or {o}")
         item = {"l": label, "c": main_cit}
-        rl = {"label": label, "citation": main_cit, "page_citation": cit}
+        rl = {"label": label, "citation": main_cit, "page_citation": r["c"].strip(), "clean_notes": clean_notes}
         try:
             res = assemble.resolve(main_cit, bible, vs)
         except citations.CitationError as e:
@@ -125,7 +141,7 @@ def build_day(date, pages, bible, vs, log):
             continue
         item["b"] = res["book"]
         item["t"] = res["verses"]
-        rl.update({k: res[k] for k in ("book", "missing", "omitted_in_web", "skipped_nabre_omitted", "fixes")})
+        rl.update({k: res[k] for k in ("book", "missing", "omitted_in_web", "skipped_nabre_omitted", "fixes", "partials")})
         rl["count"] = len(res["verses"])
         entry["r"].append(item)
         day_log["readings"].append(rl)
@@ -163,8 +179,8 @@ def main():
                     help="ebible.org edition id (default eng-web-c: WEB Catholic, US spelling, 'the LORD')")
     ap.add_argument("--offline", action="store_true",
                     help="use cached USCCB pages only; dates not yet cached are skipped and listed")
-    ap.add_argument("--source", choices=["usccb", "prototype"], default="usccb",
-                    help="where titles and citations come from (prototype = prototype-readings.json)")
+    ap.add_argument("--source", choices=["usccb", "prototype", "cpbjr"], default="usccb",
+                    help="where titles and citations come from: usccb pages, prototype-readings.json, or the cpbjr dataset")
     ap.add_argument("--replace-companion-days", action="store_true",
                     help="overwrite readings for dates that have content/companion/ files")
     a = ap.parse_args()
@@ -183,12 +199,16 @@ def main():
             log["days"] = old.get("days", [])
     bydate = {d["date"]: d for d in log["days"]}
     proto = None
+    if a.source == "cpbjr":
+        cpbjr.ensure()
     if a.source == "prototype":
         with open(PROTO_PATH, encoding="utf-8") as f:
             proto = json.load(f)
     written, skipped, held = 0, [], []
     for d in fetch.daterange(start, end):
-        if proto is not None:
+        if a.source == "cpbjr":
+            pages = cpbjr_pages(d)
+        elif proto is not None:
             pages = prototype_pages(proto, d)
         else:
             pages = fetch.pages_for(d, offline=a.offline, quiet=a.offline)

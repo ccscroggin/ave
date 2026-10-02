@@ -33,6 +33,8 @@ BOOKS = [
     ("James", "JAS"), ("1 Peter", "1PE"), ("2 Peter", "2PE"), ("1 John", "1JN"),
     ("2 John", "2JN"), ("3 John", "3JN"), ("Jude", "JUD"), ("Revelation", "REV"),
 ]
+# Misspellings seen in source data, corrected and recorded in the report.
+TYPOS = {"Phiippians": "Philippians", "Sirarch": "Sirach"}
 BOOKS.sort(key=lambda x: -len(x[0]))
 SINGLE_CHAPTER = {"OBA", "PHM", "2JN", "3JN", "JUD"}
 
@@ -55,13 +57,48 @@ def _ref(tok):
     """'31' -> (None, 31, '') ; '5:1' -> (5, 1, '') ; '8abc' -> (None, 8, 'abc');
     'C:12' -> ('C', 12, '')."""
     tok = tok.strip()
-    m = re.fullmatch(r"(?:(\d+|[A-F]):)?(\d+)([a-g]*)", tok)
+    m = re.fullmatch(r"(?:(\d+|[A-F]):)?(\d+)([a-n]*)", tok)
     if not m:
         raise CitationError(f"bad verse token {tok!r}")
     ch = m.group(1)
     if ch is not None and ch.isdigit():
         ch = int(ch)
     return ch, int(m.group(2)), m.group(3)
+
+
+def clean(text, label=""):
+    """Normalise formatting slips in source citations. Returns (text, notes).
+    Only spacing, case and separators change; numbers never do."""
+    notes = []
+    t = text.strip()
+    new = t.rstrip(". ")
+    if new != t:
+        notes.append("trailing period removed")
+    t = new
+    new = t.replace("&", "and")
+    if new != t:
+        notes.append("'&' read as 'and'")
+    t = new
+    new = re.sub(r"(\d):\s+(\d)", r"\1:\2", t)
+    if new != t:
+        notes.append("space after colon removed")
+    t = new
+    new = re.sub(r"(\d)\s+(?!and\b|or\b)([a-n]{1,8})(?=[,;\s\-–—]|$)", r"\1\2", t)
+    if new != t:
+        notes.append("space before verse letters removed")
+    t = new
+    new = re.sub(r"(\d)([A-N]{1,8})(?=[,;\s\-–—]|$)", lambda m: m.group(1) + m.group(2).lower(), t)
+    if new != t:
+        notes.append("verse letters lower-cased")
+    t = new
+    if label.lower().startswith("responsorial psalm") and re.match(r"^\d+:\d", t):
+        t = "Psalm " + t
+        notes.append("book name 'Psalm' supplied for a Responsorial Psalm citation without one")
+    for typo, right in TYPOS.items():
+        if t.startswith(typo + " "):
+            t = right + t[len(typo):]
+            notes.append(f"misspelled book name {typo!r} corrected to {right!r}")
+    return t, notes
 
 
 def split_alternatives(text):

@@ -1,0 +1,20 @@
+{"date": "2027-10-11", "title": "Pope Saint John XXIII", "r": [
+ {"l": "Reading 1", "c": "Romans 1:1-7", "b": "ROM", "t": [
+  [1, 1, "Paul, a servant of Jesus Christ, called to be an apostle, set apart for the Good News of God,", "1:1"],
+  [1, 2, "which he promised before through his prophets in the holy Scriptures,", "1:2"],
+  [1, 3, "concerning his Son, who was born of the offspring of David according to the flesh,", "1:3"],
+  [1, 4, "who was declared to be the Son of God with power according to the Spirit of holiness, by the resurrection from the dead, Jesus Christ our Lord,", "1:4"],
+  [1, 5, "through whom we received grace and apostleship for obedience of faith among all the nations for his name’s sake;", "1:5"],
+  [1, 6, "among whom you are also called to belong to Jesus Christ;", "1:6"],
+  [1, 7, "to all who are in Rome, beloved of God, called to be saints: Grace to you and peace from God our Father and the Lord Jesus Christ.", "1:7"]]},
+ {"l": "Responsorial Psalm", "c": "Psalm 98:1bcde, 2-3ab, 3cd-4", "b": "PSA", "t": [
+  [98, 1, "Sing to the LORD a new song, for he has done marvelous things! His right hand and his holy arm have worked salvation for him.", "98:1"],
+  [98, 2, "The LORD has made known his salvation. He has openly shown his righteousness in the sight of the nations.", "98:2"],
+  [98, 3, "He has remembered his loving kindness and his faithfulness toward the house of Israel. All the ends of the earth have seen the salvation of our God.", "98:3"],
+  [98, 4, "Make a joyful noise to the LORD, all the earth! Burst out and sing for joy, yes, sing praises!", "98:4"]]},
+ {"l": "Gospel", "c": "Luke 11:29-32", "b": "LUK", "t": [
+  [11, 29, "When the multitudes were gathering together to him, he began to say, “This is an evil generation. It seeks after a sign. No sign will be given to it but the sign of Jonah the prophet.", "11:29"],
+  [11, 30, "For even as Jonah became a sign to the Ninevites, so the Son of Man will also be to this generation.", "11:30"],
+  [11, 31, "The Queen of the South will rise up in the judgment with the men of this generation and will condemn them, for she came from the ends of the earth to hear the wisdom of Solomon; and behold, one greater than Solomon is here.", "11:31"],
+  [11, 32, "The men of Nineveh will stand up in the judgment with this generation, and will condemn it, for they repented at the preaching of Jonah; and behold, one greater than Jonah is here.", "11:32"]]}
+]}

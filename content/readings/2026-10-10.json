@@ -1,23 +1,23 @@
 {"date": "2026-10-10", "title": "Saturday of the Twenty-seventh Week in Ordinary Time", "r": [
  {"l": "Reading 1", "c": "Galatians 3:22-29", "b": "GAL", "t": [
-  [3, 22, "But the Scripture imprisoned all things under sin, that the promise by faith in Jesus Christ might be given to those who believe."],
-  [3, 23, "But before faith came, we were kept in custody under the law, confined for the faith which should afterwards be revealed."],
-  [3, 24, "So that the law has become our tutor to bring us to Christ, that we might be justified by faith."],
-  [3, 25, "But now that faith has come, we are no longer under a tutor."],
-  [3, 26, "For you are all children of God, through faith in Christ Jesus."],
-  [3, 27, "For as many of you as were baptized into Christ have put on Christ."],
-  [3, 28, "There is neither Jew nor Greek, there is neither slave nor free man, there is neither male nor female; for you are all one in Christ Jesus."],
-  [3, 29, "If you are Christ’s, then you are Abraham’s offspring and heirs according to promise."]]},
+  [3, 22, "But the Scripture imprisoned all things under sin, that the promise by faith in Jesus Christ might be given to those who believe.", "3:22"],
+  [3, 23, "But before faith came, we were kept in custody under the law, confined for the faith which should afterwards be revealed.", "3:23"],
+  [3, 24, "So that the law has become our tutor to bring us to Christ, that we might be justified by faith.", "3:24"],
+  [3, 25, "But now that faith has come, we are no longer under a tutor.", "3:25"],
+  [3, 26, "For you are all children of God, through faith in Christ Jesus.", "3:26"],
+  [3, 27, "For as many of you as were baptized into Christ have put on Christ.", "3:27"],
+  [3, 28, "There is neither Jew nor Greek, there is neither slave nor free man, there is neither male nor female; for you are all one in Christ Jesus.", "3:28"],
+  [3, 29, "If you are Christ’s, then you are Abraham’s offspring and heirs according to promise.", "3:29"]]},
  {"l": "Responsorial Psalm", "c": "Psalm 105:2-3, 4-5, 6-7", "b": "PSA", "t": [
-  [105, 2, "Sing to him, sing praises to him! Tell of all his marvelous works."],
-  [105, 3, "Glory in his holy name. Let the heart of those who seek the LORD rejoice."],
-  [105, 4, "Seek the LORD and his strength. Seek his face forever more."],
-  [105, 5, "Remember his marvelous works that he has done: his wonders, and the judgments of his mouth,"],
-  [105, 6, "you offspring of Abraham, his servant, you children of Jacob, his chosen ones."],
-  [105, 7, "He is the LORD, our God. His judgments are in all the earth."]]},
+  [105, 2, "Sing to him, sing praises to him! Tell of all his marvelous works.", "105:2"],
+  [105, 3, "Glory in his holy name. Let the heart of those who seek the LORD rejoice.", "105:3"],
+  [105, 4, "Seek the LORD and his strength. Seek his face forever more.", "105:4"],
+  [105, 5, "Remember his marvelous works that he has done: his wonders, and the judgments of his mouth,", "105:5"],
+  [105, 6, "you offspring of Abraham, his servant, you children of Jacob, his chosen ones.", "105:6"],
+  [105, 7, "He is the LORD, our God. His judgments are in all the earth.", "105:7"]]},
  {"l": "Alleluia", "c": "Luke 11:28", "b": "LUK", "t": [
-  [11, 28, "But he said, “On the contrary, blessed are those who hear the word of God, and keep it.”"]]},
+  [11, 28, "But he said, “On the contrary, blessed are those who hear the word of God, and keep it.”", "11:28"]]},
  {"l": "Gospel", "c": "Luke 11:27-28", "b": "LUK", "t": [
-  [11, 27, "It came to pass, as he said these things, a certain woman out of the multitude lifted up her voice and said to him, “Blessed is the womb that bore you, and the breasts which nursed you!”"],
-  [11, 28, "But he said, “On the contrary, blessed are those who hear the word of God, and keep it.”"]]}
+  [11, 27, "It came to pass, as he said these things, a certain woman out of the multitude lifted up her voice and said to him, “Blessed is the womb that bore you, and the breasts which nursed you!”", "11:27"],
+  [11, 28, "But he said, “On the contrary, blessed are those who hear the word of God, and keep it.”", "11:28"]]}
 ]}

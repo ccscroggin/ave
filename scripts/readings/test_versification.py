@@ -96,32 +96,51 @@ class Mapping(unittest.TestCase):
 class Resolve(unittest.TestCase):
     def test_exodus_22_20_26(self):
         r = assemble.resolve("Exodus 22:20-26", BIBLE, VS)
-        self.assertEqual([(c, v) for c, v, _ in r["verses"]], [(22, x) for x in range(21, 28)])
+        self.assertEqual([(c, v) for c, v, *_ in r["verses"]], [(22, x) for x in range(21, 28)])
         self.assertTrue(r["verses"][0][2].lstrip("“").startswith("You shall not wrong"))
         self.assertFalse(r["missing"])
 
     def test_cross_chapter_and_letters(self):
         r = assemble.resolve("Galatians 4:22-24, 26-27, 31–5:1", BIBLE, VS)
-        self.assertEqual([(c, v) for c, v, _ in r["verses"]],
+        self.assertEqual([(c, v) for c, v, *_ in r["verses"]],
                          [(4, 22), (4, 23), (4, 24), (4, 26), (4, 27), (4, 31), (5, 1)])
         r = assemble.resolve("Isaiah 63:16b-17, 19b; 64:2-7", BIBLE, VS)
-        self.assertEqual([(c, v) for c, v, _ in r["verses"]],
+        self.assertEqual([(c, v) for c, v, *_ in r["verses"]],
                          [(63, 16), (63, 17), (64, 1), (64, 3), (64, 4), (64, 5), (64, 6), (64, 7), (64, 8)])
 
     def test_jonah_cross_chapter_mapping(self):
         r = assemble.resolve("Jonah 1:1–2:2, 11", BIBLE, VS)
-        refs = [(c, v) for c, v, _ in r["verses"]]
+        refs = [(c, v) for c, v, *_ in r["verses"]]
         self.assertEqual(refs[-3:], [(1, 17), (2, 1), (2, 10)])
         self.assertEqual(len(refs), 19)
 
     def test_nabre_omitted_verse_skipped(self):
         r = assemble.resolve("Luke 17:26-37", BIBLE, VS)
-        self.assertNotIn(36, [v for _, v, _ in r["verses"]])
+        self.assertNotIn(36, [v for _, v, *_ in r["verses"]])
         self.assertEqual(r["skipped_nabre_omitted"], ["LUK 17:36"])
 
     def test_psalm_with_superscription_verse(self):
         r = assemble.resolve("Psalm 51:3-4, 5-6ab, 12-13, 14 and 17", BIBLE, VS)
-        self.assertEqual([(c, v) for c, v, _ in r["verses"]][:2], [(51, 1), (51, 2)])
+        self.assertEqual([(c, v) for c, v, *_ in r["verses"]][:2], [(51, 1), (51, 2)])
+
+    def test_nabre_labels(self):
+        r = assemble.resolve("Exodus 22:20-26", BIBLE, VS)
+        self.assertEqual([x[3] for x in r["verses"]][:2], ["22:20", "22:21"])
+        r = assemble.resolve("Romans 16:25-27", BIBLE, VS)
+        self.assertEqual([(x[0], x[1], x[3]) for x in r["verses"]],
+                         [(14, 24, "16:25"), (14, 25, "16:26"), (14, 26, "16:27")])
+        r = assemble.resolve("3 John 13-15", BIBLE, VS)
+        self.assertEqual([(x[1], x[3]) for x in r["verses"]], [(13, "1:13"), (14, "1:14-15")])
+        r = assemble.resolve("Isaiah 61:1-2a, 10-11", BIBLE, VS)
+        self.assertEqual(r["partials"], ["61:2a"])
+
+    def test_clean(self):
+        self.assertEqual(citations.clean("Sirach 51:12 cd-20")[0], "Sirach 51:12cd-20")
+        self.assertEqual(citations.clean("137:1-2, 3", "Responsorial Psalm")[0], "Psalm 137:1-2, 3")
+        self.assertEqual(citations.clean("1 Samuel 2:1, 4-5", "Responsorial Psalm")[0], "1 Samuel 2:1, 4-5")
+        self.assertEqual(citations.clean("Psalm 37:3-4, 18 and 23")[0], "Psalm 37:3-4, 18 and 23")
+        self.assertEqual(citations.clean("Revelation 11:19A; 12:1-6A")[0], "Revelation 11:19a; 12:1-6a")
+        self.assertEqual(citations.clean("Sirarch 5:1-8")[0], "Sirach 5:1-8")
 
     def test_alternatives(self):
         self.assertEqual(citations.split_alternatives("Mark 14:1—15:47 or 15:1-39"),

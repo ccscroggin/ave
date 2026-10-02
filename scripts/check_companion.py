@@ -14,7 +14,7 @@ CHUNKED = ("Reading 1", "Reading 2", "Gospel")
 
 
 def verses(reading):
-    return [f"{c}:{v}" for c, v, _ in reading["t"]]
+    return [f"{c}:{v}" for c, v, *_ in reading["t"]]
 
 
 def check_chunks(errs, where, chunks, vs, max_len):

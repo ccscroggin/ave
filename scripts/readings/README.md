@@ -4,35 +4,39 @@ Writes `content/readings/YYYY-MM-DD.json`, one file per day, for the US
 Roman Catholic calendar.
 
 ```
-# 1. fetch USCCB pages (slow: the site allows about one page per 90 s; resumable)
-python3 scripts/readings/fetch.py --from 2026-10-01 --to 2027-11-27
+# build from the cpbjr dataset (cloned once into cache/, pinned to a commit)
+python3 scripts/readings/build.py --from 2027-01-12 --to 2027-11-27 --source cpbjr
 
-# 2. build any range from the cached pages only; dates not cached yet are skipped and listed
-python3 scripts/readings/build.py --from 2026-10-01 --to 2027-11-27 --offline
-
-# 3. check it and write docs/readings-report.md
+# check everything and write docs/readings-report.md
 python3 scripts/readings/validate.py --from 2026-10-01 --to 2027-11-27
 
-# tests for the versification mapping
+# tests for the versification mapping and citation parsing
 python3 scripts/readings/test_versification.py
 ```
 
-`build.py` without `--offline` fetches any page it is missing, at the same
-slow pace. `--source prototype` takes titles and citations from
-`prototype-readings.json` instead of USCCB pages (used for 2026-10-01 to
-2027-01-11 while the fetch runs). Builds can be run in pieces:
-`build-log.json` is merged by date across runs, and a later USCCB build of
-a date replaces its prototype build.
+`--source` picks where titles and citations come from:
 
-Status 2026-10-02: 2026-10-01 to 2027-01-11 is built from the prototype
-citations. The rest of the year waits on the fetch; when it finishes,
-run step 2 and 3 over the full range.
+| `--source` | Used for | Notes |
+|---|---|---|
+| `prototype` | 2026-10-01 to 2027-01-11 | `prototype-readings.json` (taken from USCCB pages in the design session) |
+| `cpbjr` | 2027-01-12 to 2027-11-27 | [cpbjr/catholic-readings-api](https://github.com/cpbjr/catholic-readings-api), MIT, commit `973e9864eb0f15accadfc48750f5b243a95b7a2c` (2026-08-29), pinned in `cpbjr.py`. No Alleluia citations, so those days have no Alleluia entry. Titles are the dataset's calendar names. |
+| `usccb` (default) | not used for the committed files | USCCB pages; `--offline` builds only from cached pages and skips the rest |
 
-Python 3 standard library only. The USCCB pages are fetched with the
-system `curl` binary (see below); nothing else is installed. No AI or LLM
-calls. Everything downloaded is cached under `scripts/readings/cache/`
-(gitignored), so a rerun is offline once the cache is warm
-(`build.py --offline` refuses to touch the network).
+Other flags: `--edition` (default `eng-web-c`), `--replace-companion-days`
+(by default a rebuild leaves the readings for dates that have
+`content/companion/` files unchanged when the new build differs, and parks
+the new build in `cache/proposed/`). `build-log.json` is merged by date, so
+ranges can be built in pieces.
+
+**USCCB fetch, stopped 2026-10-02.** The site serves `curl` but answers
+anything faster than about one request per 90 s, and often slower ones,
+with its proof-of-work page. The fetcher never solves it; it backs off.
+At about 6 minutes per page the year would have taken two days, so the
+fetch was stopped with 6 pages cached and the cpbjr dataset used instead.
+Its citations were first checked against the prototype and those 6 pages
+(see the report: 345 of 349 agree; the 4 differences are Thanksgiving 2026
+and one misspelling). `fetch.py` still works if the USCCB source is
+wanted later.
 
 ## Files
 
@@ -40,10 +44,11 @@ calls. Everything downloaded is cached under `scripts/readings/cache/`
 |---|---|
 | `fetch.py` | Fetches every USCCB page in a range (main page plus same-date sub-pages such as Vigil, Night, Dawn, Day). Resumable. |
 | `usccb.py` | Polite cached fetch; extracts the day title, lectionary number, labels and citations. Never parses the verse text. |
-| `citations.py` | Parses Lectionary citations (`Psalm 27:7-8a, 8b-9abc, 13-14`, `Galatians 4:22-24, 26-27, 31–5:1`, `Esther C:12, 14-16`) into NABRE verse lists. |
+| `citations.py` | Cleans formatting slips in source citations (spacing, `&`, upper-case verse letters, a missing "Psalm", two misspelled book names; numbers never change) and parses Lectionary citations (`Psalm 27:7-8a, 8b-9abc, 13-14`, `Galatians 4:22-24, 26-27, 31–5:1`, `Esther C:12, 14-16`) into NABRE verse lists. |
 | `versification.py` | Maps NABRE verse numbers to World English Bible numbers. |
 | `web.py` | Loads the World English Bible USFM into plain text per verse. |
 | `assemble.py` | Resolves one citation to WEB verses and records every mapping decision. |
+| `cpbjr.py` | Reads titles and citations from the pinned cpbjr dataset. |
 | `build.py` | Picks the Mass for each day, writes the JSON files and `build-log.json`. |
 | `validate.py` | Checks coverage, resolution, regression against `prototype-readings.json` and fixed spot checks; writes `docs/readings-report.md`. |
 
@@ -52,13 +57,20 @@ calls. Everything downloaded is cached under `scripts/readings/cache/`
 ```json
 {"date": "2026-10-25", "title": "Thirtieth Sunday in Ordinary Time",
  "r": [{"l": "Reading 1", "c": "Exodus 22:20-26", "b": "EXO",
-        "t": [[22, 21, "“You shall not wrong an alien..."], ...]}, ...],
+        "t": [[22, 21, "“You shall not wrong an alien...", "22:20"], ...]}, ...],
  "alt": ["..."]}
 ```
 
-`c` is the citation as printed by the USCCB (NABRE numbering). `t` holds
-`[chapter, verse, text]` in **World English Bible numbering**, so `c`
-and `t` can disagree on numbers by design (the example above). A partial
+`c` is the Lectionary citation (NABRE numbering). `t` holds
+`[chapter, verse, text, nabre]`: chapter and verse in **World English
+Bible numbering** (companion chunk keys use these), and `nabre`, the
+Lectionary number of the same verse as `"ch:v"` (for example
+`"22:20"` on WEB Exodus 22:21, `"16:25"` on WEB Romans 14:24). When
+several NABRE verses fall in one WEB verse the label is a range,
+`"1:14-15"` (3 John) or `"51:1-2"` (a psalm superscription the NABRE
+counts as two verses). Show `nabre` to readers so the numbers match the
+heading; partial-verse letters are not included because the whole verse
+is printed. A partial
 verse (`8a`, `9abc`) is printed whole. `alt` is present only when the day
 has other Masses or optional readings that were not chosen.
 
