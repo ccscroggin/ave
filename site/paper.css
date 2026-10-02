@@ -1,0 +1,58 @@
+.pg{position:relative;box-sizing:border-box;background:#FFFDF8;color:#1C1B18;font-family:"EB Garamond","Iowan Old Style",Palatino,Georgia,serif;overflow:hidden;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg *{box-sizing:border-box}
+.pg.half{width:528px;height:816px;padding:42px 40px 40px;font-size:14.5px}
+.pg.letter{width:816px;height:1056px;padding:58px 62px 50px;font-size:15.5px}
+.pg-body{position:relative;height:100%;overflow:hidden}
+.pg-foot{position:absolute;left:40px;right:40px;bottom:16px;display:flex;justify-content:space-between;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:10.5px;letter-spacing:.06em;color:#8C8677}
+.pg.letter .pg-foot{left:62px;right:62px;bottom:20px}
+.pg p{margin:0 0 .5em}
+.pg .eyebrow{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.72em;letter-spacing:.14em;text-transform:uppercase;color:#A3192B;margin:0 0 .15em}
+.pg .cite{font-size:1.2em;font-style:italic;margin:0 0 .35em;line-height:1.2}
+.pg .rh{margin-top:.9em}
+.pg .rh:first-child{margin-top:0}
+.pg .vs{text-wrap:pretty;hyphens:auto}
+.pg .vs sup{font-size:.6em;color:#A3192B;font-weight:600;margin:0 .15em 0 .05em;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif}
+.pg .plain{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;color:#1F3A6E;font-size:.93em;line-height:1.38}
+.pg .box{background:#EDF1F7;border-radius:3px;padding:.55em .75em .6em;margin:.35em 0 .8em}
+.pg .box .lbl{display:block;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.68em;letter-spacing:.14em;text-transform:uppercase;color:#1F3A6E;opacity:.8;margin-bottom:.15em}
+.pg .psalm{font-style:italic;color:#5E5949;font-size:.95em}
+.pg .ftn{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.7em;color:#8C8677;line-height:1.35}
+/* cover */
+.pg .cv{display:flex;flex-direction:column;height:100%}
+.pg .cv-date{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.78em;letter-spacing:.16em;text-transform:uppercase;color:#5E5949}
+.pg .cv-title{font-size:1.08em;font-style:italic;margin:.2em 0 0;color:#3D3A31;line-height:1.25}
+.pg .cv-rule{height:1px;background:#D9D1BE;margin:1.2em 0}
+.pg .cv-ed{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.78em;letter-spacing:.16em;text-transform:uppercase;color:#A3192B;font-weight:700}
+.pg .cv-head{font-size:2.5em;font-style:italic;line-height:1.02;margin:.15em 0 .45em;color:#1C1B18;text-wrap:balance}
+.pg .cv-intro{font-size:1.06em;line-height:1.45}
+.pg .cv-listen{margin-top:.8em}
+.pg .cv-listen b{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.75em;letter-spacing:.14em;text-transform:uppercase;color:#A3192B;font-weight:700;display:block}
+.pg .cv-listen i{font-size:1.1em}
+.pg .cv-meta{margin-top:auto;display:flex;flex-wrap:wrap;gap:.3em 1.2em;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.78em;color:#5E5949;padding-top:1em}
+.pg .sw{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:.35em;vertical-align:-.05em;border:1px solid rgba(0,0,0,.18)}
+.pg .stamp{position:absolute;top:18px;right:20px;border:1.5px solid #A3192B;color:#A3192B;font:700 9px "Alegreya Sans","Gill Sans",Calibri,sans-serif;letter-spacing:.16em;text-transform:uppercase;padding:3px 7px;transform:rotate(3deg);background:#FFFDF8;z-index:2}
+.pg .mast{display:flex;justify-content:space-between;align-items:flex-end;gap:1em;border-bottom:1px solid #D9D1BE;padding-bottom:.6em;margin-bottom:.9em}
+.pg .mast .cv-head{font-size:1.9em;margin:.1em 0 0}
+.pg .mast-r{text-align:right;flex:none;max-width:45%}
+/* side by side */
+.pg .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-bottom:.5em}
+.pg .row2>div:last-child{border-left:1px solid #E6DFCF;padding-left:16px}
+.pg .row2.hd{margin-top:.8em;margin-bottom:.25em}
+.pg .row2.hd>div:last-child{border-left-color:transparent}
+.pg .colhd{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.68em;letter-spacing:.14em;text-transform:uppercase;color:#1F3A6E}
+/* facing pages */
+.pg .fc{margin-bottom:.55em}
+.pg .cont{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.68em;letter-spacing:.14em;text-transform:uppercase;color:#8C8677;margin:0 0 .4em}
+/* back pages */
+.pg .bk-back h3{font-size:1.25em;font-style:italic;font-weight:500;margin:0 0 .3em;color:#A3192B}
+.pg .bk-back h4{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.72em;letter-spacing:.14em;text-transform:uppercase;color:#1F3A6E;margin:1.1em 0 .3em}
+.pg .bk-back ol{margin:0;padding-left:1.2em}
+.pg .bk-back li{margin:0 0 .45em}
+.pg .draw{border:1.5px dashed #B9AF97;border-radius:6px;height:15em;margin-top:.5em;display:flex;align-items:flex-end;justify-content:flex-end;padding:.5em;color:#B9AF97;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.7em}
+.pg .word{border:1px solid #D9D1BE;border-radius:4px;padding:.5em .7em}
+.pg .word b{font-size:1.2em;font-style:italic;font-weight:500}
+.pg .oom-mini{display:grid;grid-template-columns:1fr auto;gap:.15em 1em;font-size:.92em}
+.pg .oom-mini span:nth-child(even){font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.8em;color:#5E5949;text-align:right}
+.pg .oom-mini .off{text-decoration:line-through;color:#A39C8A}
+.pg .lines{height:100%;background:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,#E3DCCB 27px,#E3DCCB 28px)}
+.pg .notes-h{font-style:italic;font-size:1.2em;color:#8C8677;margin:0 0 .3em}

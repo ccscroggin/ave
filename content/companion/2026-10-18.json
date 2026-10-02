@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-18",
+  "plain": {
+    "headline": "Everything Belongs to God",
+    "intro": "Today's readings ask who is really in charge. God uses a foreign king who does not know him, Paul thanks God for a young church, and Jesus answers a trap about taxes. Rulers have their place, but every person and every nation belongs to God.",
+    "listen": "what belongs to Caesar, and what belongs to God",
+    "readings": {
+      "Reading 1": {
+        "box": "God speaks to Cyrus, the king of Persia, and calls him his chosen one. Cyrus does not know the God of Israel, yet God uses him to free his people. Background: Cyrus conquered Babylon around 539 BC and allowed the exiled Jews to go home.",
+        "chunks": [
+          {"from": "45:1", "to": "45:1", "text": "The Lord speaks to Cyrus, the king he has chosen. God has taken him by the hand to defeat nations and disarm kings. God opens doors and gates for him, and none stay shut."},
+          {"from": "45:4", "to": "45:5", "text": "God says: I called you by name for the sake of my servant Jacob, my chosen people Israel. I gave you an honored title, even though you did not know me. I am the Lord, and there is no other God. I give you strength, even though you do not know me,"},
+          {"from": "45:6", "to": "45:6", "text": "so that people from the east to the west will know there is no God but me. I am the Lord, and there is no other."}
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "Psalm 96 calls the whole world to sing a new song to the Lord. The gods of the nations are nothing, but the Lord made the heavens, so all peoples should give him glory and praise."
+      },
+      "Reading 2": {
+        "box": "These are the opening lines of Paul's letter to the Christians in Thessalonica, a city in Greece. He thanks God for their faith, love and hope. Background: this is likely the oldest of Paul's letters, written around AD 50.",
+        "chunks": [
+          {"from": "1:1", "to": "1:2", "text": "From Paul, Silvanus and Timothy, to the church in Thessalonica, which lives in God the Father and the Lord Jesus Christ. Grace and peace to you from God our Father and the Lord Jesus Christ. We always thank God for all of you and name you in our prayers."},
+          {"from": "1:3", "to": "1:3", "text": "Before our God and Father, we keep remembering how your faith shows in what you do, how your love makes you work hard, and how your hope in our Lord Jesus Christ keeps you going."},
+          {"from": "1:4", "to": "1:5", "text": "Brothers and sisters, God loves you, and we know he has chosen you. When we brought you the Good News, it was not just words. It came with power, with the Holy Spirit, and with deep conviction. You saw for yourselves how we lived among you for your good."}
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus' enemies try to trap him with a question about paying taxes to the Roman emperor. If he says yes, he angers the crowd. If he says no, he can be reported to Rome. He answers by pointing to the emperor's picture on a coin, and asks them to give God what is God's.",
+        "chunks": [
+          {"from": "22:15", "to": "22:17", "text": "The Pharisees met and planned how to trap Jesus with his own words. They sent some of their followers to him, along with supporters of King Herod. They said, \"Teacher, we know you are honest. You teach God's way truthfully, and you do not play favorites. So tell us what you think. Is it right to pay taxes to the emperor, or not?\""},
+          {"from": "22:18", "to": "22:19", "text": "Jesus saw their bad intent and said, \"Why are you testing me, you hypocrites? Show me the coin used for the tax.\" They handed him a Roman coin."},
+          {"from": "22:20", "to": "22:21", "text": "He asked them, \"Whose face is this, and whose name is written on it?\" They answered, \"The emperor's.\" Then he said, \"So give to the emperor what belongs to the emperor, and give to God what belongs to God.\""}
+        ]
+      }
+    },
+    "carry": "The coin bore the emperor's image, and you bear God's, so offer him your whole self this week."
+  },
+  "kids": {
+    "headline": "We Belong to God",
+    "intro": "Today we hear that God is in charge of the whole world, even kings who do not know him. Jesus reminds us that we belong to God.",
+    "listen": "the word \"coin\" in the Gospel",
+    "readings": {
+      "Reading 1": {
+        "box": "Long ago, God's people were far from home. God chose a king named Cyrus to set them free, even though Cyrus did not know God.",
+        "chunks": [
+          {"from": "45:1", "to": "45:6", "text": "God told King Cyrus: I have chosen you and held your hand. I will help you win against other kings, and I will open every gate for you. I called you by name to help my people, even though you do not know me. I am the Lord. There is no other God. I make you strong so that people everywhere, from where the sun comes up to where it goes down, will know that I am the only God."}
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "This song asks everyone in the world to sing to God. God made the sky and everything in it, so we give him praise."
+      },
+      "Reading 2": {
+        "box": "Paul writes a letter to a church in a city called Thessalonica. He tells them he thanks God for them every day.",
+        "chunks": [
+          {"from": "1:1", "to": "1:3", "text": "Paul and his friends Silvanus and Timothy wrote to the church in Thessalonica. They wished them grace and peace from God. They said: We thank God for all of you, and we pray for you all the time. We remember how you show your faith, how hard you work out of love, and how you keep hoping in Jesus."},
+          {"from": "1:4", "to": "1:5", "text": "God loves you and has chosen you. When we told you about Jesus, it was more than words. The Holy Spirit was at work, and you could see how we lived to help you."}
+        ]
+      },
+      "Gospel": {
+        "box": "Some people did not like Jesus and tried to trick him with a question about money. Jesus gave a wise answer that surprised them.",
+        "chunks": [
+          {"from": "22:15", "to": "22:18", "text": "Some leaders wanted to trick Jesus into saying something that would get him in trouble. They sent people to say nice things to him first: \"Teacher, we know you always tell the truth.\" Then they asked, \"Should we pay taxes to the emperor or not?\" But Jesus knew they were trying to trick him. He said, \"Why are you testing me? You are only pretending to be friendly.\""},
+          {"from": "22:19", "to": "22:21", "text": "\"Show me a coin,\" Jesus said. They gave him one. He asked, \"Whose face and name are on this coin?\" They said, \"The emperor's.\" Jesus said, \"Then give the emperor what belongs to him, and give God what belongs to God.\""}
+        ]
+      }
+    },
+    "word": {"term": "taxes", "meaning": "Money people pay to their country's leaders to help run things."},
+    "draw": "Draw a coin with your own face on it and write \"I belong to God\" around the edge.",
+    "ask": "The coin had the emperor's face on it, and you are made in God's image, so what can you give to God this week?"
+  },
+  "family": {
+    "opener": "Today Jesus looks at a coin and asks whose face is on it, so let's think about whose we are.",
+    "questions": [
+      "Jesus says to give God what belongs to God. What do you think belongs to God?",
+      "God used King Cyrus even though Cyrus did not know him. How might God be working through people we don't expect?",
+      "Paul thanked God for his friends' faith, love and hope. Who could we thank God for today?"
+    ],
+    "try": "Each night at dinner, name one person and thank God for something good you see in them.",
+    "pray": "Loving God, everything we have comes from you, so help us give you our hearts, our time and our love. Amen."
+  }
+}

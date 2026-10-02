@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8ECF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1540" media="(prefers-color-scheme: dark)">
+<title>Ave</title>
+<meta name="description" content="Pray the rosary, read the day’s Mass readings, and print a free missalette with a guide in plain words.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Ave">
+<meta property="og:description" content="Pray the rosary, read the day’s Mass readings, and print a free missalette.">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="paper.css">
+</head>
+<body>
+
+<div class="app">
+<div class="views">
+
+<!-- ============ ROSARY ============ -->
+<section class="view" id="view-rosary" aria-label="Rosary">
+  <header class="top">
+    <button class="set-btn" id="setBtn" aria-haspopup="dialog">
+      <span class="name"><span id="setName">Sorrowful mysteries</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </span>
+      <span class="days" id="setDays"></span>
+    </button>
+    <button class="icon-btn" id="optBtn" aria-label="Prayer options">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M3 5h8M15 5h2M3 15h2M9 15h8M3 10h4M11 10h6"/><circle cx="13" cy="5" r="2"/><circle cx="7" cy="15" r="2"/><circle cx="9" cy="10" r="2"/>
+      </svg>
+    </button>
+  </header>
+  <div class="stage" id="stage" aria-label="Rosary beads. Tap to go to the next prayer.">
+    <svg id="beads" viewBox="0 0 300 410" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <radialGradient id="gTodo" cx="35%" cy="30%" r="75%"><stop offset="0" style="stop-color:var(--bead-hi)"/><stop offset="1" style="stop-color:var(--bead)"/></radialGradient>
+        <radialGradient id="gDone" cx="35%" cy="30%" r="75%"><stop offset="0" style="stop-color:var(--gold-hi)"/><stop offset="1" style="stop-color:var(--gold)"/></radialGradient>
+        <radialGradient id="gCur" cx="35%" cy="30%" r="75%"><stop offset="0" style="stop-color:#fff"/><stop offset="1" style="stop-color:var(--halo)"/></radialGradient>
+        <radialGradient id="gHalo"><stop offset="0" style="stop-color:var(--halo);stop-opacity:.75"/><stop offset=".55" style="stop-color:var(--halo);stop-opacity:.22"/><stop offset="1" style="stop-color:var(--halo);stop-opacity:0"/></radialGradient>
+      </defs>
+      <g id="chainLayer"></g>
+      <g id="haloG" class="halo"><circle class="glow" r="17"/><circle class="ring" r="9.5"/></g>
+      <g id="beadLayer"></g>
+      <g id="centerText"></g>
+    </svg>
+  </div>
+  <article class="card" id="card" aria-live="polite">
+    <p class="rubric" id="rubric"></p>
+    <h1 class="ptitle" id="ptitle"></h1>
+    <div id="pbody"></div>
+  </article>
+  <nav class="controls">
+    <button class="back" id="backBtn" aria-label="Previous prayer">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M13.5 5L7.5 11l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="next" id="nextBtn"><span class="next-main" id="nextMain">Next</span><span class="next-sub" id="nextSub"></span></button>
+  </nav>
+</section>
+
+<!-- ============ MASS ============ -->
+<section class="view" id="view-mass" aria-label="Mass">
+  <div class="datenav">
+    <button class="icon-btn" id="dPrev" aria-label="Previous day"><svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><path d="M13.5 5L7.5 11l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="when" id="dToday" aria-label="Go to today"><span class="d1" id="dLabel"></span><span class="d2" id="dSub"></span></button>
+    <button class="icon-btn" id="dNext" aria-label="Next day"><svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><path d="M8.5 5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+  <div class="seg" role="group" aria-label="Mass section">
+    <button id="segR" aria-pressed="true">Readings</button>
+    <button id="segO" aria-pressed="false">Order of Mass</button>
+  </div>
+  <div class="scroll" id="massScroll"></div>
+</section>
+
+<!-- ============ BOOKLETS ============ -->
+<section class="view" id="view-booklets" aria-label="Booklets">
+  <div class="scroll">
+    <header class="bk-head">
+      <div>
+        <h1>Booklets</h1>
+        <p>The readings, with a guide in plain words</p>
+      </div>
+      <button class="btn-pill" id="orderBtn" aria-haspopup="dialog">By mail</button>
+    </header>
+
+    <p class="pick-label" id="lblDate">Sunday</p>
+    <div class="datenav bk-date">
+      <button class="icon-btn" id="bPrev" aria-label="Previous date"><svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><path d="M13.5 5L7.5 11l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="when"><span class="d1" id="bLabel"></span><span class="d2" id="bSub"></span></div>
+      <button class="icon-btn" id="bNext" aria-label="Next date"><svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><path d="M8.5 5l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+
+    <p class="pick-label">Edition</p>
+    <div class="seg n4" role="group" aria-label="Edition" id="edSeg">
+      <button data-ed="plain">Plain</button>
+      <button data-ed="kids">Kids</button>
+      <button data-ed="family">Family</button>
+      <button data-ed="readings">Readings</button>
+    </div>
+
+    <p class="pick-label">Layout</p>
+    <div class="seg n3" role="group" aria-label="Layout" id="lySeg">
+      <button data-ly="pocket">Pocket</button>
+      <button data-ly="side">Side by side</button>
+      <button data-ly="facing">Facing</button>
+    </div>
+    <p class="draft-note" id="draftNote"></p>
+
+    <div class="pv-meta"><span id="pvSize"></span><span id="pvCount"></span></div>
+    <div class="pv" id="pv" data-comment-target><p class="pv-loading">Setting the pages…</p></div>
+
+    <div class="bk-actions">
+            <button class="btn-gold" id="bkPrint">Print this booklet</button>
+    </div>
+    <p class="bk-note" id="bkNote"></p>
+    <a class="about-link" href="about.html">About Ave</a>
+  </div>
+</section>
+
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="rosary" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="9" r="6.5" stroke-dasharray="1.6 2.1"/><path d="M12 15.5v3M10.3 19.6h3.4M12 18.5v4"/></svg>
+    <span class="tl">Rosary</span></button>
+  <button class="tab" role="tab" data-tab="mass" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C9.5 4.8 6.5 4.5 3.5 5v13c3-.5 6-.2 8.5 1.5 2.5-1.7 5.5-2 8.5-1.5V5c-3-.5-6-.2-8.5 1.5z"/><path d="M12 6.5v13"/></svg>
+    <span class="tl">Mass</span></button>
+  <button class="tab" role="tab" data-tab="booklets" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5L4 3.5v15l8 2 8-2v-15z"/><path d="M12 5.5v15"/><path d="M6.5 7.5l3 .7M6.5 10.5l3 .7M14.5 8.2l3-.7M14.5 11.2l3-.7"/></svg>
+    <span class="tl">Booklets</span></button>
+</nav>
+</div>
+
+<!-- rosary options -->
+<dialog class="sheet" id="sheet" aria-label="Prayer options">
+  <div class="sheet-in">
+    <div class="grip"></div>
+    <h2>Mysteries</h2>
+    <div class="sets" id="setOpts"></div>
+    <h2 style="margin-top:18px">Prayer</h2>
+    <div class="row"><span class="l">Fatima prayer<span class="s">Say it after each Glory Be</span></span><button class="switch" role="switch" id="swFatima" aria-label="Fatima prayer"></button></div>
+    <div class="row"><span class="l">Show prayer words<span class="s">Turn off when you know them by heart</span></span><button class="switch" role="switch" id="swWords" aria-label="Show prayer words"></button></div>
+    <div class="row"><span class="l">Keep screen on<span class="s" id="wakeNote">The screen stays on while you pray</span></span><button class="switch" role="switch" id="swWake" aria-label="Keep screen on"></button></div>
+    <div class="row" style="border-bottom:0"><span class="l">Text size<span class="s">Also changes the readings</span></span>
+      <span class="stepper"><button id="fsDown" aria-label="Smaller text">A−</button><span id="fsVal">3</span><button id="fsUp" aria-label="Larger text">A+</button></span></div>
+    <div class="sheet-actions">
+      <button class="btn-quiet" id="restartBtn">Start again</button>
+      <button class="btn-gold" id="doneBtn">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- by mail -->
+<dialog class="sheet" id="orderSheet" aria-label="Booklets by mail">
+  <div class="sheet-in">
+    <div class="grip"></div>
+    <h2>Booklets by mail</h2>
+    <p class="mail-p">Printed, stapled booklets mailed to your door are coming. Two ways to get them:</p>
+    <div class="plan-opts">
+      <div class="opt"><span class="n">Monthly</span><span class="d">One booklet a month with every Sunday and holy day, mailed before the first Sunday.</span></div>
+      <div class="opt"><span class="n">A season</span><span class="d">All of Advent and Christmas, or all of Lent, in one booklet that ships once.</span></div>
+    </div>
+    <p class="mail-p">Until then, every booklet here is free to print at home.</p>
+    <div class="sheet-actions"><button class="btn-gold" id="oClose">Done</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<div id="printArea"></div>
+
+<script src="app.js"></script>
+<script>if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>

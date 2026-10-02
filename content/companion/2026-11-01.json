@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-01",
+  "plain": {
+    "headline": "A Crowd Too Big to Count",
+    "intro": "Today the Church honors all the saints, the famous ones and the countless people no one remembers by name. John's vision shows a huge crowd from every nation standing before God, and his letter tells us we are already God's children. In the Gospel, Jesus describes the kind of people who belong to that crowd.",
+    "listen": "the word \"blessed,\" repeated again and again in the Gospel",
+    "readings": {
+      "Reading 1": {
+        "box": "John sees God's people marked as his own, and then a crowd beyond counting, dressed in white and praising God and the Lamb, who is Jesus. The Book of Revelation was written near the end of the first century to Christians facing hard times, and its numbers are symbols: 144,000 (twelve times twelve times a thousand) stands for God's people made complete.",
+        "chunks": [
+          {"from": "7:2", "to": "7:3", "text": "I saw another angel rise from the east, carrying the seal of the living God. He shouted to the four angels who had power to damage the earth and the sea: \"Do not harm the earth, the sea, or the trees until we have put God's mark on the foreheads of his servants.\""},
+          {"from": "7:4", "to": "7:4", "text": "I heard how many received the mark: one hundred forty-four thousand, from every tribe of the people of Israel."},
+          {"from": "7:9", "to": "7:9", "text": "After that I looked and saw a huge crowd that no one could count. They came from every nation, tribe, people, and language. They stood before the throne and before the Lamb, wearing white robes and holding palm branches."},
+          {"from": "7:10", "to": "7:10", "text": "They shouted, \"Our salvation comes from our God, who sits on the throne, and from the Lamb.\""},
+          {"from": "7:11", "to": "7:12", "text": "All the angels stood around the throne, with the elders and the four living creatures. They bowed down with their faces to the ground and worshiped God, saying, \"Amen. Praise, glory, wisdom, thanks, honor, power, and strength belong to our God forever and ever. Amen.\""},
+          {"from": "7:13", "to": "7:14", "text": "One of the elders asked me, \"Who are these people dressed in white, and where did they come from?\" I said, \"Sir, you know.\" He told me, \"These are the ones who have come through the great time of suffering. They washed their robes and made them white in the blood of the Lamb.\""}
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "The whole earth belongs to the Lord. Those who may climb his holy mountain are people with clean hands and pure hearts, the people who long to see God's face."
+      },
+      "Reading 2": {
+        "box": "John tells his readers that God loves them so much that they really are his children, right now. What they will become is still hidden, but when Jesus appears they will see him as he is and become like him. This letter was written late in the first century to encourage Christian communities.",
+        "chunks": [
+          {"from": "3:1", "to": "3:1", "text": "Look how much the Father loves us: he calls us his children. That is why the world does not understand us. It did not understand him either."},
+          {"from": "3:2", "to": "3:2", "text": "Dear friends, we are God's children now. We do not yet know what we will become. But we know that when he appears, we will be like him, because we will see him as he really is."},
+          {"from": "3:3", "to": "3:3", "text": "Everyone who hopes in him makes himself pure, just as he is pure."}
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus climbs a mountain, sits down like a teacher, and names the people God calls blessed: the poor in spirit, the grieving, the gentle, the merciful, the peacemakers, and those who suffer for doing right. These sayings, called the Beatitudes, open the Sermon on the Mount in Matthew's Gospel.",
+        "chunks": [
+          {"from": "5:1", "to": "5:2", "text": "When Jesus saw the crowds, he went up the mountain and sat down. His disciples came to him, and he began to teach them."},
+          {"from": "5:3", "to": "5:4", "text": "\"Blessed are those who know they are poor before God, because the Kingdom of Heaven belongs to them. Blessed are those who grieve, because God will comfort them."},
+          {"from": "5:5", "to": "5:6", "text": "Blessed are the gentle, because the earth will be theirs. Blessed are those who long for what is right as much as they long for food and drink, because God will satisfy them."},
+          {"from": "5:7", "to": "5:8", "text": "Blessed are those who show mercy, because they will receive mercy. Blessed are those with pure hearts, because they will see God."},
+          {"from": "5:9", "to": "5:10", "text": "Blessed are those who make peace, because they will be called God's children. Blessed are those who are treated badly for doing what is right, because the Kingdom of Heaven belongs to them."},
+          {"from": "5:11", "to": "5:12", "text": "Blessed are you when people insult you, hurt you, and tell lies about you because you follow me. Be glad and full of joy, because your reward in heaven is great. People treated the prophets before you the same way.\""}
+        ]
+      }
+    },
+    "carry": "The saints were ordinary people who let God make them holy, and he offers the same to us."
+  },
+  "kids": {
+    "headline": "God's Big Family",
+    "intro": "Today is All Saints Day, when we remember everyone who is with God in heaven. The readings show a crowd so big no one can count it, and Jesus tells us how to be part of it.",
+    "listen": "how many times Jesus says the word \"blessed\"",
+    "readings": {
+      "Reading 1": {
+        "box": "John had a dream from God. He saw a huge crowd of people from every country, all wearing white and praising God and Jesus, whom he calls the Lamb. These are the saints.",
+        "chunks": [
+          {"from": "7:2", "to": "7:4", "text": "John saw an angel holding God's special mark. The angel told the other angels to wait before doing anything to the earth, so God could first mark his people as his own. A great many people received the mark."},
+          {"from": "7:9", "to": "7:10", "text": "Then John saw a crowd so big no one could count it. People came from every country and spoke every language. They wore white clothes, held palm branches, and shouted, \"Our God and the Lamb save us.\""},
+          {"from": "7:11", "to": "7:12", "text": "All the angels bowed down low and worshiped God. They said that all praise, thanks, and glory belong to God forever."},
+          {"from": "7:13", "to": "7:14", "text": "An elder asked John who the people in white were. Then he told him: they had gone through hard times, and Jesus had made them clean and bright."}
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "Everything in the world belongs to God. The people who come close to him are the ones with clean hands and kind, honest hearts."
+      },
+      "Reading 2": {
+        "box": "John tells us that God loves us so much that we are his children. One day we will see Jesus and become like him.",
+        "chunks": [
+          {"from": "3:1", "to": "3:1", "text": "Look how much God the Father loves us. He calls us his children."},
+          {"from": "3:2", "to": "3:3", "text": "We are God's children right now. We don't know everything about what we will be, but when Jesus comes, we will see him and be like him. Hoping for that helps us stay good and pure, like Jesus."}
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus sat on a mountain and taught his friends who is truly blessed by God. His list surprises people, because it includes the sad, the gentle, and the kind.",
+        "chunks": [
+          {"from": "5:1", "to": "5:2", "text": "Jesus saw the crowds, went up a mountain, and sat down. His friends came close, and he began to teach them."},
+          {"from": "5:3", "to": "5:5", "text": "\"Blessed are those who know they need God, because heaven is theirs. Blessed are those who are sad, because God will comfort them. Blessed are the gentle, because the world will be theirs."},
+          {"from": "5:6", "to": "5:8", "text": "Blessed are those who really want to do what is right, because God will fill them up. Blessed are those who forgive and show kindness, because they will be shown kindness too. Blessed are those with clean hearts, because they will see God."},
+          {"from": "5:9", "to": "5:10", "text": "Blessed are those who make peace, because they will be called God's children. Blessed are those who are treated badly for doing right, because heaven is theirs."},
+          {"from": "5:11", "to": "5:12", "text": "Blessed are you when people are mean to you because you love me. Be happy, because you have a great reward waiting in heaven.\""}
+        ]
+      }
+    },
+    "word": {"term": "Blessed", "meaning": "Blessed means truly happy because God is close to you and cares for you."},
+    "draw": "Draw the huge crowd in heaven, with people from all over the world wearing white and holding palm branches, and put yourself in it.",
+    "ask": "Which of the people Jesus calls blessed would you most like to be like this week?"
+  },
+  "family": {
+    "opener": "Today we remember all the saints in heaven, including people from our own family who loved God, and we ask what made them holy.",
+    "questions": [
+      "Who is someone you know who shows us what a saint looks like, and why?",
+      "Jesus says the gentle, the merciful, and the peacemakers are blessed. Which of these is hardest for you?",
+      "What do you think it means to be God's child right now, not just someday?"
+    ],
+    "try": "Pick one saint, maybe one whose name someone in the family shares, and learn one true thing about that person to share at dinner.",
+    "pray": "All you holy men and women, saints of God, pray for our family, that we may one day join you in heaven."
+  }
+}

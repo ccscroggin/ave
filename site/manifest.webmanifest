@@ -1,0 +1,15 @@
+{
+  "name": "Ave",
+  "short_name": "Ave",
+  "description": "Pray the rosary, read the day’s Mass readings, and print a free missalette with a guide in plain words.",
+  "start_url": "./#rosary",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B1540",
+  "theme_color": "#0B1540",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

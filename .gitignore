@@ -1,0 +1,6 @@
+site/data/
+site/sw.js
+scripts/readings/cache/
+.vercel
+.DS_Store
+node_modules/
