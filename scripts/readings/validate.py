@@ -427,17 +427,14 @@ def write_report(log, files, start, end, readings_total, labels, unresolved, mis
     L.append("- Titles are the dataset's calendar names, in its own style (\"Tuesday of the 1st week of Ordinary Time\", "
              "\"Saint Bruno, Priest\" on optional memorials), not the USCCB wording. "
              + (f"Missing titles: {', '.join(extra['no_title'])}." if extra["no_title"] else "No title is missing."))
-    L.append("- 2027-03-27 (Easter Vigil): the dataset flattens the vigil's nine readings into four slots: "
-             "\"Reading 1\" Genesis 1:1–2:2, \"Responsorial Psalm\" Psalm 118 (the psalm after the Epistle), "
-             "\"Reading 2\" Genesis 22:1-18 (the vigil's second Old Testament reading, not an epistle), Gospel Mark 16:1-7. "
-             "Romans 6:3-11 and the other Old Testament readings are absent. Printed as the dataset gives it; needs a hand fix.")
-    L.append("- Thanksgiving (2026-11-26 and 2027-11-25): the dataset gives the Thanksgiving Day Mass readings "
-             "(Sirach 50:22-24, 1 Corinthians 1:3-9, Luke 17:11-19); the prototype used the weekday readings. "
-             "2027-11-25 is built from the dataset, so it carries the Thanksgiving readings under the title "
-             "\"Saint Catherine of Alexandria, Virgin and Martyr\".")
-    L.append("- Ascension 2027: the dataset puts the Ascension readings on both Thursday 2027-05-06 (titled "
-             "\"Ascension of the Lord\") and Sunday 2027-05-09 (titled \"7th Sunday of Easter\"). Most US provinces "
-             "keep the Ascension on that Sunday, so 05-09's title and 05-06's readings are probably wrong; printed as given.")
+    L.append("- Three days had wrong data in the dataset and are set by hand in `scripts/readings/overrides.json`: "
+             "2027-03-27 (the dataset flattened the Easter Vigil into four slots; now all seven readings, Epistle, "
+             "psalms and Gospel), 2027-05-06 (the dataset put the Ascension on Thursday; now the Thursday of the Sixth "
+             "Week of Easter, with the six provinces that keep Thursday noted in alt), 2027-11-25 (the dataset gave the "
+             "Thanksgiving Mass under a saint's title; now the weekday, with Thanksgiving noted in alt). 2026-11-26, "
+             "built from the prototype, already had the weekday readings.")
+    L.append("- 2027-05-09 still carries the dataset's title \"7th Sunday of Easter\" over the Ascension readings, which "
+             "most US provinces use that day. Not overridden.")
     L.append("- These were found by reading the built files for the major days; other dataset errors of the same kind "
              "would not be caught by validate.py, which checks citations resolve, not that they are the right ones.")
     L.append("")

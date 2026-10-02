@@ -73,6 +73,9 @@ class Mapping(unittest.TestCase):
         self.assertEqual(m("REV", 12, 18), [(13, 1)])
         self.assertEqual(m("DAN", 3, 98), [(4, 1)])
         self.assertEqual(m("EST", "C", 12), [(4, 29)])
+        self.assertEqual(m("BAR", 3, 35), [(3, 34)])
+        self.assertEqual(m("BAR", 3, 38), [(3, 37)])
+        self.assertTrue(BIBLE["BAR"][3][37].startswith("Afterward she appeared upon earth"))
 
     def test_daniel_greek(self):
         # NABRE and eng-web's Greek Daniel share the Greek numbering of chapter 3

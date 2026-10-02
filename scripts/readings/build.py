@@ -29,6 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT_DIR = os.path.join(ROOT, "content", "readings")
 LOG_PATH = os.path.join(HERE, "build-log.json")
 PROTO_PATH = os.path.join(HERE, "prototype-readings.json")
+OVERRIDES_PATH = os.path.join(HERE, "overrides.json")
 COMPANION_DIR = os.path.join(ROOT, "content", "companion")
 PROPOSED_DIR = os.path.join(HERE, "cache", "proposed")
 
@@ -151,6 +152,40 @@ def build_day(date, pages, bible, vs, log):
     return entry, day_log
 
 
+def load_overrides():
+    if not os.path.exists(OVERRIDES_PATH):
+        return {}
+    with open(OVERRIDES_PATH, encoding="utf-8") as f:
+        data = json.load(f)
+    return {k: v for k, v in data.items() if not k.startswith("_")}
+
+
+def build_override(date, ov, bible, vs):
+    """Build a day entirely from overrides.json. Labels may repeat, and the
+    readings are taken in the order given; nothing is moved to alt."""
+    entry = {"date": date.isoformat(), "title": ov["title"], "r": []}
+    day_log = {"date": date.isoformat(), "page": "overrides.json", "readings": [], "alt": [], "problems": []}
+    for label, cit in ov["readings"]:
+        item = {"l": label, "c": cit}
+        rl = {"label": label, "citation": cit, "page_citation": cit, "clean_notes": []}
+        try:
+            res = assemble.resolve(cit, bible, vs)
+        except citations.CitationError as e:
+            item["b"], item["t"] = None, []
+            rl["error"] = str(e)
+            day_log["problems"].append(f"{label}: {e}")
+        else:
+            item["b"], item["t"] = res["book"], res["verses"]
+            rl.update({k: res[k] for k in ("book", "missing", "omitted_in_web", "skipped_nabre_omitted", "fixes", "partials")})
+            rl["count"] = len(res["verses"])
+        entry["r"].append(item)
+        day_log["readings"].append(rl)
+    if ov.get("alt"):
+        entry["alt"] = list(ov["alt"])
+    day_log["alt"] = entry.get("alt", [])
+    return entry, day_log
+
+
 def dumps(entry):
     """Compact, diff-friendly JSON: one verse per line."""
     j = lambda x: json.dumps(x, ensure_ascii=False)
@@ -205,6 +240,7 @@ def main():
         with open(PROTO_PATH, encoding="utf-8") as f:
             proto = json.load(f)
     written, skipped, held = 0, [], []
+    overrides = load_overrides()
     for d in fetch.daterange(start, end):
         if a.source == "cpbjr":
             pages = cpbjr_pages(d)
@@ -217,6 +253,9 @@ def main():
             continue
         entry, day_log = build_day(d, pages, bible, vs, log)
         day_log["source"] = a.source
+        if d.isoformat() in overrides:
+            entry, day_log = build_override(d, overrides[d.isoformat()], bible, vs)
+            day_log["source"] = "override"
         bydate[d.isoformat()] = day_log
         if entry is None:
             print(f"{d}: NO READINGS ({'; '.join(day_log['problems'])})", file=sys.stderr)

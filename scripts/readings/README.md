@@ -22,6 +22,15 @@ python3 scripts/readings/test_versification.py
 | `cpbjr` | 2027-01-12 to 2027-11-27 | [cpbjr/catholic-readings-api](https://github.com/cpbjr/catholic-readings-api), MIT, commit `973e9864eb0f15accadfc48750f5b243a95b7a2c` (2026-08-29), pinned in `cpbjr.py`. No Alleluia citations, so those days have no Alleluia entry. Titles are the dataset's calendar names. |
 | `usccb` (default) | not used for the committed files | USCCB pages; `--offline` builds only from cached pages and skips the rest |
 
+**Hand overrides.** `overrides.json` maps a date to `title`, `readings`
+(a list of `[label, citation]` in order; labels may repeat, as at the
+Easter Vigil) and optional `alt`. `build.py` applies it after whatever
+source it used, so an override wins on every rebuild. Current entries:
+2027-03-27 (Easter Vigil, flattened in the dataset), 2027-05-06
+(the dataset put the Ascension on Thursday), 2027-11-25 (the dataset gave
+the Thanksgiving Mass). To change one, edit the file and rebuild that
+date, e.g. `build.py --from 2027-03-27 --to 2027-03-27 --source cpbjr`.
+
 Other flags: `--edition` (default `eng-web-c`), `--replace-companion-days`
 (by default a rebuild leaves the readings for dates that have
 `content/companion/` files unchanged when the new build differs, and parks
@@ -128,6 +137,7 @@ the WEB files depart from `eng.vrs`:
 | Daniel 3:98-100 | DAG 4:1-3 | Hebrew 3:31-33; the WEB puts them at 4:1-3 |
 | Daniel 13, 14 | DAG 13, 14 | Susanna, Bel and the Dragon: same numbering |
 | Esther C:1-30 | ESG 4:18-47 | the WEB appends Addition C after 4:17 |
+| Baruch 3:35-38 | 3:34-37 | NABRE follows the Greek, which splits English 3:34 in two; `org.vrs` counts 38 verses and `eng.vrs` 37, with no mapping line |
 | Isaiah 63:19b | 64:1 | Hebrew 63:19 is split across English 63:19 / 64:1; `eng.vrs` leaves the half verse implicit |
 | Romans 16:25-27 | 14:24-26 | the WEB prints the doxology at the end of chapter 14 and leaves 16:25-27 empty |
 | 2 Corinthians 13:12 / 13:13 | 13:12-13 / 13:14 | English splits NABRE 13:12 |

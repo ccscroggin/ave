@@ -1,36 +1,23 @@
-{"date": "2027-05-06", "title": "Ascension of the Lord", "r": [
- {"l": "Reading 1", "c": "Acts 1:1-11", "b": "ACT", "t": [
-  [1, 1, "The first book I wrote, Theophilus, concerned all that Jesus began both to do and to teach,", "1:1"],
-  [1, 2, "until the day in which he was received up, after he had given commandment through the Holy Spirit to the apostles whom he had chosen.", "1:2"],
-  [1, 3, "To these he also showed himself alive after he suffered, by many proofs, appearing to them over a period of forty days and speaking about God’s Kingdom.", "1:3"],
-  [1, 4, "Being assembled together with them, he commanded them, “Don’t depart from Jerusalem, but wait for the promise of the Father, which you heard from me.", "1:4"],
-  [1, 5, "For John indeed baptized in water, but you will be baptized in the Holy Spirit not many days from now.”", "1:5"],
-  [1, 6, "Therefore, when they had come together, they asked him, “Lord, are you now restoring the kingdom to Israel?”", "1:6"],
-  [1, 7, "He said to them, “It isn’t for you to know times or seasons which the Father has set within his own authority.", "1:7"],
-  [1, 8, "But you will receive power when the Holy Spirit has come upon you. You will be witnesses to me in Jerusalem, in all Judea and Samaria, and to the uttermost parts of the earth.”", "1:8"],
-  [1, 9, "When he had said these things, as they were looking, he was taken up, and a cloud received him out of their sight.", "1:9"],
-  [1, 10, "While they were looking steadfastly into the sky as he went, behold, two men stood by them in white clothing,", "1:10"],
-  [1, 11, "who also said, “You men of Galilee, why do you stand looking into the sky? This Jesus, who was received up from you into the sky, will come back in the same way as you saw him going into the sky.”", "1:11"]]},
- {"l": "Responsorial Psalm", "c": "Psalm 47:2-3, 6-7, 8-9", "b": "PSA", "t": [
-  [47, 1, "Oh clap your hands, all you nations. Shout to God with the voice of triumph!", "47:2"],
-  [47, 2, "For the LORD Most High is awesome. He is a great King over all the earth.", "47:3"],
-  [47, 5, "God has gone up with a shout, the LORD with the sound of a trumpet.", "47:6"],
-  [47, 6, "Sing praises to God! Sing praises! Sing praises to our King! Sing praises!", "47:7"],
-  [47, 7, "For God is the King of all the earth. Sing praises with understanding.", "47:8"],
-  [47, 8, "God reigns over the nations. God sits on his holy throne.", "47:9"]]},
- {"l": "Reading 2", "c": "Ephesians 1:17-23", "b": "EPH", "t": [
-  [1, 17, "that the God of our Lord Jesus Christ, the Father of glory, may give to you a spirit of wisdom and revelation in the knowledge of him,", "1:17"],
-  [1, 18, "having the eyes of your hearts enlightened, that you may know what is the hope of his calling, and what are the riches of the glory of his inheritance in the saints,", "1:18"],
-  [1, 19, "and what is the exceeding greatness of his power toward us who believe, according to that working of the strength of his might", "1:19"],
-  [1, 20, "which he worked in Christ when he raised him from the dead and made him to sit at his right hand in the heavenly places,", "1:20"],
-  [1, 21, "far above all rule, authority, power, dominion, and every name that is named, not only in this age, but also in that which is to come.", "1:21"],
-  [1, 22, "He put all things in subjection under his feet, and gave him to be head over all things for the assembly,", "1:22"],
-  [1, 23, "which is his body, the fullness of him who fills all in all.", "1:23"]]},
- {"l": "Gospel", "c": "Mark 16:15-20", "b": "MRK", "t": [
-  [16, 15, "He said to them, “Go into all the world and preach the Good News to the whole creation.", "16:15"],
-  [16, 16, "He who believes and is baptized will be saved; but he who disbelieves will be condemned.", "16:16"],
-  [16, 17, "These signs will accompany those who believe: in my name they will cast out demons; they will speak with new languages;", "16:17"],
-  [16, 18, "they will take up serpents; and if they drink any deadly thing, it will in no way hurt them; they will lay hands on the sick, and they will recover.”", "16:18"],
-  [16, 19, "So then the Lord, after he had spoken to them, was received up into heaven and sat down at the right hand of God.", "16:19"],
-  [16, 20, "They went out and preached everywhere, the Lord working with them and confirming the word by the signs that followed. Amen.", "16:20"]]}
-]}
+{"date": "2027-05-06", "title": "Thursday of the Sixth Week of Easter", "r": [
+ {"l": "Reading 1", "c": "Acts 18:1-8", "b": "ACT", "t": [
+  [18, 1, "After these things Paul departed from Athens and came to Corinth.", "18:1"],
+  [18, 2, "He found a certain Jew named Aquila, a man of Pontus by race, who had recently come from Italy with his wife Priscilla, because Claudius had commanded all the Jews to depart from Rome. He came to them,", "18:2"],
+  [18, 3, "and because he practiced the same trade, he lived with them and worked, for by trade they were tent makers.", "18:3"],
+  [18, 4, "He reasoned in the synagogue every Sabbath and persuaded Jews and Greeks.", "18:4"],
+  [18, 5, "When Silas and Timothy came down from Macedonia, Paul was compelled by the Spirit, testifying to the Jews that Jesus was the Christ.", "18:5"],
+  [18, 6, "When they opposed him and blasphemed, he shook out his clothing and said to them, “Your blood be on your own heads! I am clean. From now on, I will go to the Gentiles!”", "18:6"],
+  [18, 7, "He departed there and went into the house of a certain man named Justus, one who worshiped God, whose house was next door to the synagogue.", "18:7"],
+  [18, 8, "Crispus, the ruler of the synagogue, believed in the Lord with all his house. Many of the Corinthians, when they heard, believed and were baptized.", "18:8"]]},
+ {"l": "Responsorial Psalm", "c": "Psalm 98:1, 2-3ab, 3cd-4", "b": "PSA", "t": [
+  [98, 1, "Sing to the LORD a new song, for he has done marvelous things! His right hand and his holy arm have worked salvation for him.", "98:1"],
+  [98, 2, "The LORD has made known his salvation. He has openly shown his righteousness in the sight of the nations.", "98:2"],
+  [98, 3, "He has remembered his loving kindness and his faithfulness toward the house of Israel. All the ends of the earth have seen the salvation of our God.", "98:3"],
+  [98, 4, "Make a joyful noise to the LORD, all the earth! Burst out and sing for joy, yes, sing praises!", "98:4"]]},
+ {"l": "Gospel", "c": "John 16:16-20", "b": "JHN", "t": [
+  [16, 16, "“A little while, and you will not see me. Again a little while, and you will see me.”", "16:16"],
+  [16, 17, "Some of his disciples therefore said to one another, “What is this that he says to us, ‘A little while, and you won’t see me, and again a little while, and you will see me;’ and, ‘Because I go to the Father’?”", "16:17"],
+  [16, 18, "They said therefore, “What is this that he says, ‘A little while’? We don’t know what he is saying.”", "16:18"],
+  [16, 19, "Therefore Jesus perceived that they wanted to ask him, and he said to them, “Do you inquire among yourselves concerning this, that I said, ‘A little while, and you won’t see me, and again a little while, and you will see me’?", "16:19"],
+  [16, 20, "Most certainly I tell you that you will weep and lament, but the world will rejoice. You will be sorrowful, but your sorrow will be turned into joy.", "16:20"]]}
+], "alt": [
+  "In the ecclesiastical provinces of Boston, Hartford, New York, Newark, Omaha and Philadelphia, the Ascension is kept today; its readings are on May 9."]}

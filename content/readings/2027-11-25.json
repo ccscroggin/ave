@@ -1,35 +1,39 @@
-{"date": "2027-11-25", "title": "Saint Catherine of Alexandria, Virgin and Martyr", "r": [
- {"l": "Reading 1", "c": "Sirach 50:22-24", "b": "SIR", "t": [
-  [50, 22, "Now bless the God of all, who everywhere does great things, who exalts our days from the womb, and deals with us according to his mercy.", "50:22"],
-  [50, 23, "May he grant us joyfulness of heart, and that peace may be in our days in Israel for the days of eternity,", "50:23"],
-  [50, 24, "to entrust his mercy with us, and let him deliver us in his time!", "50:24"]]},
- {"l": "Responsorial Psalm", "c": "Psalm 145:2-3, 4-5, 6-7, 8-9, 10-11", "b": "PSA", "t": [
-  [145, 2, "Every day I will praise you. I will extol your name forever and ever.", "145:2"],
-  [145, 3, "Great is the LORD, and greatly to be praised! His greatness is unsearchable.", "145:3"],
-  [145, 4, "One generation will commend your works to another, and will declare your mighty acts.", "145:4"],
-  [145, 5, "I will meditate on the glorious majesty of your honor, on your wondrous works.", "145:5"],
-  [145, 6, "Men will speak of the might of your awesome acts. I will declare your greatness.", "145:6"],
-  [145, 7, "They will utter the memory of your great goodness, and will sing of your righteousness.", "145:7"],
-  [145, 8, "The LORD is gracious, merciful, slow to anger, and of great loving kindness.", "145:8"],
-  [145, 9, "The LORD is good to all. His tender mercies are over all his works.", "145:9"],
-  [145, 10, "All your works will give thanks to you, LORD. Your saints will extol you.", "145:10"],
-  [145, 11, "They will speak of the glory of your kingdom, and talk about your power,", "145:11"]]},
- {"l": "Reading 2", "c": "1 Corinthians 1:3-9", "b": "1CO", "t": [
-  [1, 3, "Grace to you and peace from God our Father and the Lord Jesus Christ.", "1:3"],
-  [1, 4, "I always thank my God concerning you for the grace of God which was given you in Christ Jesus,", "1:4"],
-  [1, 5, "that in everything you were enriched in him, in all speech and all knowledge—", "1:5"],
-  [1, 6, "even as the testimony of Christ was confirmed in you—", "1:6"],
-  [1, 7, "so that you come behind in no gift, waiting for the revelation of our Lord Jesus Christ,", "1:7"],
-  [1, 8, "who will also confirm you until the end, blameless in the day of our Lord Jesus Christ.", "1:8"],
-  [1, 9, "God is faithful, through whom you were called into the fellowship of his Son, Jesus Christ our Lord.", "1:9"]]},
- {"l": "Gospel", "c": "Luke 17:11-19", "b": "LUK", "t": [
-  [17, 11, "As he was on his way to Jerusalem, he was passing along the borders of Samaria and Galilee.", "17:11"],
-  [17, 12, "As he entered into a certain village, ten men who were lepers met him, who stood at a distance.", "17:12"],
-  [17, 13, "They lifted up their voices, saying, “Jesus, Master, have mercy on us!”", "17:13"],
-  [17, 14, "When he saw them, he said to them, “Go and show yourselves to the priests.” As they went, they were cleansed.", "17:14"],
-  [17, 15, "One of them, when he saw that he was healed, turned back, glorifying God with a loud voice.", "17:15"],
-  [17, 16, "He fell on his face at Jesus’ feet, giving him thanks; and he was a Samaritan.", "17:16"],
-  [17, 17, "Jesus answered, “Weren’t the ten cleansed? But where are the nine?", "17:17"],
-  [17, 18, "Were there none found who returned to give glory to God, except this foreigner?”", "17:18"],
-  [17, 19, "Then he said to him, “Get up, and go your way. Your faith has healed you.”", "17:19"]]}
-]}
+{"date": "2027-11-25", "title": "Thursday of the Thirty-fourth Week in Ordinary Time", "r": [
+ {"l": "Reading 1", "c": "Daniel 6:12-28", "b": "DAN", "t": [
+  [6, 11, "Then these men assembled together, and found Daniel making petition and supplication before his God.", "6:12"],
+  [6, 12, "Then they came near, and spoke before the king concerning the king’s decree: “Haven’t you signed a decree that every man who makes a petition to any god or man within thirty days, except to you, O king, shall be cast into the den of lions?” The king answered, “This thing is true, according to the law of the Medes and Persians, which doesn’t alter.”", "6:13"],
+  [6, 13, "Then they answered and said before the king, “That Daniel, who is of the children of the captivity of Judah, doesn’t respect you, O king, nor the decree that you have signed, but makes his petition three times a day.”", "6:14"],
+  [6, 14, "Then the king, when he heard these words, was very displeased, and set his heart on Daniel to deliver him; and he labored until the going down of the sun to rescue him.", "6:15"],
+  [6, 15, "Then these men assembled together to the king, and said to the king, “Know, O king, that it is a law of the Medes and Persians, that no decree nor statute which the king establishes may be changed.”", "6:16"],
+  [6, 16, "Then the king commanded, and they brought Daniel, and cast him into the den of lions. The king spoke and said to Daniel, “Your God whom you serve continually, he will deliver you.”", "6:17"],
+  [6, 17, "A stone was brought, and laid on the mouth of the den; and the king sealed it with his own signet, and with the signet of his lords, that nothing might be changed concerning Daniel.", "6:18"],
+  [6, 18, "Then the king went to his palace, and passed the night fasting. No musical instruments were brought before him; and his sleep fled from him.", "6:19"],
+  [6, 19, "Then the king arose very early in the morning, and went in haste to the den of lions.", "6:20"],
+  [6, 20, "When he came near to Daniel in the den, he cried with a troubled voice. The king spoke and said to Daniel, “Daniel, servant of the living God, is your God, whom you serve continually, able to deliver you from the lions?”", "6:21"],
+  [6, 21, "Then Daniel said to the king, “O king, live forever!", "6:22"],
+  [6, 22, "My God has sent his angel, and has shut the lions’ mouths, and they have not hurt me; because I am innocent in his sight. Also before you, O king, I have done no harm.”", "6:23"],
+  [6, 23, "Then the king was exceedingly glad, and commanded that they should take Daniel up out of the den. So Daniel was taken up out of the den, and no kind of harm was found on him, because he had trusted in his God.", "6:24"],
+  [6, 24, "The king commanded, and they brought those men who had accused Daniel, and they cast them into the den of lions—them, their children, and their wives; and the lions mauled them and broke all their bones in pieces before they came to the bottom of the den.", "6:25"],
+  [6, 25, "Then King Darius wrote to all the peoples, nations, and languages, who dwell in all the earth: “Peace be multiplied to you.", "6:26"],
+  [6, 26, "“I make a decree that in all the dominion of my kingdom men tremble and fear before the God of Daniel; “for he is the living God, and steadfast forever. His kingdom is that which will not be destroyed. His dominion will be even to the end.", "6:27"],
+  [6, 27, "He delivers and rescues. He works signs and wonders in heaven and in earth, who has delivered Daniel from the power of the lions.”", "6:28"]]},
+ {"l": "Responsorial Psalm", "c": "Daniel 3:68-74", "b": "DAN", "t": [
+  [3, 68, "O you dews and storms of snow, bless the Lord! Praise and exalt him above all forever!", "3:68"],
+  [3, 69, "O you nights and days, bless the Lord! Praise and exalt him above all forever!", "3:69"],
+  [3, 70, "O you light and darkness, bless the Lord! Praise and exalt him above all forever!", "3:70"],
+  [3, 71, "O you cold and heat, bless the Lord! Praise and exalt him above all forever!", "3:71"],
+  [3, 72, "O you frost and snow, bless the Lord! Praise and exalt him above all forever!", "3:72"],
+  [3, 73, "O you lightnings and clouds, bless the Lord! Praise and exalt him above all forever!", "3:73"],
+  [3, 74, "O let the earth bless the Lord! Let it praise and exalt him above all forever!", "3:74"]]},
+ {"l": "Gospel", "c": "Luke 21:20-28", "b": "LUK", "t": [
+  [21, 20, "“But when you see Jerusalem surrounded by armies, then know that its desolation is at hand.", "21:20"],
+  [21, 21, "Then let those who are in Judea flee to the mountains. Let those who are in the middle of her depart. Let those who are in the country not enter therein.", "21:21"],
+  [21, 22, "For these are days of vengeance, that all things which are written may be fulfilled.", "21:22"],
+  [21, 23, "Woe to those who are pregnant and to those who nurse infants in those days! For there will be great distress in the land and wrath to this people.", "21:23"],
+  [21, 24, "They will fall by the edge of the sword, and will be led captive into all the nations. Jerusalem will be trampled down by the Gentiles until the times of the Gentiles are fulfilled.", "21:24"],
+  [21, 25, "“There will be signs in the sun, moon, and stars; and on the earth anxiety of nations, in perplexity for the roaring of the sea and the waves;", "21:25"],
+  [21, 26, "men fainting for fear and for expectation of the things which are coming on the world, for the powers of the heavens will be shaken.", "21:26"],
+  [21, 27, "Then they will see the Son of Man coming in a cloud with power and great glory.", "21:27"],
+  [21, 28, "But when these things begin to happen, look up and lift up your heads, because your redemption is near.”", "21:28"]]}
+], "alt": [
+  "Thanksgiving Day: parishes may use the Mass for Thanksgiving with its own readings."]}

@@ -122,6 +122,11 @@ _override(("2CO", 13, 13, None), [("2CO", 13, 14)], "NABRE 2 Cor 13:13 = Eng 13:
 _override(("3JN", 1, 15, None), [("3JN", 1, 14)], "NABRE 3 John 15 = Eng 3 John 14b")
 # Revelation 12:18 (NABRE) = English 13:1a.
 _override(("REV", 12, 18, None), [("REV", 13, 1)], "NABRE Rev 12:18 = Eng 13:1a")
+# Baruch 3: NABRE follows the Greek, which splits English 3:34 into 3:34-35,
+# so NABRE 3:35-38 = English 3:34-37. org.vrs counts 38 verses and eng.vrs
+# 37, but eng.vrs has no mapping line for it.
+for n in range(35, 39):
+    _override(("BAR", 3, n, None), [("BAR", 3, n - 1)], "NABRE Baruch 3:35-38 = Eng 3:34-37 (Greek splits Eng 3:34)")
 # Daniel: NABRE chapter 3 carries the Greek prayer (3:24-90) and so
 # numbers the Hebrew 3:24-33 as 3:91-100. eng-web DAG uses the same Greek
 # numbering for 3:1-97 and puts Hebrew 3:31-33 at 4:1-3.
