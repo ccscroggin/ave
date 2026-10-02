@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-29",
+  "plain": {
+    "headline": "Stay Awake and Watch",
+    "intro": "Advent opens with a cry and a command. In Isaiah, God's people admit they have wandered and beg God to tear open the heavens and come down. Paul assures the Corinthians that God is faithful and will keep them strong until Christ comes, and in the Gospel Jesus tells his disciples to stay awake, because no one knows when the master of the house will return.",
+    "listen": "what Jesus says to everyone, not only his disciples, in the very last line",
+    "readings": {
+      "Reading 1": {
+        "box": "The prophet speaks for a people who know they have drifted from God. They call God their Father, confess their sins, and beg him to come down and save them. The prayer ends in trust: God is the potter and they are the clay. It comes from a time when the people's city and Temple lay in ruins.",
+        "chunks": [
+          {
+            "from": "63:16",
+            "to": "63:17",
+            "text": "You are our Father. Abraham and Israel may not know us, but you, Lord, are our Father. Your name has always been Our Redeemer. Lord, why do you let us wander from your ways and let our hearts grow too hard to fear you? Come back, for the sake of your servants, the tribes that belong to you."
+          },
+          {
+            "from": "64:1",
+            "to": "64:3",
+            "text": "If only you would tear open the heavens and come down, so that the mountains shook before you. Long ago you did amazing things we never expected. You came down, and the mountains shook before you."
+          },
+          {
+            "from": "64:4",
+            "to": "64:5",
+            "text": "From ancient times no ear has heard and no eye has seen any God but you, who acts for those who wait for him. You come to meet those who gladly do what is right and remember your ways. But you were angry, because we sinned. We have been sinning for a long time. Can we be saved?"
+          },
+          {
+            "from": "64:6",
+            "to": "64:8",
+            "text": "All of us have become unclean. Even our good deeds are like a stained cloth. We all wither like leaves, and our sins sweep us away like the wind. No one calls on your name or tries to hold on to you. You have hidden your face from us and left us to the results of our sins. Yet, Lord, you are our Father. We are the clay, and you are the potter. We are all the work of your hands."
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "The people call on God as the Shepherd of Israel and beg him to come and save them. They ask him to look down on the vine he planted, to strengthen the one he has chosen, and to give them new life so they will never turn away from him."
+      },
+      "Reading 2": {
+        "box": "Paul opens his first letter to the Christians of Corinth by thanking God for them. God has given them every gift they need while they wait for Jesus to be revealed, and God, who is faithful, will keep them strong to the end. Corinth was a busy Greek port city where Paul had founded the church.",
+        "chunks": [
+          {
+            "from": "1:3",
+            "to": "1:5",
+            "text": "Grace and peace to you from God our Father and the Lord Jesus Christ. I always thank God for you, because of the grace he has given you in Christ Jesus. In him you have been made rich in every way, in all you say and all you know."
+          },
+          {
+            "from": "1:6",
+            "to": "1:9",
+            "text": "The message about Christ has taken firm root in you. So you lack no gift as you wait for our Lord Jesus Christ to be revealed. He will keep you strong to the end, so that you will be blameless on the day of our Lord Jesus Christ. God is faithful. He called you to share life with his Son, Jesus Christ our Lord."
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus compares himself to a man who goes on a journey, puts his servants in charge, gives each one a task, and tells the doorkeeper to keep watch. No one knows when the master will return, so everyone must stay awake. Jesus says this on the Mount of Olives, facing the Temple, a few days before his death.",
+        "chunks": [
+          {
+            "from": "13:33",
+            "to": "13:34",
+            "text": "Be on guard. Stay alert and pray, because you do not know when the time will come. It is like a man who goes away on a journey. He leaves his house, puts his servants in charge, gives each one a task, and tells the doorkeeper to keep watch."
+          },
+          {
+            "from": "13:35",
+            "to": "13:37",
+            "text": "So stay awake. You do not know when the master of the house is coming, whether in the evening, at midnight, when the rooster crows, or at dawn. Do not let him come suddenly and find you asleep. What I say to you, I say to everyone: Stay awake."
+          }
+        ]
+      }
+    },
+    "carry": "This week I will stay awake to God by setting aside a few quiet minutes each day to pray and ask him to come into my life."
+  },
+  "kids": {
+    "headline": "Stay Awake for Jesus",
+    "intro": "Advent is the time when we get ready for Jesus. Today's readings ask God to come close to us, and Jesus tells us to stay awake and be ready for him.",
+    "listen": "what Jesus tells everyone to do, again and again",
+    "readings": {
+      "Reading 1": {
+        "box": "The prophet Isaiah prays for God's people, who have wandered away from God. They ask God to come down from heaven and help them. At the end they say God is like a potter, and they are the clay he shapes.",
+        "chunks": [
+          {
+            "from": "63:16",
+            "to": "64:3",
+            "text": "God, you are our Father. You have always been the one who saves us. Why have we wandered away from you? Please come back to us. We wish you would open up the sky and come down, so the mountains would shake. You did amazing things for us long ago."
+          },
+          {
+            "from": "64:4",
+            "to": "64:8",
+            "text": "No one has ever heard of or seen a God like you, who helps people who wait for him. But we did wrong things for a long time, and we wonder if we can be saved. Our sins have made even our good deeds look like dirty rags, and we blow away like dry leaves in the wind. We stopped praying to you, and you felt far away. But you are still our Father. We are the clay, and you are the potter. You made every one of us."
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "In this song the people call God their shepherd. They ask him to come and save them and to take care of them, the way a gardener cares for a vine."
+      },
+      "Reading 2": {
+        "box": "Saint Paul writes to his friends in the city of Corinth. He thanks God for all the gifts God has given them while they wait for Jesus. He reminds them that God always keeps his promises.",
+        "chunks": [
+          {
+            "from": "1:3",
+            "to": "1:5",
+            "text": "Paul says, May God our Father and the Lord Jesus give you grace and peace. I always thank God for you, because he has been so good to you. Through Jesus he has given you so much, in what you say and in what you know."
+          },
+          {
+            "from": "1:6",
+            "to": "1:9",
+            "text": "What you learned about Jesus is strong in you. You have every gift you need while you wait for Jesus to come. He will keep you strong until the end. God always keeps his promises. He invited you to be close friends with his Son, Jesus."
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus tells a story about a man who goes on a trip and leaves his helpers in charge of his house. They do not know when he will come home, so they must be ready all the time. Jesus wants us to be ready for him in the same way.",
+        "chunks": [
+          {
+            "from": "13:33",
+            "to": "13:34",
+            "text": "Jesus said, Watch, be ready, and pray, because you do not know when the time will come. It is like a man who goes on a long trip. He gives each helper a job and tells the doorkeeper to watch the door."
+          },
+          {
+            "from": "13:35",
+            "to": "13:37",
+            "text": "So stay awake. You do not know when the owner of the house will come home. It could be in the evening, at midnight, when the rooster crows, or in the morning. Do not let him come suddenly and find you asleep. I say this to everyone: Stay awake."
+          }
+        ]
+      }
+    },
+    "word": {
+      "term": "Advent",
+      "meaning": "Advent means \"coming.\" It is the four weeks before Christmas, when we get ready to celebrate Jesus' birth and to welcome him when he comes again."
+    },
+    "draw": "Draw a house at night with the doorkeeper standing by the door, watching for the owner to come home.",
+    "ask": "What is one way you can get your heart ready for Jesus this Advent?"
+  },
+  "family": {
+    "opener": "Today is the first day of Advent and the start of a new year in the Church, and Jesus begins it by telling us to stay awake.",
+    "questions": [
+      "What do we do at home to get ready when a guest is coming, and how could we get ready for Jesus in the same way?",
+      "Isaiah says God is the potter and we are the clay. What might God be shaping in each of us?",
+      "What makes it hard for us to pay attention to God during this busy season?"
+    ],
+    "try": "Light an Advent wreath at dinner each night this week, or a single candle if you have no wreath, and say a short prayer together before you eat.",
+    "pray": "Come, Lord Jesus, keep our family awake and ready for you, and shape us like clay in your loving hands."
+  },
+  "review": {
+    "status": "draft"
+  }
+}

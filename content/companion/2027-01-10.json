@@ -1,0 +1,128 @@
+{
+  "date": "2027-01-10",
+  "plain": {
+    "headline": "This Is My Beloved Son",
+    "intro": "Today the Christmas season ends with Jesus as a grown man, stepping into the Jordan River to be baptized. Isaiah describes God's chosen servant, gentle and full of the Spirit, and Peter tells how God anointed Jesus with the Spirit and with power. In the Gospel, the Spirit comes down on Jesus and the Father's voice names him his beloved Son.",
+    "listen": "the voice from heaven and what it says about Jesus",
+    "readings": {
+      "Reading 1": {
+        "box": "God presents his chosen servant, filled with his Spirit, who will bring justice gently and never give up. God makes him a light for the nations, to open blind eyes and set prisoners free. The Church has long seen Jesus as the servant in this passage.",
+        "chunks": [
+          {
+            "from": "42:1",
+            "to": "42:2",
+            "text": "\"Here is my servant, whom I uphold, my chosen one, in whom I delight. I have put my Spirit on him, and he will bring justice to the nations. He will not shout or raise his voice, or make it heard in the streets."
+          },
+          {
+            "from": "42:3",
+            "to": "42:4",
+            "text": "He will not break a bruised reed or put out a flickering wick. He will faithfully bring justice. He will not grow weak or lose heart until he has set justice on the earth. Distant lands are waiting for his teaching.\""
+          },
+          {
+            "from": "42:6",
+            "to": "42:7",
+            "text": "\"I, the Lord, have called you for a righteous purpose. I will take you by the hand and keep you. I will make you a covenant for the people and a light for the nations. You will open blind eyes, bring prisoners out of the dungeon, and free those who sit in darkness.\""
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "The psalm calls on all to give glory to God, whose voice thunders over the waters. Christians hear in it the Father's voice over the waters of the Jordan."
+      },
+      "Reading 2": {
+        "box": "Peter speaks these words in the house of Cornelius, a Roman army officer and one of the first non-Jewish believers. Peter sees that God welcomes people of every nation, and he tells the story of Jesus, beginning with his baptism.",
+        "chunks": [
+          {
+            "from": "10:34",
+            "to": "10:35",
+            "text": "Peter began to speak: \"Now I truly understand that God does not play favorites. In every nation, anyone who honors him and does what is right is acceptable to him."
+          },
+          {
+            "from": "10:36",
+            "to": "10:38",
+            "text": "He sent his message to the people of Israel, announcing the good news of peace through Jesus Christ, who is Lord of all. You know what happened all over Judea, beginning in Galilee after the baptism that John preached. You know how God anointed Jesus of Nazareth with the Holy Spirit and with power. He went around doing good and healing all who were under the power of the devil, because God was with him.\""
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "John the Baptist has been calling people to turn back to God and be baptized in the Jordan River. Jesus has no sin to wash away, yet he steps into the water with sinners to begin his mission, and the Father and the Holy Spirit show who he is. Untying a master's sandals was a servant's task, so John is saying he is not worthy even to serve Jesus.",
+        "chunks": [
+          {
+            "from": "1:7",
+            "to": "1:8",
+            "text": "John preached, \"Someone more powerful than I am is coming after me. I am not worthy to bend down and untie the strap of his sandals. I have baptized you with water, but he will baptize you with the Holy Spirit.\""
+          },
+          {
+            "from": "1:9",
+            "to": "1:11",
+            "text": "At that time Jesus came from Nazareth in Galilee and was baptized by John in the Jordan. As soon as he came up out of the water, he saw the heavens split open and the Spirit coming down on him like a dove. And a voice came from heaven: \"You are my beloved Son. I am well pleased with you.\""
+          }
+        ]
+      }
+    },
+    "carry": "This week I will remember my own baptism and live as a beloved child of God who goes about doing good."
+  },
+  "kids": {
+    "headline": "Jesus Is Baptized",
+    "intro": "Today we remember the day Jesus was baptized in the Jordan River. God the Father spoke from heaven, and the Holy Spirit came down like a dove. When we are baptized, we become God's beloved children too.",
+    "listen": "what the voice from heaven says",
+    "readings": {
+      "Reading 1": {
+        "box": "The prophet Isaiah tells about a servant God loves. God's servant is gentle and kind, and he helps people who are hurting. We believe this servant is Jesus.",
+        "chunks": [
+          {
+            "from": "42:1",
+            "to": "42:4",
+            "text": "God says, \"Here is my servant. I chose him, I love him, and I have given him my Spirit. He will make things fair for all people. He will not yell or shout in the streets. He is so gentle he will not even break a bent plant or blow out a tiny flame. He will keep working and never give up until the whole world is fair.\""
+          },
+          {
+            "from": "42:6",
+            "to": "42:7",
+            "text": "God says to his servant, \"I called you, and I will hold your hand. You will be a light for all the people of the world. You will help blind people see, and you will set free people who are locked up in the dark.\""
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "This song tells everyone to give glory to God. It says God's voice is strong and mighty, like thunder over the water."
+      },
+      "Reading 2": {
+        "box": "Saint Peter tells a group of people who are not Jewish that God loves people from every country. Then he tells them about Jesus, who went around doing good.",
+        "chunks": [
+          {
+            "from": "10:34",
+            "to": "10:38",
+            "text": "Peter said, \"Now I understand that God does not love one people more than another. In every country, anyone who loves God and does what is right is welcome to him. God sent his good news of peace through Jesus, who is Lord of everyone. You heard what happened after John baptized people. God filled Jesus with the Holy Spirit and with power. Jesus went everywhere doing good and healing people who were hurt by the devil, because God was with him.\""
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "John the Baptist told people to get ready for Jesus. Then Jesus came to the river, and John baptized him. God the Father spoke from heaven about his Son.",
+        "chunks": [
+          {
+            "from": "1:7",
+            "to": "1:11",
+            "text": "John said, \"Someone much greater than me is coming. I am not even good enough to untie his sandals. I baptize you with water, but he will baptize you with the Holy Spirit.\" Then Jesus came from his town, Nazareth, and John baptized him in the Jordan River. As Jesus came up out of the water, he saw the sky open and the Holy Spirit come down on him like a dove. A voice from heaven said, \"You are my Son, and I love you. I am very pleased with you.\""
+          }
+        ]
+      }
+    },
+    "word": {
+      "term": "baptism",
+      "meaning": "Baptism is when water is poured over us in the name of the Father, the Son, and the Holy Spirit. It washes away sin and makes us God's children and part of his Church."
+    },
+    "draw": "Draw Jesus in the river with a dove above him, and draw yourself nearby on the day you were baptized.",
+    "ask": "God called Jesus his beloved Son, so how does it feel to know that God calls you his beloved child too?"
+  },
+  "family": {
+    "opener": "Today we remember the day Jesus was baptized in the Jordan River and heard his Father call him his beloved Son.",
+    "questions": [
+      "What do we know about the day each of us was baptized, and who was there?",
+      "Peter says Jesus went around doing good, so what good could each of us do this week?",
+      "Isaiah says God's servant would not break a bruised reed, so how can we be gentle with someone who is struggling?"
+    ],
+    "try": "Find out the date of each person's baptism, and each morning this week bless one another with the sign of the cross before you leave the house.",
+    "pray": "Loving Father, thank you for making us your children in baptism, so fill our family with your Holy Spirit and help us go around doing good like Jesus."
+  },
+  "review": {
+    "status": "draft"
+  }
+}

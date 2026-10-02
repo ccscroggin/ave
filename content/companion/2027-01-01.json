@@ -1,0 +1,138 @@
+{
+  "date": "2027-01-01",
+  "plain": {
+    "headline": "Blessed in His Name",
+    "intro": "On the eighth day of Christmas, the Church honors Mary as the Mother of God, because the child she bore is God's own Son. The first reading gives the ancient blessing God taught his priests, and Paul tells us that through Mary's Son we become God's children. In the Gospel, the shepherds find the baby, Mary treasures everything in her heart, and the child receives the name Jesus.",
+    "listen": "what Mary does with everything she sees and hears",
+    "readings": {
+      "Reading 1": {
+        "box": "God gives Moses the words the priests are to use when they bless the people. To put God's name on the people means they belong to him and live under his care. The Church reads this blessing on the first day of the new year.",
+        "chunks": [
+          {
+            "from": "6:22",
+            "to": "6:23",
+            "text": "The Lord said to Moses, \"Tell Aaron and his sons that this is how they are to bless the people of Israel. Say to them:"
+          },
+          {
+            "from": "6:24",
+            "to": "6:26",
+            "text": "'May the Lord bless you and keep you. May the Lord let his face shine on you and be gracious to you. May the Lord look on you with favor and give you peace.'"
+          },
+          {
+            "from": "6:27",
+            "to": "6:27",
+            "text": "In this way they will put my name on the people of Israel, and I will bless them.\""
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "The psalm echoes the blessing of the first reading, asking God to let his face shine on his people. It prays that every nation on earth will come to know God's saving love and praise him."
+      },
+      "Reading 2": {
+        "box": "Paul tells the Galatians that at the right moment God sent his Son, born of a woman, to set us free and make us his children. Because the Spirit of Jesus lives in us, we can call God Father as Jesus does. Abba is the word for father in the language Jesus spoke.",
+        "chunks": [
+          {
+            "from": "4:4",
+            "to": "4:5",
+            "text": "But when the right time had fully come, God sent his Son, born of a woman and born under the law. He came to free those who were under the law, so that we could be adopted as God's children."
+          },
+          {
+            "from": "4:6",
+            "to": "4:7",
+            "text": "And because you are his children, God has sent the Spirit of his Son into your hearts, crying out, \"Abba, Father.\" So you are no longer a slave but a child. And if you are a child, then through Christ you are also God's heir."
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "The shepherds hurry to Bethlehem after the angels tell them the news, and they find everything just as they were told. Mary keeps all these things and thinks them over in her heart. Eight days later the child is circumcised, as the law required for every Jewish boy, and he is given the name Jesus, which means \"the Lord saves.\"",
+        "chunks": [
+          {
+            "from": "2:16",
+            "to": "2:17",
+            "text": "The shepherds hurried off and found Mary and Joseph, and the baby lying in a manger. When they saw him, they told everyone what they had been told about this child."
+          },
+          {
+            "from": "2:18",
+            "to": "2:19",
+            "text": "All who heard it were amazed at what the shepherds told them. But Mary kept all these things and thought about them deeply in her heart."
+          },
+          {
+            "from": "2:20",
+            "to": "2:21",
+            "text": "The shepherds went back, giving glory and praise to God for all they had heard and seen, just as it had been told to them. Eight days later, when it was time to circumcise the child, he was named Jesus. This was the name the angel had given him before he was conceived."
+          }
+        ]
+      }
+    },
+    "carry": "This week I will set aside a little quiet time each day, as Mary did, to think over what God is doing in my life."
+  },
+  "kids": {
+    "headline": "Mary, Mother of God",
+    "intro": "Today is New Year's Day, and we celebrate Mary as the Mother of God. Mary is the mother of Jesus, and Jesus is God's Son, so we call her the Mother of God. The readings are full of blessings for the new year.",
+    "listen": "the blessing in the first reading, and the name the baby is given at the end of the Gospel",
+    "readings": {
+      "Reading 1": {
+        "box": "God teaches the priests a special blessing to pray over his people. It asks God to keep them safe, to be kind to them, and to give them peace.",
+        "chunks": [
+          {
+            "from": "6:22",
+            "to": "6:26",
+            "text": "God told Moses to teach the priests how to bless the people. They were to say, \"May the Lord bless you and keep you safe. May the Lord smile on you and be kind to you. May the Lord look at you with love and give you peace.\""
+          },
+          {
+            "from": "6:27",
+            "to": "6:27",
+            "text": "God said, \"When they bless the people this way, the people will carry my name, and I will bless them.\""
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "In this song we ask God to bless us and smile on us. We pray that people everywhere will know God and sing to him with joy."
+      },
+      "Reading 2": {
+        "box": "Saint Paul says God sent Jesus, born of a mother like us, so that we could become God's own children. That means we can talk to God the way a child talks to a loving father.",
+        "chunks": [
+          {
+            "from": "4:4",
+            "to": "4:7",
+            "text": "When the time was just right, God sent his Son. Jesus was born of a woman, Mary, and grew up keeping God's law. He came to set us free and make us part of God's family. God sends the Spirit of Jesus into our hearts, so we can call God \"Abba,\" which means Father. We are not servants anymore. We are God's children, and everything God has promised is for us too."
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "The shepherds hurry to see baby Jesus and tell everyone what the angels said. Mary keeps all of it in her heart. When Jesus is eight days old, he is given his name.",
+        "chunks": [
+          {
+            "from": "2:16",
+            "to": "2:18",
+            "text": "The shepherds hurried to Bethlehem. They found Mary and Joseph, and baby Jesus lying in a manger, a box where animals eat. They told everyone what the angels had said about this baby, and everyone who heard it was amazed."
+          },
+          {
+            "from": "2:19",
+            "to": "2:21",
+            "text": "Mary remembered everything and thought about it quietly in her heart. The shepherds went home praising God, because everything was just as the angels had said. When the baby was eight days old, he was named Jesus, the name the angel had given him before Mary was expecting him."
+          }
+        ]
+      }
+    },
+    "word": {
+      "term": "Mother of God",
+      "meaning": "We call Mary the Mother of God because her son Jesus is God's Son, truly God and truly human."
+    },
+    "draw": "Draw Mary holding baby Jesus with the shepherds nearby, and write one blessing for the new year across the top.",
+    "ask": "Mary kept special memories in her heart, so what is one thing from Christmas you want to keep in yours?"
+  },
+  "family": {
+    "opener": "Today, on the first day of the new year, we honor Mary as the Mother of God and ask God to bless our family for the year ahead.",
+    "questions": [
+      "Mary thought about everything quietly in her heart, so where can each of us find a little quiet time with God this year?",
+      "What blessing would you most like God to give our family this year?",
+      "The shepherds told everyone about Jesus, so who could we share the joy of Christmas with this week?"
+    ],
+    "try": "Learn the blessing from the first reading by heart, and pray it over one another at bedtime each night this week.",
+    "pray": "Holy Mary, Mother of God, pray for our family as this new year begins, and help us keep Jesus close in our hearts as you did."
+  },
+  "review": {
+    "status": "draft"
+  }
+}

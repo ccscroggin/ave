@@ -1,0 +1,153 @@
+{
+  "date": "2026-11-08",
+  "plain": {
+    "headline": "Keep Your Lamp Burning",
+    "intro": "As the Church year draws to a close, the readings turn our eyes toward the end of time and the return of Christ. Wisdom is pictured as a woman who comes looking for anyone who seeks her, and the psalm thirsts for God like dry land for water. Paul comforts a grieving church with the hope of the resurrection, and Jesus tells of ten bridesmaids, only half of them ready when the bridegroom finally arrives.",
+    "listen": "who is ready when the bridegroom comes at midnight",
+    "readings": {
+      "Reading 1": {
+        "box": "Wisdom is described as a woman who is easy to find for anyone who truly looks for her. In fact, she is already out looking for them. The Book of Wisdom was written by a Jewish teacher in the century or so before Christ.",
+        "chunks": [
+          {
+            "from": "6:12",
+            "to": "6:13",
+            "text": "Wisdom shines brightly and never fades. Those who love her see her easily, and those who look for her find her. She runs ahead to meet those who want her and makes herself known to them."
+          },
+          {
+            "from": "6:14",
+            "to": "6:16",
+            "text": "Whoever gets up early to look for her will not struggle, because he will find her sitting at his door. Just to think about her is the fullness of understanding, and whoever stays awake for her will soon be free of worry. For she goes around looking for those who are worthy of her. She shows herself kindly to them along their way and meets them in everything they set out to do."
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "The psalmist longs for God the way a body in the desert longs for water. He remembers seeing God's power in the sanctuary, and he praises God all day and even lying awake at night, safe in the shadow of God's wings."
+      },
+      "Reading 2": {
+        "box": "Some Christians in Thessalonica had died, and their friends feared those loved ones would miss the Lord's return. Paul tells them to grieve with hope, because God will raise the dead in Christ, and all who belong to him will be with the Lord forever. This is likely Paul's earliest letter and perhaps the oldest writing in the New Testament.",
+        "chunks": [
+          {
+            "from": "4:13",
+            "to": "4:14",
+            "text": "Brothers and sisters, we want you to understand what happens to those who have died, so that you do not grieve like people who have no hope. We believe that Jesus died and rose again. In the same way, God will bring with Jesus those who have died in him."
+          },
+          {
+            "from": "4:15",
+            "to": "4:16",
+            "text": "We tell you this as the Lord's own word: those of us still alive when the Lord comes will not go ahead of those who have died. The Lord himself will come down from heaven with a shout, with the voice of the archangel and the sound of God's trumpet. Those who died in Christ will rise first."
+          },
+          {
+            "from": "4:17",
+            "to": "4:18",
+            "text": "Then those of us still alive will be taken up together with them in the clouds to meet the Lord in the air. And so we will be with the Lord forever. So comfort one another with these words."
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus tells this parable in his last days in Jerusalem, as he teaches about the end of time. At a wedding, young women would wait with lamps to welcome the bridegroom and walk with him to the feast. The oil stands for a readiness no one can borrow at the last minute, and the shut door warns us not to put off what matters most.",
+        "chunks": [
+          {
+            "from": "25:1",
+            "to": "25:4",
+            "text": "\"At that time, the Kingdom of Heaven will be like ten bridesmaids who took their lamps and went out to meet the bridegroom. Five of them were foolish and five were wise. The foolish ones took their lamps but brought no extra oil. The wise ones brought jars of oil along with their lamps."
+          },
+          {
+            "from": "25:5",
+            "to": "25:7",
+            "text": "The bridegroom was late, and they all grew drowsy and fell asleep. At midnight someone shouted, 'Look, the bridegroom is coming. Come out to meet him.' Then all the bridesmaids got up and trimmed their lamps."
+          },
+          {
+            "from": "25:8",
+            "to": "25:10",
+            "text": "The foolish ones said to the wise, 'Give us some of your oil. Our lamps are going out.' But the wise answered, 'There may not be enough for both us and you. Go to the sellers and buy some for yourselves.' While they were gone to buy it, the bridegroom arrived. Those who were ready went in with him to the wedding feast, and the door was shut."
+          },
+          {
+            "from": "25:11",
+            "to": "25:13",
+            "text": "Later the other bridesmaids came back and said, 'Lord, Lord, open the door for us.' But he answered, 'I tell you the truth, I do not know you.' So stay awake, because you do not know the day or the hour when the Son of Man will come.\""
+          }
+        ]
+      }
+    },
+    "carry": "This week I will keep my lamp filled by turning to God in prayer each day, so that I am ready whenever the Lord comes."
+  },
+  "kids": {
+    "headline": "Be Ready for Jesus",
+    "intro": "The Church year is almost over, and today's readings help us get ready for the day Jesus comes again. Jesus tells a story about ten bridesmaids waiting for a wedding party to begin. Saint Paul reminds us that people who die loving Jesus will be with him forever.",
+    "listen": "which bridesmaids brought extra oil for their lamps",
+    "readings": {
+      "Reading 1": {
+        "box": "This reading talks about wisdom as if it were a wise and kind woman. Wisdom means knowing what is truly good. Anyone who looks for her will find her, and she is looking for us too.",
+        "chunks": [
+          {
+            "from": "6:12",
+            "to": "6:16",
+            "text": "Wisdom shines bright and never fades. People who love her and look for her will find her. She is so eager to be found that she comes to them first. If you get up early to look for her, you will find her already sitting at your door. Thinking about her helps you understand, and it takes away your worries. Wisdom goes looking for good people and meets them kindly along the way."
+          }
+        ]
+      },
+      "Responsorial Psalm": {
+        "box": "This song is a prayer from someone who wants God the way a thirsty person wants water. He praises God all day, and even at night in bed he thinks about God and feels safe, like a little bird under its mother's wings."
+      },
+      "Reading 2": {
+        "box": "Some people in the city of Thessalonica were very sad because friends of theirs had died. Saint Paul wrote to comfort them. He says that Jesus rose from the dead, and one day those who belong to Jesus will rise and be with him forever.",
+        "chunks": [
+          {
+            "from": "4:13",
+            "to": "4:15",
+            "text": "Paul says, \"We want you to know what happens to people who have died. You can be sad, but not like people who have no hope. Jesus died and rose again, and God will bring everyone who died loving Jesus to be with him. People who are still alive when Jesus comes back will not go ahead of them."
+          },
+          {
+            "from": "4:16",
+            "to": "4:18",
+            "text": "Jesus will come down from heaven with a loud shout and the sound of God's trumpet. People who died loving Jesus will rise first. Then everyone still alive will join them, and we will all meet the Lord together and be with him forever. So cheer each other up with these words.\""
+          }
+        ]
+      },
+      "Gospel": {
+        "box": "Jesus tells a story about ten bridesmaids waiting at night for the bridegroom to arrive, so the wedding party could begin. Five were ready with extra oil for their lamps, and five were not. Jesus wants us to be ready for him every day, by loving God and loving others.",
+        "chunks": [
+          {
+            "from": "25:1",
+            "to": "25:4",
+            "text": "Jesus said, \"God's Kingdom is like ten bridesmaids who took their lamps and went out at night to meet the bridegroom. Five were wise and five were foolish. The foolish ones did not bring any extra oil for their lamps. The wise ones brought jars of oil with them."
+          },
+          {
+            "from": "25:5",
+            "to": "25:7",
+            "text": "The bridegroom was late, so they all got sleepy and fell asleep. At midnight someone shouted, 'He is coming. Go out to meet him.' All ten bridesmaids woke up and got their lamps ready."
+          },
+          {
+            "from": "25:8",
+            "to": "25:10",
+            "text": "The foolish ones said, 'Our lamps are going out. Please give us some of your oil.' The wise ones said, 'There may not be enough for all of us. Go and buy some.' While they were gone, the bridegroom came. The bridesmaids who were ready went into the wedding party with him, and the door was shut."
+          },
+          {
+            "from": "25:11",
+            "to": "25:13",
+            "text": "Later the other bridesmaids came and said, 'Sir, sir, please open the door.' But he said, 'I do not know you.' So stay awake and be ready, because you do not know the day or the hour when I will come back.\""
+          }
+        ]
+      }
+    },
+    "word": {
+      "term": "bridegroom",
+      "meaning": "A bridegroom is a man on his wedding day, about to marry his bride."
+    },
+    "draw": "Draw the five wise bridesmaids with their lamps shining bright as the bridegroom arrives at midnight.",
+    "ask": "What is one thing you can do each day to be ready for Jesus?"
+  },
+  "family": {
+    "opener": "Today Jesus tells a story about waiting in the dark for a wedding to begin, and about who was ready when the bridegroom finally came.",
+    "questions": [
+      "Why do you think the wise bridesmaids could not simply share their oil with the others?",
+      "What helps our family stay ready for Jesus every day, not just on Sundays?",
+      "Saint Paul says we can be sad and still have hope; who is someone we miss that we can pray for this week?"
+    ],
+    "try": "Light a candle at dinner each night this week and pray for family and friends who have died, since November is the month the Church especially remembers the faithful departed.",
+    "pray": "Lord Jesus, keep the lamps of our hearts burning with love for you, so that we are ready to welcome you whenever you come."
+  },
+  "review": {
+    "status": "draft"
+  }
+}
