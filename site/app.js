@@ -386,6 +386,8 @@ const SEASON_NOTE={
 let mDay=iso(new Date()); if(!TITLES[mDay]) mDay=DAYS.find(k=>k>=mDay)||DAYS[DAYS.length-1]||mDay;
 let mPart="r";
 const fmtLong=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric"});
+/* Verse number to show: the Lectionary's (4th field, "ch:v" or "v") when present, else the World English Bible's. */
+function shownNum(e){ const n=e[3]; if(n==null) return [e[0],e[1]]; const m=String(n).split(":"); return m.length>1?[+m[0]||m[0],m[1]]:[e[0],m[0]]; }
 function txt(tag,cls,text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
 function goDay(n){ const i=DAYS.indexOf(mDay)+n; if(i>=0&&i<DAYS.length){ mDay=DAYS[i]; renderMass(); $("massScroll").scrollTop=0; } }
 $("dPrev").addEventListener("click",()=>goDay(-1));
@@ -440,7 +442,7 @@ async function renderMass(){
     if(BOOK[r.b] && !/Alleluia/.test(r.l)) b.appendChild(txt("p","about",BOOK[r.b]));
     if(r.t.length){
       const p=txt("p","rtext"); let lastCh=null;
-      r.t.forEach(([ch,v,t])=>{ const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(t+" ")); });
+      r.t.forEach(e=>{ const [ch,v]=shownNum(e), t=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(t+" ")); });
       b.appendChild(p);
       if(r.l==="Responsorial Psalm") b.appendChild(txt("p","psalm-note","At Mass the cantor sings these verses, and everyone sings the response from your parish booklet."));
     } else if(r.b==="PSA"){
@@ -532,7 +534,7 @@ function addDays(k,n){ const d=fromIso(k); d.setDate(d.getDate()+n); return iso(
 function compText(day,ed){ if(ed==="readings"||!COMP[day]) return null; return ed==="kids"?COMP[day].kids:COMP[day].plain; }
 function readingsOf(day){ return RD[day].r.filter(r=>r.l!=="Alleluia"); }
 function labelOf(r){ return {"Reading 1":"First reading","Reading 2":"Second reading"}[r.l]||r.l; }
-function spans(list){ let last=null; return list.map(([ch,v,t])=>{ const s=`<span><sup>${last!==null&&ch!==last?ch+":":""}${v}</sup>${esc(t)} </span>`; last=ch; return s; }); }
+function spans(list){ let last=null; return list.map(e=>{ const [ch,v]=shownNum(e); const s=`<span><sup>${last!==null&&ch!==last?ch+":":""}${v}</sup>${esc(e[2])} </span>`; last=ch; return s; }); }
 function chunkVerses(r,ch){ const key=t=>t[0]+":"+t[1]; const i=r.t.findIndex(t=>key(t)===ch.from), j=r.t.findIndex(t=>key(t)===ch.to); return r.t.slice(i,j+1); }
 function headHtml(r){ return `<p class="eyebrow">${labelOf(r)}</p><p class="cite">${esc(r.c)}</p>`; }
 
