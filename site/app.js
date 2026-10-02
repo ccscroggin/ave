@@ -782,6 +782,6 @@ lastCur=S.cur; render();
 void haloEl.getBoundingClientRect(); haloEl.style.transition="";
 renderMass();
 if(resumed) toast("You continue from where you stopped");
-else if(!S.seen){ toast("Tap the beads or Next to move on. Swipe right to go back."); S.seen=true; save(); }
+else if(!S.seen&&$("view-rosary").classList.contains("on")){ toast("Tap the beads or Next to move on. Swipe right to go back."); S.seen=true; save(); }
 document.addEventListener("pointerdown",wakeOn,{once:true});
 })();
