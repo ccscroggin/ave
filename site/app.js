@@ -444,7 +444,7 @@ async function renderMass(){
       const p=txt("p","rtext"); let lastCh=null;
       r.t.forEach(e=>{ const [ch,v]=shownNum(e), t=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(t+" ")); });
       b.appendChild(p);
-      if(r.l==="Responsorial Psalm") b.appendChild(txt("p","psalm-note","At Mass the cantor sings these verses, and everyone sings the response from your parish booklet."));
+      if(r.l==="Responsorial Psalm"&&r===day.r.find(x=>x.l==="Responsorial Psalm")) b.appendChild(txt("p","psalm-note","At Mass the cantor sings these verses, and everyone sings the response from your parish booklet."));
     } else if(r.b==="PSA"){
       b.appendChild(txt("p","psalm-note","The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response."));
     }
@@ -585,11 +585,11 @@ function backItems(day,ed){
 }
 /* single-column items: readings with an "in plain words" box after each */
 function flowItems(day,ed){
-  const c=compText(day,ed), out=[];
+  const c=compText(day,ed), out=[]; let noted=false;
   readingsOf(day).forEach(r=>{
     out.push({type:"head",cls:"rh",html:headHtml(r)});
     if(r.l==="Responsorial Psalm"&&!r.t.length){ out.push({html:`<p class="psalm">${PSALM_NOTE}</p>`}); }
-    else { out.push({type:"verses",spans:spans(r.t)}); if(r.l==="Responsorial Psalm") out.push({html:`<p class="psalm">${PSALM_NOTE}</p>`}); }
+    else { out.push({type:"verses",spans:spans(r.t)}); if(r.l==="Responsorial Psalm"&&!noted){ noted=true; out.push({html:`<p class="psalm">${PSALM_NOTE}</p>`}); } }
     if(c&&c.readings[r.l]) out.push({html:`<div class="box plain"><span class="lbl">In plain words</span>${esc(c.readings[r.l].box)}</div>`});
   });
   return out;
