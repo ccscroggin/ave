@@ -291,6 +291,11 @@ def write_report(log, files, start, end, readings_total, labels, unresolved, mis
                  "90 seconds). When the fetch finishes, rerun `build.py --offline` and `validate.py` over the "
                  "full range.")
         L.append("")
+    held = [d["date"] for d in log["days"] if d.get("held_for_companion") and d["date"] in files]
+    if held:
+        L.append("Dates with companion text whose USCCB rebuild differed from the committed readings were left "
+                 "unchanged (new build parked in `scripts/readings/cache/proposed/`): " + ", ".join(held) + ".")
+        L.append("")
     L.append("## Spot checks")
     L.append("")
     for name, ok, detail in spots:

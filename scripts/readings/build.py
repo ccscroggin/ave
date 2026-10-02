@@ -28,6 +28,8 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT_DIR = os.path.join(ROOT, "content", "readings")
 LOG_PATH = os.path.join(HERE, "build-log.json")
 PROTO_PATH = os.path.join(HERE, "prototype-readings.json")
+COMPANION_DIR = os.path.join(ROOT, "content", "companion")
+PROPOSED_DIR = os.path.join(HERE, "cache", "proposed")
 
 # Sub-page name fragments, in order of preference, for the Mass to print
 # when a date has several (Christmas, Easter, vigils, All Souls).
@@ -163,6 +165,8 @@ def main():
                     help="use cached USCCB pages only; dates not yet cached are skipped and listed")
     ap.add_argument("--source", choices=["usccb", "prototype"], default="usccb",
                     help="where titles and citations come from (prototype = prototype-readings.json)")
+    ap.add_argument("--replace-companion-days", action="store_true",
+                    help="overwrite readings for dates that have content/companion/ files")
     a = ap.parse_args()
     web.use_edition(a.edition)
     bible = web.load()
@@ -182,7 +186,7 @@ def main():
     if a.source == "prototype":
         with open(PROTO_PATH, encoding="utf-8") as f:
             proto = json.load(f)
-    written, skipped = 0, []
+    written, skipped, held = 0, [], []
     for d in fetch.daterange(start, end):
         if proto is not None:
             pages = prototype_pages(proto, d)
@@ -197,8 +201,24 @@ def main():
         if entry is None:
             print(f"{d}: NO READINGS ({'; '.join(day_log['problems'])})", file=sys.stderr)
             continue
-        with open(os.path.join(OUT_DIR, f"{d.isoformat()}.json"), "w", encoding="utf-8") as f:
-            f.write(dumps(entry))
+        out_path = os.path.join(OUT_DIR, f"{d.isoformat()}.json")
+        text = dumps(entry)
+        comp = os.path.join(COMPANION_DIR, f"{d.isoformat()}.json")
+        if not a.replace_companion_days and os.path.exists(comp) and os.path.exists(out_path):
+            with open(out_path, encoding="utf-8") as f:
+                current = f.read()
+            if current != text:
+                # A companion text was written against the existing readings;
+                # do not change them silently. Park the new build for review.
+                os.makedirs(PROPOSED_DIR, exist_ok=True)
+                with open(os.path.join(PROPOSED_DIR, f"{d.isoformat()}.json"), "w", encoding="utf-8") as f:
+                    f.write(text)
+                held.append(d.isoformat())
+                day_log["held_for_companion"] = True
+                print(f"{d} HELD (has companion text; new build differs, see cache/proposed/)", flush=True)
+                continue
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(text)
         written += 1
         probs = day_log["problems"] + [f"{r['label']}: missing {m}" for r in day_log["readings"] for m in r.get("missing", [])]
         flag = f"  !! {'; '.join(map(str, probs))}" if probs else ""
@@ -209,6 +229,8 @@ def main():
     with open(LOG_PATH, "w", encoding="utf-8") as f:
         json.dump(log, f, ensure_ascii=False, indent=1)
     print(f"wrote {written} files to {OUT_DIR}")
+    if held:
+        print(f"held {len(held)} companion dates unchanged (rerun with --replace-companion-days to overwrite): {', '.join(held)}")
     if skipped:
         print(f"skipped {len(skipped)} dates with no source data yet: {skipped[0]} .. {skipped[-1]}")
 
