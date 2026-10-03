@@ -254,7 +254,10 @@ dialog.sheet[open]{animation:rise .28s ease-out}
 .is-preview .app{padding-top:26px}
 @media print{.preview-bar{display:none}}
 
-.theme-tab .tl{font-size:13px}
+.settings-tab .tl{font-size:13px}
+.es-readings p{margin:0 0 10px}
+.es-readings a{color:var(--gold)}
+.en-toggle{height:40px;padding:0 16px;border-radius:20px;font-size:16px}
 .linkish{background:none;border:0;padding:0;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer}
 .about-link a{color:var(--ink-soft)}
 .sheet h3.sub{font-size:18px;font-weight:500;margin:14px 0 4px}

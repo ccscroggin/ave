@@ -57,6 +57,7 @@ Run the tests:
 
 ```bash
 node --import ./scripts/test/register.mjs scripts/test/review.test.mjs
+node scripts/test/i18n.test.mjs
 python3 scripts/check_companion.py
 python3 scripts/readings/validate.py --no-report
 ```

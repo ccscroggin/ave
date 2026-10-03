@@ -1,6 +1,6 @@
 /* Ave service worker. The build replaces __VERSION__ with a hash of the shell files. */
 const VERSION = "__VERSION__";
-const SHELL = ["./", "index.html", "app.css", "paper.css", "app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "about.html", "data/days.json", "data/companion.json"];
+const SHELL = ["./", "index.html", "app.css", "paper.css", "i18n.js", "app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "about.html", "about-es.html", "data/days.json", "data/companion.json"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open("shell-" + VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

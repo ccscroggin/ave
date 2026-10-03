@@ -1,27 +1,67 @@
 (async function(){
 "use strict";
 const $=id=>document.getElementById(id);
+const QP=new URLSearchParams(location.search);
+
+/* ---------- language ----------
+   English is the source text. t("English") returns the Spanish entry from
+   site/i18n.js when Spanish is chosen; {name} placeholders are filled from vars.
+   scripts/test/i18n.test.mjs fails if a string passed to t() has no Spanish entry,
+   so always pass t() a literal string. */
+const ES=(window.AVE_I18N&&window.AVE_I18N.es)||{ui:{}};
+function pickLang(){
+  const q=QP.get("lang"); if(q==="es"||q==="en") return q;
+  try{ const s=localStorage.getItem("ave-lang"); if(s==="es"||s==="en") return s; }catch(e){}
+  return /^es\b/i.test(navigator.language||"")?"es":"en";
+}
+let LANG=pickLang();
+document.documentElement.lang=LANG;
+function t(s,vars){
+  let o=LANG==="es"&&ES.ui[s]!=null?ES.ui[s]:s;
+  if(vars) o=o.replace(/\{(\w+)\}/g,(m,k)=>k in vars?vars[k]:m);
+  return o;
+}
+const capFirst=s=>s?s.charAt(0).toLocaleUpperCase(LANG)+s.slice(1):s;
+/* Static text in index.html: each text node and aria-label is looked up by its
+   English text, captured once before anything else writes to the page. */
+const STATIC=(()=>{
+  const out=[], skip=new Set(["SCRIPT","STYLE","svg"]);
+  const walk=n=>{ for(const c of n.childNodes){
+    if(c.nodeType===3){ const m=c.nodeValue.match(/^(\s*)([\s\S]*?)(\s*)$/); if(m[2]) out.push({node:c,lead:m[1],en:m[2].replace(/\s+/g," "),trail:m[3]}); }
+    else if(c.nodeType===1&&!skip.has(c.nodeName)){ if(c.hasAttribute("aria-label")) out.push({el:c,attr:"aria-label",en:c.getAttribute("aria-label")}); walk(c); } } };
+  walk(document.body);
+  const md=document.querySelector('meta[name="description"]'); if(md) out.push({el:md,attr:"content",en:md.getAttribute("content")});
+  return out;
+})();
+function applyStatic(){
+  for(const x of STATIC){ const v=LANG==="es"&&ES.ui[x.en]!=null?ES.ui[x.en]:x.en;
+    if(x.node) x.node.nodeValue=x.lead+v+x.trail; else x.el.setAttribute(x.attr,v); }
+}
+applyStatic();
 
 /* ---------- toast ---------- */
 let toastT;
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),3200); }
+function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),3200); }
 /* ---------- read aloud (the device's own voices; free, works offline) ---------- */
 const SPEECH="speechSynthesis" in window&&"SpeechSynthesisUtterance" in window;
-let speechGen=0, LANG="en";
+let speechGen=0;
 function voiceFor(lang){
   const vs=SPEECH?speechSynthesis.getVoices():[], want=lang==="es"?["es-US","es-MX","es-ES","es"]:["en-US","en-GB","en"];
   for(const w of want){ const v=vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())&&v.localService)||vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())); if(v) return v; }
   return null;
 }
 function sentences(text){ return String(text).replace(/\s+/g," ").match(/[^.!?;:]+[.!?;:]+["”’)]*|[^.!?;:]+$/g)||[text]; }
-/* Speak text; calls done() after the last sentence unless something else spoke or stopped first. */
-function speak(text,done){
+/* Speak a list of [text, lang] parts, each in its own language's voice; calls done()
+   after the last sentence unless something else spoke or stopped first. */
+function speakSeq(list,done){
   if(!SPEECH) return false;
-  speechSynthesis.cancel(); const gen=++speechGen, parts=sentences(text).map(x=>x.trim()).filter(Boolean), v=voiceFor(LANG);
-  parts.forEach((t,i)=>{ const u=new SpeechSynthesisUtterance(t); u.lang=LANG==="es"?"es-US":"en-US"; if(v) u.voice=v; u.rate=.92;
-    if(i===parts.length-1) u.onend=()=>{ if(gen===speechGen&&done) done(); }; speechSynthesis.speak(u); });
+  speechSynthesis.cancel(); const gen=++speechGen, all=[];
+  list.forEach(([text,lang])=>{ const v=voiceFor(lang); sentences(text).map(x=>x.trim()).filter(Boolean).forEach(x=>all.push([x,lang,v])); });
+  all.forEach(([x,lang,v],i)=>{ const u=new SpeechSynthesisUtterance(x); u.lang=lang==="es"?"es-US":"en-US"; if(v) u.voice=v; u.rate=.92;
+    if(i===all.length-1) u.onend=()=>{ if(gen===speechGen&&done) done(); }; speechSynthesis.speak(u); });
   return true;
 }
+function speak(text,done){ return speakSeq([[text,LANG]],done); }
 function stopSpeech(){ speechGen++; if(SPEECH) speechSynthesis.cancel(); }
 
 function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } }
@@ -84,6 +124,14 @@ const SETS = {
 };
 const ORD=["first","second","third","fourth","fifth"];
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+/* Localized prayers, mysteries and ordinals. Spanish ordinals agree with the noun:
+   misterio is masculine (primer, segundo...), decena feminine (primera, segunda...). */
+/* A Spanish prayer left empty (awaiting review) falls back to the English text. */
+const pr=k=>LANG==="es"&&ES.prayers&&ES.prayers[k]&&ES.prayers[k].x?ES.prayers[k]:PR[k];
+const setOf=k=>LANG==="es"?ES.sets[k]:Object.assign({Adj:cap(SETS[k].adj)},SETS[k]);
+const ordM=d=>LANG==="es"?ES.ord.m[d]:ORD[d], ordF=d=>LANG==="es"?ES.ord.f[d]:ORD[d];
+/* "The Annunciation" -> "the Annunciation"; "La Anunciación" -> "la Anunciación" */
+const lowerArt=s=>s.replace(/^(The|El|La|Los|Las) /,m=>m.toLowerCase());
 const todaySet=()=>{ const d=new Date().getDay(); return Object.keys(SETS).find(k=>SETS[k].dow.includes(d)); };
 
 const KEY="rosary-v1";
@@ -156,27 +204,28 @@ function drawCenter(small,title,count){
   if(count) el("text",{class:"c-count",x:CX,y:y0+(lines.length-1)*lh+26},g).textContent=count;
 }
 function stepName(st){
-  if(st.key==="mystery") return {main:cap(ORD[st.d])+" mystery",sub:SETS[S.set].m[st.d][0]};
-  if(st.key==="hail") return {main:"Hail Mary",sub:st.n+" of "+st.of};
-  return {main:PR[st.key].t,sub:""};
+  if(st.key==="mystery") return {main:t("{Ord} mystery",{Ord:cap(ordM(st.d))}),sub:setOf(S.set).m[st.d][0]};
+  if(st.key==="hail") return {main:pr("hail").t,sub:t("{n} of {of}",{n:st.n,of:st.of})};
+  return {main:pr(st.key).t,sub:""};
 }
 function rubricFor(st){
-  const set=SETS[S.set];
+  const set=setOf(S.set);
   switch(st.key){
-    case "sign": return st.last?"End on the crucifix":"Begin on the crucifix";
-    case "creed": return "On the crucifix";
-    case "our": return st.ph==="open"?"On the first large bead":"On the large bead, "+ORD[st.d]+" decade";
-    case "hail": return st.ph==="open"?"For an increase in "+st.intent+", "+st.n+" of 3":cap(ORD[st.d])+" decade, "+st.n+" of 10";
-    case "glory": return st.ph==="open"?"On the large bead":"End of the "+ORD[st.d]+" decade";
-    case "fatima": return "End of the "+ORD[st.d]+" decade";
-    case "mystery": return "The "+ORD[st.d]+" "+set.adj+" mystery";
-    case "queen": case "closing": return "On the medal";
+    case "sign": return st.last?t("End on the crucifix"):t("Begin on the crucifix");
+    case "creed": return t("On the crucifix");
+    case "our": return st.ph==="open"?t("On the first large bead"):t("On the large bead, {ord} decade",{ord:ordF(st.d)});
+    case "hail": if(st.ph==="open"){ const virtue={faith:t("faith"),hope:t("hope"),charity:t("charity")}[st.intent]; return t("For an increase in {virtue}, {n} of 3",{virtue,n:st.n}); }
+      return t("{Ord} decade, {n} of 10",{Ord:cap(ordF(st.d)),n:st.n});
+    case "glory": return st.ph==="open"?t("On the large bead"):t("End of the {ord} decade",{ord:ordF(st.d)});
+    case "fatima": return t("End of the {ord} decade",{ord:ordF(st.d)});
+    case "mystery": return t("The {ord} {adj} mystery",{ord:ordM(st.d),adj:set.adj});
+    case "queen": case "closing": return t("On the medal");
   }
   return "";
 }
 let lastCur=-1;
 function render(){
-  const set=SETS[S.set], done=S.cur>=steps.length;
+  const set=setOf(S.set), done=S.cur>=steps.length;
   document.documentElement.style.setProperty("--fs",FS[S.fs]+"px");
   $("setName").textContent=set.name; $("setDays").textContent=set.days;
   const curBead=done?null:steps[S.cur].bead;
@@ -193,40 +242,40 @@ function render(){
   card.classList.remove("fresh"); void card.offsetWidth; card.classList.add("fresh");
   card.scrollTop=0; body.textContent="";
   if(done){
-    drawCenter("Amen","The rosary is complete","");
-    $("rubric").textContent="Amen"; $("ptitle").textContent="The rosary is complete";
-    const p=document.createElement("p"); p.className="ptext"; p.textContent="You prayed the "+set.name.toLowerCase()+". Go in peace."; body.appendChild(p);
-    $("nextMain").textContent="Pray again"; $("nextSub").textContent=""; $("nextBtn").setAttribute("aria-label","Pray the rosary again");
+    drawCenter(t("Amen"),t("The rosary is complete"),"");
+    $("rubric").textContent=t("Amen"); $("ptitle").textContent=t("The rosary is complete");
+    const p=document.createElement("p"); p.className="ptext"; p.textContent=t("You prayed the {set}. Go in peace.",{set:set.name.toLowerCase()}); body.appendChild(p);
+    $("nextMain").textContent=t("Pray again"); $("nextSub").textContent=""; $("nextBtn").setAttribute("aria-label",t("Pray the rosary again"));
   } else {
     const st=steps[S.cur];
-    if(st.ph==="open") drawCenter("Opening prayers","The "+cap(set.adj)+" Mysteries",st.key==="hail"?st.n+" of 3":"");
-    else if(st.ph==="close") drawCenter("Closing prayers",PR[st.key].t,"");
-    else drawCenter(cap(ORD[st.d])+" decade",set.m[st.d][0],st.key==="hail"?st.n+" of 10":"");
+    if(st.ph==="open") drawCenter(t("Opening prayers"),t("The {Adj} Mysteries",{Adj:set.Adj}),st.key==="hail"?t("{n} of {of}",{n:st.n,of:3}):"");
+    else if(st.ph==="close") drawCenter(t("Closing prayers"),pr(st.key).t,"");
+    else drawCenter(t("{Ord} decade",{Ord:cap(ordF(st.d))}),set.m[st.d][0],st.key==="hail"?t("{n} of {of}",{n:st.n,of:10}):"");
     $("rubric").textContent=rubricFor(st);
     if(st.key==="mystery"){
       const m=set.m[st.d]; $("ptitle").textContent=m[0];
       const p=document.createElement("p"); p.className="ptext"; p.textContent=m[3]; body.appendChild(p);
       const meta=document.createElement("p"); meta.className="meta";
-      meta.innerHTML="<span></span><span>Fruit of the mystery: <i></i></span>";
-      meta.children[0].textContent=m[1]; meta.querySelector("i").textContent=m[2]; body.appendChild(meta);
+      meta.innerHTML="<span></span><span><span class=\"fl\"></span> <i></i></span>";
+      meta.children[0].textContent=m[1]; meta.querySelector(".fl").textContent=t("Fruit of the mystery:"); meta.querySelector("i").textContent=m[2]; body.appendChild(meta);
     } else {
-      const pr=PR[st.key]; $("ptitle").textContent=pr.t;
+      const P=pr(st.key); $("ptitle").textContent=P.t;
       if(S.words){
-        const p=document.createElement("p"); p.className="ptext"; p.textContent=pr.x;
-        (pr.vr||[]).forEach(v=>{ const s=document.createElement("span"); s.className="vr"; s.innerHTML="<b></b>"; s.firstChild.textContent=v[0]; s.appendChild(document.createTextNode(v[1])); p.appendChild(s); });
+        const p=document.createElement("p"); p.className="ptext"; p.textContent=P.x;
+        (P.vr||[]).forEach(v=>{ const s=document.createElement("span"); s.className="vr"; s.innerHTML="<b></b>"; s.firstChild.textContent=v[0]; s.appendChild(document.createTextNode(v[1])); p.appendChild(s); });
         body.appendChild(p);
       } else {
         const p=document.createElement("p"); p.className="hidden-words";
-        p.textContent=st.d!=null?"Think about "+set.m[st.d][0].replace(/^The /,"the ")+".":"Pray the words from your heart."; body.appendChild(p);
+        p.textContent=st.d!=null?t("Think about {m}.",{m:lowerArt(set.m[st.d][0])}):t("Pray the words from your heart."); body.appendChild(p);
       }
       if(st.key==="hail"&&st.d!=null&&S.words){
         const meta=document.createElement("p"); meta.className="meta";
-        meta.innerHTML="<span>Think about <i></i></span>"; meta.querySelector("i").textContent=set.m[st.d][0].replace(/^The /,"the "); body.appendChild(meta);
+        meta.innerHTML="<span><span class=\"fl\"></span> <i></i></span>"; meta.querySelector(".fl").textContent=t("Think about"); meta.querySelector("i").textContent=lowerArt(set.m[st.d][0]); body.appendChild(meta);
       }
     }
-    const nx=S.cur+1<steps.length?stepName(steps[S.cur+1]):{main:"Finish",sub:""};
+    const nx=S.cur+1<steps.length?stepName(steps[S.cur+1]):{main:t("Finish"),sub:""};
     $("nextMain").textContent=nx.main; $("nextSub").textContent=nx.sub;
-    $("nextBtn").setAttribute("aria-label","Next: "+nx.main+(nx.sub?", "+nx.sub:""));
+    $("nextBtn").setAttribute("aria-label",t("Next: {step}",{step:nx.main+(nx.sub?", "+nx.sub:"")}));
   }
   $("backBtn").disabled=S.cur===0; lastCur=S.cur;
   if(S.voice&&voiceArmed&&$("view-rosary").classList.contains("on")) speakStep();
@@ -234,11 +283,11 @@ function render(){
 /* Speech can only start after a tap, so read-aloud arms on the first tap of Next or Back. */
 let voiceArmed=false, autoTimer=null;
 function stepText(){
-  const set=SETS[S.set];
-  if(S.cur>=steps.length) return "The rosary is complete. Go in peace.";
+  const set=setOf(S.set);
+  if(S.cur>=steps.length) return t("The rosary is complete. Go in peace.");
   const st=steps[S.cur];
-  if(st.key==="mystery"){ const m=set.m[st.d]; return `The ${ORD[st.d]} ${set.adj} mystery. ${m[0]}. ${m[3]} Fruit of the mystery: ${m[2]}.`; }
-  const pr=PR[st.key]; return pr.x+(pr.vr?" "+pr.vr.map(v=>v[1]).join(" "):"");
+  if(st.key==="mystery"){ const m=set.m[st.d]; return `${capFirst(t("The {ord} {adj} mystery",{ord:ordM(st.d),adj:set.adj}))}. ${m[0]}. ${m[3]} ${t("Fruit of the mystery:")} ${m[2]}.`; }
+  const P=pr(st.key); return P.x+(P.vr?" "+P.vr.map(v=>v[1]).join(" "):"");
 }
 function speakStep(){
   clearTimeout(autoTimer);
@@ -286,14 +335,14 @@ function renderSheet(){
   const box=$("setOpts"); box.textContent=""; const today=todaySet();
   Object.keys(SETS).forEach(k=>{
     const b=document.createElement("button"); b.className="set-opt"; b.setAttribute("aria-pressed",k===S.set?"true":"false");
-    b.innerHTML='<span class="n"></span><span class="d"></span>'+(k===today?'<span class="t">Today</span>':"");
-    b.querySelector(".n").textContent=cap(SETS[k].adj); b.querySelector(".d").textContent=SETS[k].days;
+    b.innerHTML='<span class="n"></span><span class="d"></span>'+(k===today?'<span class="t"></span>':"");
+    const so=setOf(k); b.querySelector(".n").textContent=so.Adj; b.querySelector(".d").textContent=so.days; if(k===today) b.querySelector(".t").textContent=t("Today");
     b.addEventListener("click",()=>{ S.set=k; renderSheet(); render(); save(); }); box.appendChild(b);
   });
   setSwitch("swFatima",S.fatima); setSwitch("swWords",S.words); setSwitch("swWake",S.wake); setSwitch("swVoice",S.voice); setSwitch("swAuto",S.auto);
-  $("swAuto").disabled=!S.voice||!SPEECH; $("swVoice").disabled=!SPEECH; if(!SPEECH) $("voiceNote").textContent="This browser cannot read aloud";
+  $("swAuto").disabled=!S.voice||!SPEECH; $("swVoice").disabled=!SPEECH; if(!SPEECH) $("voiceNote").textContent=t("This browser cannot read aloud");
   $("fsVal").textContent=S.fs+1;
-  if(!("wakeLock" in navigator)){ $("wakeNote").textContent="This browser cannot keep the screen on"; $("swWake").disabled=true; }
+  if(!("wakeLock" in navigator)){ $("wakeNote").textContent=t("This browser cannot keep the screen on"); $("swWake").disabled=true; }
 }
 function bindSheet(d,closeId){ d.addEventListener("click",e=>{ if(e.target===d) d.close(); }); if(closeId) $(closeId).addEventListener("click",()=>d.close()); }
 $("setBtn").addEventListener("click",()=>{ renderSheet(); sheet.showModal(); });
@@ -425,7 +474,67 @@ const SEASON_NOTE={
 };
 let mDay=iso(new Date()); if(!TITLES[mDay]) mDay=DAYS.find(k=>k>=mDay)||DAYS[DAYS.length-1]||mDay;
 let mPart="r";
-const fmtLong=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric"});
+/* Interface dates follow the chosen language; booklet pages stay English (see BOOKLETS). */
+let fmtLong, fmtShortUI, fmtMonthUI;
+function makeFormatters(){
+  const loc=LANG==="es"?"es-US":"en-US";
+  const f=o=>{ const x=new Intl.DateTimeFormat(loc,o); return {format:d=>capFirst(x.format(d))}; };
+  fmtLong=f({weekday:"long",month:"long",day:"numeric"}); fmtShortUI=new Intl.DateTimeFormat(loc,{month:"short",day:"numeric"});
+  fmtMonthUI=new Intl.DateTimeFormat(loc,{month:"long",year:"numeric"}); /* used mid-sentence: Spanish keeps the month lowercase */
+}
+makeFormatters();
+const seasonNote=k=>(LANG==="es"?ES.season:SEASON_NOTE)[season(k)];
+const colorLabel=col=>t("{color} vestments",{color:LANG==="es"?ES.colors[col]:COLORS[col][0]});
+const noteFor=k=>(LANG==="es"?ES.notes:NOTES)[k];
+const bookAbout=b=>(LANG==="es"?ES.book:BOOK)[b];
+/* Liturgical titles in the data are English. In Spanish, the regular days are
+   translated by pattern and the great feasts by table; other saints' days stay English. */
+const EN_ORD={first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10,eleventh:11,twelfth:12,thirteenth:13,fourteenth:14,fifteenth:15,sixteenth:16,seventeenth:17,eighteenth:18,nineteenth:19,twentieth:20,thirtieth:30};
+function enOrd(w){ w=w.toLowerCase(); const n=w.match(/^(\d+)(st|nd|rd|th)$/); if(n) return +n[1]; if(EN_ORD[w]) return EN_ORD[w];
+  const m=w.match(/^(twenty|thirty)-(\w+)$/); return m&&EN_ORD[m[2]]<10?(m[1]==="twenty"?20:30)+EN_ORD[m[2]]:0; }
+function esOrd(n){ const u=["","Primer","Segundo","Tercer","Cuarto","Quinto","Sexto","S\u00e9ptimo","Octavo","Noveno"],
+  teen=["D\u00e9cimo","Und\u00e9cimo","Duod\u00e9cimo","Decimotercer","Decimocuarto","Decimoquinto","Decimosexto","Decimos\u00e9ptimo","Decimoctavo","Decimonoveno"];
+  return n<10?u[n]:n<20?teen[n-10]:(n<30?"Vig\u00e9simo":"Trig\u00e9simo")+(n%10?" "+u[n%10]:""); }
+function roman(n){ let o=""; for(const [v,r] of [[30,"XXX"],[20,"XX"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]]) while(n>=v){ o+=r; n-=v; } return o; }
+const ES_DOW={Monday:"Lunes",Tuesday:"Martes",Wednesday:"Mi\u00e9rcoles",Thursday:"Jueves",Friday:"Viernes",Saturday:"S\u00e1bado"};
+const ES_SEASON={"Ordinary Time":"del Tiempo Ordinario",Advent:"de Adviento",Lent:"de Cuaresma",Easter:"de Pascua"};
+function esTitle(en){
+  if(!en) return en;
+  if(ES.titles[en]) return ES.titles[en];
+  let x=en, tail="";
+  const th=x.match(/^(.*) \(Thanksgiving Day\)$/); if(th){ x=th[1]; tail=" (D\u00eda de Acci\u00f3n de Gracias)"; }
+  const O="([\\w-]+)", SEA="(Ordinary Time|Advent|Lent|Easter)";
+  let m=x.match(new RegExp("^"+O+" Sunday (?:in|of) "+SEA+"$"));
+  if(m&&enOrd(m[1])) return esOrd(enOrd(m[1]))+" Domingo "+ES_SEASON[m[2]]+tail;
+  m=x.match(new RegExp("^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) of the "+O+" [Ww]eek (?:in|of) "+SEA+"$"));
+  if(m&&enOrd(m[2])) return ES_DOW[m[1]]+" de la "+roman(enOrd(m[2]))+" Semana "+ES_SEASON[m[3]]+tail;
+  m=x.match(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) after Epiphany$/); if(m) return ES_DOW[m[1]]+" despu\u00e9s de la Epifan\u00eda";
+  m=x.match(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) after Ash Wednesday$/); if(m) return ES_DOW[m[1]]+" despu\u00e9s del Mi\u00e9rcoles de Ceniza";
+  m=x.match(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) of Holy Week$/); if(m) return ES_DOW[m[1]]+" Santo";
+  m=x.match(/^Easter (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)$/); if(m) return ES_DOW[m[1]]+" de la Octava de Pascua";
+  m=x.match(new RegExp("^The "+O+" Day in the Octave of Christmas$")); if(m&&enOrd(m[1])) return esOrd(enOrd(m[1]))+" d\u00eda de la Octava de Navidad";
+  return en;
+}
+const titleFor=en=>LANG==="es"?esTitle(en):en;
+/* Reading labels in the data are English keys ("Reading 1"); Mass-tab labels. */
+function readingLabel(l){
+  switch(l){
+    case "Reading 1": return t("First reading"); case "Reading 2": return t("Second reading"); case "Reading 3": return t("Third reading");
+    case "Reading 4": return t("Fourth reading"); case "Reading 5": return t("Fifth reading"); case "Reading 6": return t("Sixth reading");
+    case "Reading 7": return t("Seventh reading"); case "Reading": return t("Reading"); case "Epistle": return t("Epistle");
+    case "Responsorial Psalm": return t("Responsorial Psalm"); case "Alleluia": return t("Gospel acclamation"); case "Gospel": return t("Gospel");
+  }
+  return l;
+}
+/* "Isaiah 5:1-7" -> "Isaías 5, 1-7": Spanish book name, comma after the chapter,
+   a period between verse groups. The Lectionary's numbers are kept as they are. */
+function esCite(r){
+  const m=String(r.c).replace(/\u00a0/g," ").match(/^((?:Cf\.|See)\s+)?((?:[1-3]\s)?[A-Z][A-Za-z]*(?:\s(?:of\s)?[A-Z][a-z]+)*)\s+(.+)$/);
+  if(!m) return r.c;
+  const pre=m[1]?"Cf. ":"", book=ES.bookName[r.b]||m[2];
+  return pre+book+" "+m[3].replace(/, /g,". ").replace(/(\w+):/g,"$1, ").replace(/ or /g," o ");
+}
+const cite=r=>LANG==="es"?esCite(r):r.c;
 /* Verse number to show: the Lectionary's (4th field, "ch:v" or "v") when present, else the World English Bible's. */
 function shownNum(e){ const n=e[3]; if(n==null) return [e[0],e[1]]; const m=String(n).split(":"); return m.length>1?[+m[0]||m[0],m[1]]:[e[0],m[0]]; }
 function txt(tag,cls,text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
@@ -437,74 +546,103 @@ $("segR").addEventListener("click",()=>{ mPart="r"; renderMass(); });
 $("segO").addEventListener("click",()=>{ mPart="o"; renderMass(); });
 swipe($("massScroll"),()=>goDay(1),()=>goDay(-1));
 
-function resetListen(){ document.querySelectorAll(".listen-btn,.listen-all").forEach(x=>{ delete x.dataset.on; x.textContent=x.classList.contains("listen-all")?"▶ Listen to all the readings":"▶ Listen"; }); }
+function resetListen(){ document.querySelectorAll(".listen-btn,.listen-all").forEach(x=>{ delete x.dataset.on; x.textContent=x.classList.contains("listen-all")?t("\u25b6 Listen to all the readings"):t("\u25b6 Listen"); }); }
 function usccbUrl(k){ const [y,m,d]=k.split("-"); return "https://bible.usccb.org/bible/readings/"+m+d+y.slice(2)+".cfm"; }
+/* The USCCB's Spanish readings page for the day (pattern checked: 100426.cfm is 2026-10-04). */
+function usccbEsUrl(k){ const [y,m,d]=k.split("-"); return "https://bible.usccb.org/es/bible/lecturas/"+m+d+y.slice(2)+".cfm"; }
+/* Ave has no Spanish Bible text yet. In Spanish, the Mass tab shows each reading's
+   label and citation, links to the official Spanish readings, and can show the
+   English text on request. */
+let showEn=!!store("ave-es-en");
 let massSeq=0;
 async function renderMass(){
-  const seq=++massSeq, date=fromIso(mDay), today=iso(new Date());
+  const seq=++massSeq, date=fromIso(mDay), today=iso(new Date()), es=LANG==="es";
   let day=null; try{ day=await ensureDay(mDay); }catch(e){}
   if(seq!==massSeq) return;
   if(!day){ $("dLabel").textContent=fmtLong.format(date); $("dSub").textContent="";
-    const box=$("massScroll"); box.textContent=""; box.appendChild(txt("p","empty",DAYS.length?"These readings need an internet connection. Connect and try again.":"The readings could not load. Check your connection and try again.")); return; }
+    const box=$("massScroll"); box.textContent=""; box.appendChild(txt("p","empty",DAYS.length?t("These readings need an internet connection. Connect and try again."):t("The readings could not load. Check your connection and try again."))); return; }
   $("dLabel").textContent=fmtLong.format(date);
   const sub=$("dSub"); sub.className="d2"+(mDay===today?" today":"");
-  sub.textContent=mDay===today?"Today":(mDay<today?"Past day":"Coming up")+", tap for today";
+  sub.textContent=mDay===today?t("Today"):mDay<today?t("Past day, tap for today"):t("Coming up, tap for today");
   $("dPrev").disabled=DAYS.indexOf(mDay)<=0; $("dNext").disabled=DAYS.indexOf(mDay)>=DAYS.length-1;
   $("segR").setAttribute("aria-pressed",mPart==="r"); $("segO").setAttribute("aria-pressed",mPart==="o");
   const box=$("massScroll"); box.textContent="";
-  /* liturgical header */
+  /* liturgical header; the colour, Gloria and Creed rules read the English title */
   const head=txt("div","lit-head");
-  head.appendChild(txt("h1","lit-title",day.title));
+  head.appendChild(txt("h1","lit-title",titleFor(day.title)));
   const meta=txt("div","lit-meta"); const col=litColor(day.title,mDay);
-  const c=txt("span"); const sw=txt("span","swatch"); sw.style.background=COLORS[col][1]; c.appendChild(sw); c.appendChild(document.createTextNode(COLORS[col][0]+" vestments")); meta.appendChild(c);
-  meta.appendChild(txt("span","",SEASON_NOTE[season(mDay)][0]));
-  if(OBL[mDay]) meta.appendChild(txt("span","obl","Holy day of obligation (USA)"));
+  const c=txt("span"); const sw=txt("span","swatch"); sw.style.background=COLORS[col][1]; c.appendChild(sw); c.appendChild(document.createTextNode(colorLabel(col))); meta.appendChild(c);
+  meta.appendChild(txt("span","",seasonNote(mDay)[0]));
+  if(OBL[mDay]) meta.appendChild(txt("span","obl",t("Holy day of obligation (USA)")));
   head.appendChild(meta); box.appendChild(head);
   if(mPart==="o"){ renderOrder(box,day); return; }
 
   /* before Mass */
-  const intro=txt("div","block intro"); intro.appendChild(txt("h2","","Before Mass"));
-  const note=NOTES[mDay];
+  const intro=txt("div","block intro"); intro.appendChild(txt("h2","",t("Before Mass")));
+  const note=noteFor(mDay);
   if(note){
     intro.appendChild(txt("p","",note[0]));
-    const l=txt("p","listen"); l.appendChild(document.createTextNode("Listen for ")); l.appendChild(txt("i","",note[1])); intro.appendChild(l);
+    const l=txt("p","listen"); l.appendChild(document.createTextNode(t("Listen for")+" ")); l.appendChild(txt("i","",note[1])); intro.appendChild(l);
   } else {
-    const sn=SEASON_NOTE[season(mDay)]; intro.appendChild(txt("p","",sn[1]));
+    const sn=seasonNote(mDay); intro.appendChild(txt("p","",sn[1]));
     const saint=day.title.match(/^(Memorial|Feast|Solemnity) of (.+)$/);
-    if(saint) intro.appendChild(txt("p","","Today the Church also remembers "+saint[2]+"."));
+    if(saint) intro.appendChild(txt("p","",t("Today the Church also remembers {name}.",{name:saint[2]})));
   }
   box.appendChild(intro);
 
+  /* Spanish: where the readings are, and the English text on request */
+  if(es){
+    const n=txt("div","block es-readings");
+    const p=txt("p","",t("The readings in Spanish are not in Ave yet. Read them on the official site:")+" ");
+    const a=txt("a","",t("Readings in Spanish (USCCB)")); a.href=usccbEsUrl(mDay); a.target="_blank"; a.rel="noopener"; p.appendChild(a); n.appendChild(p);
+    const tg=txt("button","btn-quiet en-toggle",showEn?t("Hide the English text"):t("Show the English text")); tg.type="button"; tg.setAttribute("aria-pressed",showEn?"true":"false");
+    tg.addEventListener("click",()=>{ showEn=!showEn; store("ave-es-en",showEn); stopSpeech(); const top=box.scrollTop; renderMass().then(()=>{ box.scrollTop=top; }); });
+    n.appendChild(tg); box.appendChild(n);
+  }
+
   /* readings */
-  const spoken=r=>`${r.l.replace("Reading 1","First reading").replace("Reading 2","Second reading").replace("Alleluia","Gospel acclamation")}. ${r.c.split(/\s\d/)[0].replace(/^(Cf\.|See)\s+/,"")}. `+r.t.map(e=>e[2]).join(" ");
-  const withText=day.r.filter(r=>r.t.length);
-  if(SPEECH&&withText.length){
-    const all=txt("button","listen-all","▶ Listen to all the readings"); all.type="button";
-    all.addEventListener("click",()=>{ if(all.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); all.dataset.on="1"; all.textContent="■ Stop";
-      let i=0; const go=()=>{ if(i>=withText.length){ resetListen(); return; } speak(spoken(withText[i++]),go); }; go(); });
+  const withEn=!es||showEn;
+  /* Read aloud reads what is on the screen in its own language: in Spanish the label
+     and citation, then the English text in an English voice when it is shown. */
+  const spoken=r=>{
+    if(!es) return [[`${readingLabel(r.l)}. ${r.c.split(/\s\d/)[0].replace(/^(Cf\.|See)\s+/,"")}. `+r.t.map(e=>e[2]).join(" "),"en"]];
+    const parts=[[`${readingLabel(r.l)}. ${esCite(r).replace(/[-\u2013\u2014]/g," al ").replace(/^Cf\. /,"")}.`,"es"]];
+    if(showEn&&r.t.length) parts.push([r.t.map(e=>e[2]).join(" "),"en"]);
+    return parts;
+  };
+  if(SPEECH&&(es||day.r.some(r=>r.t.length))){
+    const list=es?day.r:day.r.filter(r=>r.t.length);
+    const all=txt("button","listen-all",t("\u25b6 Listen to all the readings")); all.type="button";
+    all.addEventListener("click",()=>{ if(all.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); all.dataset.on="1"; all.textContent=t("\u25a0 Stop");
+      speakSeq(list.flatMap(spoken),resetListen); });
     box.appendChild(all);
   }
   day.r.forEach(r=>{
     const b=txt("section","block");
-    if(SPEECH&&r.t.length){ const lb=txt("button","listen-btn","▶ Listen"); lb.type="button";
-      lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent="■ Stop"; speak(spoken(r),resetListen); });
+    if(SPEECH&&(es||r.t.length)){ const lb=txt("button","listen-btn",t("\u25b6 Listen")); lb.type="button";
+      lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent=t("\u25a0 Stop"); speakSeq(spoken(r),resetListen); });
       b.appendChild(lb); }
-    b.appendChild(txt("p","blabel",r.l.replace("Reading 1","First reading").replace("Reading 2","Second reading").replace("Alleluia","Gospel acclamation")));
-    b.appendChild(txt("h2","bcite",r.c));
-    if(BOOK[r.b] && !/Alleluia/.test(r.l)) b.appendChild(txt("p","about",BOOK[r.b]));
-    if(r.t.length){
-      const p=txt("p","rtext"); let lastCh=null;
-      r.t.forEach(e=>{ const [ch,v]=shownNum(e), t=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(t+" ")); });
+    b.appendChild(txt("p","blabel",readingLabel(r.l)));
+    b.appendChild(txt("h2","bcite",cite(r)));
+    if(bookAbout(r.b) && !/Alleluia/.test(r.l)) b.appendChild(txt("p","about",bookAbout(r.b)));
+    if(r.t.length&&withEn){
+      const p=txt("p","rtext"); if(es) p.lang="en"; let lastCh=null;
+      r.t.forEach(e=>{ const [ch,v]=shownNum(e), vt=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(vt+" ")); });
       b.appendChild(p);
-      if(r.l==="Responsorial Psalm"&&r===day.r.find(x=>x.l==="Responsorial Psalm")) b.appendChild(txt("p","psalm-note","At Mass the cantor sings these verses, and everyone sings the response from your parish booklet."));
-    } else if(r.b==="PSA"){
-      b.appendChild(txt("p","psalm-note","The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response."));
+      if(r.l==="Responsorial Psalm"&&r===day.r.find(x=>x.l==="Responsorial Psalm")) b.appendChild(txt("p","psalm-note",t("At Mass the cantor sings these verses, and everyone sings the response from your parish booklet.")));
+    } else if(r.b==="PSA"&&(!r.t.length||es)){
+      b.appendChild(txt("p","psalm-note",t("The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response.")));
     }
     box.appendChild(b);
   });
   const f=txt("p","foot");
-  f.innerHTML='Bible text: World English Bible (public domain). At Mass you will hear a different translation, so some words differ. <a target="_blank" rel="noopener">Open the official readings</a>.';
-  f.querySelector("a").href=usccbUrl(mDay);
+  if(es){
+    f.textContent=t("English Bible text: World English Bible (public domain). At Mass you will hear the readings from the Lectionary.")+" ";
+    const a=txt("a","",t("Open the official readings in Spanish")); a.href=usccbEsUrl(mDay); a.target="_blank"; a.rel="noopener"; f.appendChild(a); f.appendChild(document.createTextNode("."));
+  } else {
+    f.innerHTML='Bible text: World English Bible (public domain). At Mass you will hear a different translation, so some words differ. <a target="_blank" rel="noopener">Open the official readings</a>.';
+    f.querySelector("a").href=usccbUrl(mDay);
+  }
   box.appendChild(f);
 }
 
@@ -539,20 +677,20 @@ const ORDER=[
 ];
 function renderOrder(box,day){
   const has={gloria:hasGloria(mDay,day.title), creed:hasCreed(mDay,day.title), reading2:day.r.some(r=>/Reading 2/.test(r.l))};
-  const why={gloria:season(mDay).includes("advent")?"No Gloria today: Advent.":"No Gloria today: it is for Sundays, feasts and solemnities.",
-    creed:"No Creed today: it is for Sundays and solemnities.", reading2:"No second reading today: weekdays have one reading before the Gospel."};
+  const why={gloria:season(mDay).includes("advent")?t("No Gloria today: Advent."):t("No Gloria today: it is for Sundays, feasts and solemnities."),
+    creed:t("No Creed today: it is for Sundays and solemnities."), reading2:t("No second reading today: weekdays have one reading before the Gospel.")};
   const wrapEl=txt("div","block oom");
-  ORDER.forEach(([sec,parts])=>{
+  (LANG==="es"?ES.order:ORDER).forEach(([sec,parts])=>{
     wrapEl.appendChild(txt("h2","",sec));
     parts.forEach(([name,pos,text,flag])=>{
       const p=txt("div","part"+(flag&&!has[flag]?" off":""));
       p.appendChild(txt("h3","",name)); p.appendChild(txt("span","pos",pos)); p.appendChild(txt("p","",text));
-      if(flag) p.appendChild(txt("span","tag",has[flag]?"Today: yes":why[flag]));
+      if(flag) p.appendChild(txt("span","tag",has[flag]?t("Today: yes"):why[flag]));
       wrapEl.appendChild(p);
     });
   });
   box.appendChild(wrapEl);
-  box.appendChild(txt("p","foot","Postures follow the custom in the United States. Follow what your parish does."));
+  box.appendChild(txt("p","foot",t("Postures follow the custom in the United States. Follow what your parish does.")));
 }
 
 /* =====================================================================
@@ -560,20 +698,26 @@ function renderOrder(box,day){
    Pages are set at true size in a hidden host, then cloned into the
    preview at a smaller scale and into the print file at full size.
    Half-letter pages fold: a sheet of letter paper holds four pages.
+   Booklet pages are English in every language for now: Ave has no Spanish
+   Bible text, and there are no Spanish guides yet. The controls around them
+   follow the chosen language.
    ===================================================================== */
 const CDAYS=Object.keys(COMP).sort();
 if(CDAYS.some(k=>COMP[k].review&&COMP[k].review.status!=="approved")){
   const b=document.createElement("div"); b.className="preview-bar"; b.setAttribute("role","note");
-  b.textContent="Reviewer preview. These guides were written with AI help and have not yet been reviewed by a priest.";
+  b.textContent=t("Reviewer preview. These guides were written with AI help and have not yet been reviewed by a priest.");
   document.body.prepend(b); document.documentElement.classList.add("is-preview");
 }
 const HAS_COMP=CDAYS.length>0;
 const ED={plain:"Plain edition",kids:"Kids edition",family:"Family edition",readings:"Daily readings"};
-const LY={pocket:{size:"half",dim:"5½ × 8½ in, folded"},side:{size:"letter",dim:"8½ × 11 in, stapled"},facing:{size:"half",dim:"5½ × 8½ in, folded"}};
+const LY={pocket:{size:"half"},side:{size:"letter"},facing:{size:"half"}};
+const lyDim=ly=>LY[ly].size==="half"?t("5\u00bd \u00d7 8\u00bd in, folded"):t("8\u00bd \u00d7 11 in, stapled");
+/* Spanish guides do not exist yet, so in Spanish only the readings booklet is offered. */
+const edAvail=ed=>ed==="readings"||(LANG!=="es"&&daysFor(ed).length>0);
 const PAGE_PX={half:[528,816],letter:[816,1056]};
 const PSALM_NOTE="At Mass the cantor sings the verses, and everyone sings the response from your parish booklet.";
 const BK=Object.assign({day:iso(new Date()),ed:HAS_COMP?"plain":"readings",ly:"pocket"},store("ave-bk")||{});
-if(!HAS_COMP||(BK.ed!=="readings"&&!daysFor(BK.ed).length)) BK.ed="readings";
+if(!edAvail(BK.ed)) BK.ed="readings";
 if(!TITLES[BK.day]||BK.day<iso(new Date())) BK.day=iso(new Date());
 const fmtFull=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
 const fmtShort=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric"});
@@ -765,7 +909,7 @@ async function getBooklet(day,ed,ly){ const k=day+"|"+ed+"|"+ly; if(!CACHE[k]){ 
 /* ---------- preview ---------- */
 let lastRes=null;
 function renderPreview(res){
-  lastRes=res; const pv=$("pv"); pv.textContent="";
+  lastRes=res; const pv=$("pv"); pv.textContent=""; pv.lang="en";
   const W=Math.max(260,pv.clientWidth||340), [pw,ph]=PAGE_PX[res.size], n=res.html.length;
   const groups=[];
   if(BK.ly==="facing"){ groups.push([0]); for(let i=1;i<n-1;i+=2) groups.push([i,i+1]); groups.push([n-1]); }
@@ -776,43 +920,46 @@ function renderPreview(res){
     const row=div("pv-spread");
     g.forEach(i=>{ const w=div("pv-wrap"); w.style.width=Math.floor(pw*s)+"px"; w.style.height=Math.floor(ph*s)+"px"; w.innerHTML=res.html[i]; w.firstElementChild.style.transform=`scale(${s})`; row.appendChild(w); });
     pv.appendChild(row);
-    pv.appendChild(txt("p","pv-num",g.length===1?"Page "+(g[0]+1):`Pages ${g[0]+1}–${g[1]+1}`));
+    pv.appendChild(txt("p","pv-num",g.length===1?t("Page {n}",{n:g[0]+1}):t("Pages {a}\u2013{b}",{a:g[0]+1,b:g[1]+1})));
   });
 }
 function daysFor(ed){ return ed==="readings"?DAYS:CDAYS.filter(d=>COMP[d]&&COMP[d][ed]); }
 function allowedDays(){ const t=iso(new Date()), all=daysFor(BK.ed), A=all.filter(k=>k>=t); return A.length?A:all; }
 function renderBkControls(){
+  if(!edAvail(BK.ed)) BK.ed="readings";
   const A=allowedDays();
   if(!A.includes(BK.day)) BK.day=A.find(k=>k>=BK.day)||A[A.length-1];
   if(BK.ed==="readings"&&BK.ly==="facing") BK.ly="pocket";
   const i=A.indexOf(BK.day);
-  $("lblDate").textContent=BK.ed==="readings"?"Day":"Sunday or holy day";
-  $("bLabel").textContent=fmtLong.format(fromIso(BK.day)); $("bSub").textContent=TITLES[BK.day]||"";
+  $("lblDate").textContent=BK.ed==="readings"?t("Day"):t("Sunday or holy day");
+  $("bLabel").textContent=fmtLong.format(fromIso(BK.day)); $("bSub").textContent=titleFor(TITLES[BK.day]||"");
   $("bPrev").disabled=i<=0; $("bNext").disabled=i>=A.length-1;
   document.querySelectorAll("#edSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.ed===BK.ed));
   document.querySelectorAll("#lySeg button").forEach(b=>{
     b.setAttribute("aria-pressed",b.dataset.ly===BK.ly);
     if(b.dataset.ly==="facing") b.disabled=BK.ed==="readings";
-    if(b.dataset.ly==="side") b.textContent=BK.ed==="readings"?"Letter":"Side by side";
+    if(b.dataset.ly==="side") b.textContent=BK.ed==="readings"?t("Letter"):t("Side by side");
   });
-  document.querySelectorAll("#edSeg button").forEach(b=>{ if(b.dataset.ed!=="readings") b.disabled=!daysFor(b.dataset.ed).length; });
+  document.querySelectorAll("#edSeg button").forEach(b=>{ if(b.dataset.ed!=="readings") b.disabled=!edAvail(b.dataset.ed); });
   const rv0=COMP[BK.day]&&COMP[BK.day].review, rv=rv0&&(rv0.status?rv0:rv0[BK.ed]);
-  $("draftNote").textContent=!HAS_COMP
+  $("draftNote").textContent=LANG==="es"
+    ?t("The booklet text is in English for now.")+" "+t("Spanish guides are coming. Like every Ave guide, they are written with AI help, and each one appears here only after a priest reviews it.")
+    :!HAS_COMP
     ?"Plain, Kids and Family guides are written with AI help. Each one appears here only after a priest reviews it."
-    :BK.ed==="readings"?"The day’s readings, for any day."
+    :BK.ed==="readings"?"The day\u2019s readings, for any day."
     :rv&&rv.by?`Guide written with AI help and reviewed by ${rv.by}.`
     :rv&&rv.status==="draft"?"AI draft. Not yet reviewed by a priest.":"";
-  $("pvSize").textContent=LY[BK.ly].dim; bkNote();
+  $("pvSize").textContent=lyDim(BK.ly); bkNote();
   store("ave-bk",BK);
 }
 let bkSeq=0;
 async function renderBooklet(){
   renderBkControls();
-  const seq=++bkSeq; $("pv").innerHTML='<p class="pv-loading">Setting the pages…</p>'; $("pvCount").textContent="";
+  const seq=++bkSeq; $("pv").textContent=""; $("pv").appendChild(txt("p","pv-loading",t("Setting the pages\u2026"))); $("pvCount").textContent="";
   const res=await getBooklet(BK.day,BK.ed,BK.ly); if(seq!==bkSeq) return;
   renderPreview(res);
   const n=res.html.length;
-  $("pvCount").textContent=res.folded?`${n} pages · ${n/4} sheet${n>4?"s":""} of paper`:`${n} page${n>1?"s":""}`;
+  $("pvCount").textContent=res.folded?(n>4?t("{n} pages \u00b7 {s} sheets of paper",{n,s:n/4}):t("{n} pages \u00b7 1 sheet of paper",{n})):(n>1?t("{n} pages",{n}):t("1 page"));
 }
 $("bPrev").addEventListener("click",()=>{ const A=allowedDays(), i=A.indexOf(BK.day); if(i>0){ BK.day=A[i-1]; renderBooklet(); } });
 $("bNext").addEventListener("click",()=>{ const A=allowedDays(), i=A.indexOf(BK.day); if(i<A.length-1){ BK.day=A[i+1]; renderBooklet(); } });
@@ -833,26 +980,27 @@ $("bkPrint").addEventListener("click",async()=>{
 });
 function bkNote(){
   $("bkNote").textContent=BK.ly==="side"
-    ?"Print double-sided, flip on long edge, at 100% scale. Staple the corner."
-    :"Print double-sided, flip on short edge, at 100% scale (turn off “fit to page”). Fold the stack in half. The pages come out in folding order.";
+    ?t("Print double-sided, flip on long edge, at 100% scale. Staple the corner.")
+    :t("Print double-sided, flip on short edge, at 100% scale (turn off \u201cfit to page\u201d). Fold the stack in half. The pages come out in folding order.");
 }
 /* Ready-made PDFs are built daily by GitHub Actions (scripts/pdfs.mjs) and published on GitHub Pages. */
 const PDF_BASE="https://ccscroggin.github.io/ave/";
 let pdfManifest=null;
 function loadPdfs(){ if(!pdfManifest) pdfManifest=fetch(PDF_BASE+"manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{files:[]}).catch(()=>({files:[]})); return pdfManifest; }
 $("orderBtn").addEventListener("click",async()=>{
-  const spec=`${BK.day},${BK.ed},${BK.ly}`, m=BK.day.slice(0,7), mName=fmtMonth.format(fromIso(m+"-01"));
+  const spec=`${BK.day},${BK.ed},${BK.ly}`, m=BK.day.slice(0,7), mName=fmtMonthUI.format(fromIso(m+"-01")), mTitle=fmtMonth.format(fromIso(m+"-01")), dShort=esc(fmtShortUI.format(fromIso(BK.day))), lq=LANG==="es"?"&lang=es":"";
   const month=daysFor(BK.ed).filter(d=>d.startsWith(m)&&(BK.ed!=="readings"||fromIso(d).getDay()===0||OBL[d]));
   const link=(href,label,note)=>`<a class="btn-quiet plink" href="${href}" target="_blank" rel="noopener">${label}${note?`<small>${note}</small>`:""}</a>`;
   const render=files=>{
     let h="";
     const day=files.filter(f=>f.date===BK.day&&f.ed===BK.ed&&f.layout===BK.ly);
     const mon=files.filter(f=>f.month===m&&f.ed===BK.ed&&f.layout===BK.ly);
-    for(const f of day) h+=link(PDF_BASE+f.file,f.order==="fold"?`PDF to fold at home, ${esc(fmtShort.format(fromIso(BK.day)))}`:`PDF for a printer, ${esc(fmtShort.format(fromIso(BK.day)))}`,f.order==="fold"?"Letter sheets, print both sides":"5½ × 8½ in pages in order");
-    for(const f of mon) h+=link(PDF_BASE+f.file,f.order==="fold"?`All of ${esc(mName)}, to fold at home`:`All of ${esc(mName)} in one booklet`,`${f.days.length} days · ${f.order==="fold"?"letter sheets":"for a printer"}`);
-    if(!day.length) h+=link(`?print=${spec}`,`Print-ready pages for ${esc(fmtShort.format(fromIso(BK.day)))}`,"Open, then save as PDF");
-    if(!day.length&&LY[BK.ly].size==="half") h+=link(`?print=${spec}&order=fold`,"Sheets to fold at home","Open, then print or save as PDF");
-    if(!mon.length&&month.length>1) h+=link(`?print=${month.join("|")},${BK.ed},${BK.ly}&title=${encodeURIComponent(mName)}`,`All of ${esc(mName)} in one booklet`,`${month.length} days · open, then save as PDF`);
+    for(const f of day) h+=link(PDF_BASE+f.file,f.order==="fold"?t("PDF to fold at home, {date}",{date:dShort}):t("PDF for a printer, {date}",{date:dShort}),f.order==="fold"?t("Letter sheets, print both sides"):t("5\u00bd \u00d7 8\u00bd in pages in order"));
+    for(const f of mon) h+=link(PDF_BASE+f.file,f.order==="fold"?t("All of {month}, to fold at home",{month:esc(mName)}):t("All of {month} in one booklet",{month:esc(mName)}),f.order==="fold"?t("{n} days \u00b7 letter sheets",{n:f.days.length}):t("{n} days \u00b7 for a printer",{n:f.days.length}));
+    if(!day.length) h+=link(`?print=${spec}${lq}`,t("Print-ready pages for {date}",{date:dShort}),t("Open, then save as PDF"));
+    if(!day.length&&LY[BK.ly].size==="half") h+=link(`?print=${spec}&order=fold${lq}`,t("Sheets to fold at home"),t("Open, then print or save as PDF"));
+    if(!mon.length&&month.length>1) h+=link(`?print=${month.join("|")},${BK.ed},${BK.ly}&title=${encodeURIComponent(mTitle)}${lq}`,t("All of {month} in one booklet",{month:esc(mName)}),t("{n} days \u00b7 open, then save as PDF",{n:month.length}));
+    if(LANG==="es") h+=`<p class="small-note">${esc(t("The booklet text is in English for now."))}</p>`;
     $("printLinks").innerHTML=h;
   };
   render([]);
@@ -885,11 +1033,12 @@ async function printView(spec){
   else body=pages.map(h=>`<div class="leaf">${h}</div>`).join("");
   const pageSize=order==="fold"&&size==="half"?"11in 8.5in":size==="half"?"5.5in 8.5in":"8.5in 11in";
   const how=order==="fold"&&size==="half"
-    ?"Print both sides, flip on the short edge, at 100% scale. Stack the sheets and fold them in half."
-    :size==="half"?"Pages in reading order, 5½ × 8½ in. Save as a PDF and give it to a print shop or upload it to an online printer: booklet, saddle stitch."
-    :"Letter pages. Print both sides and staple the corner.";
-  document.body.innerHTML=`<div class="pv-toolbar"><b>Ave</b> · ${pages.length} pages<br>${how}<br><button type="button" onclick="window.print()">Print or save as PDF</button></div>`+body;
-  document.body.className="print-view";
+    ?t("Print both sides, flip on the short edge, at 100% scale. Stack the sheets and fold them in half.")
+    :size==="half"?t("Pages in reading order, 5\u00bd \u00d7 8\u00bd in. Save as a PDF and give it to a print shop or upload it to an online printer: booklet, saddle stitch.")
+    :t("Letter pages. Print both sides and staple the corner.");
+  const esLine=LANG==="es"?`<br>${esc(t("The booklet text is in English for now."))}`:"";
+  document.body.innerHTML=`<div class="pv-toolbar" lang="${LANG}"><b>Ave</b> \u00b7 ${esc(t("{n} pages",{n:pages.length}))}<br>${esc(how)}${esLine}<br><button type="button" onclick="window.print()">${esc(t("Print or save as PDF"))}</button></div>`+body;
+  document.body.className="print-view"; document.documentElement.lang="en"; /* the pages are English; the toolbar carries its own lang */
   const st=document.createElement("style");
   st.textContent=`@page{size:${pageSize};margin:0}html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0}:root{padding:0!important}
     .print-view .sheet{width:1056px;height:816px;display:flex;break-after:page}
@@ -905,22 +1054,41 @@ async function printView(spec){
   document.title=`${days.length>1?(QP.get("title")||"Booklet"):fmtShort.format(fromIso(days[0]))} · ${ED[ed]} · Ave`;
   document.documentElement.dataset.ready=String(pages.length);
 }
-const QP=new URLSearchParams(location.search);
 if(QP.get("print")){ await printView(QP.get("print")); return; }
 
-/* ---------- appearance ---------- */
-const THEMES=["auto","light","dark"], TLBL={auto:"Auto",light:"Light",dark:"Dark"};
-function applyTheme(t){
-  if(t==="light"||t==="dark") document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
-  $("themeLbl").textContent=TLBL[t]; $("themeBtn").setAttribute("aria-label",`Appearance: ${TLBL[t].toLowerCase()}. Tap to change.`);
+/* ---------- settings: appearance and language ---------- */
+const THEMES=["auto","light","dark"];
+function applyTheme(th){
+  if(th==="light"||th==="dark") document.documentElement.dataset.theme=th; else delete document.documentElement.dataset.theme;
 }
 let theme=(()=>{ try{ return localStorage.getItem("ave-theme")||"auto"; }catch(e){ return "auto"; } })();
+if(!THEMES.includes(theme)) theme="auto";
 applyTheme(theme);
-$("themeBtn").addEventListener("click",()=>{
-  theme=THEMES[(THEMES.indexOf(theme)+1)%3];
+const settings=$("settingsSheet");
+function renderSettings(){
+  document.querySelectorAll("#themeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.themeOpt===theme?"true":"false"));
+  document.querySelectorAll("#langSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===LANG?"true":"false"));
+}
+document.querySelectorAll("#themeSeg button").forEach(b=>b.addEventListener("click",()=>{
+  theme=b.dataset.themeOpt;
   try{ theme==="auto"?localStorage.removeItem("ave-theme"):localStorage.setItem("ave-theme",theme); }catch(e){}
-  applyTheme(theme); toast(theme==="auto"?"Appearance follows your phone":`${TLBL[theme]} mode`);
-});
+  applyTheme(theme); renderSettings();
+}));
+/* Changing language re-renders every view in place; no reload. */
+function setLang(l){
+  if(l===LANG) return;
+  LANG=l; try{ localStorage.setItem("ave-lang",l); }catch(e){}
+  document.documentElement.lang=l; stopSpeech(); clearTimeout(autoTimer);
+  makeFormatters(); applyStatic(); applyLangLinks();
+  render(); if(sheet.open) renderSheet(); renderMass();
+  if($("view-booklets").classList.contains("on")) renderBooklet(); else renderBkControls();
+  renderSettings();
+}
+document.querySelectorAll("#langSeg button").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.lang)));
+function applyLangLinks(){ $("aboutLink").href=LANG==="es"?"about-es.html":"about.html"; }
+applyLangLinks();
+$("settingsBtn").addEventListener("click",()=>{ renderSettings(); settings.showModal(); });
+bindSheet(settings,"setDone");
 
 /* =====================================================================
    START
@@ -932,7 +1100,7 @@ showTab((location.hash||"").slice(1)||store("ave-tab")||"rosary");
 lastCur=S.cur; render();
 void haloEl.getBoundingClientRect(); haloEl.style.transition="";
 renderMass();
-if(resumed) toast("You continue from where you stopped");
-else if(!S.seen&&$("view-rosary").classList.contains("on")){ toast("Tap the beads or Next to move on. Swipe right to go back."); S.seen=true; save(); }
+if(resumed) toast(t("You continue from where you stopped"));
+else if(!S.seen&&$("view-rosary").classList.contains("on")){ toast(t("Tap the beads or Next to move on. Swipe right to go back.")); S.seen=true; save(); }
 document.addEventListener("pointerdown",wakeOn,{once:true});
 })();
