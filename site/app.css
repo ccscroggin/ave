@@ -267,3 +267,15 @@ dialog.sheet[open]{animation:rise .28s ease-out}
 .small-note{font-size:14px;color:var(--ink-soft);margin:10px 0 0}
 .print-links{display:grid;gap:8px;margin-top:12px}
 .plink{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:23px;text-decoration:none;color:var(--ink);font-size:16.5px;text-align:center;padding:6px 14px}
+
+.printers{list-style:none;padding:0;margin:0}
+.printers li{padding:10px 0;border-bottom:1px solid var(--line);font-size:17px}
+.printers a{color:var(--gold);font-weight:600}
+.printers .pt{font-size:14.5px;color:var(--ink-soft);margin-left:4px}
+.printers .pd{display:block;font-size:15px;line-height:1.45;margin-top:2px}
+.plink small{display:block;font-size:13px;color:var(--ink-soft)}
+
+.listen-btn{float:right;margin:-2px -4px 0 8px;height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:transparent;font-size:15px;color:var(--gold)}
+.listen-all{display:block;width:100%;height:44px;margin:0 0 12px;border-radius:22px;border:1px solid var(--gold);background:transparent;color:var(--gold);font-size:17px;font-weight:600}
+.listen-btn[data-on],.listen-all[data-on]{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
+.switch:disabled{opacity:.4;cursor:default}

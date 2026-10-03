@@ -5,6 +5,25 @@ const $=id=>document.getElementById(id);
 /* ---------- toast ---------- */
 let toastT;
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),3200); }
+/* ---------- read aloud (the device's own voices; free, works offline) ---------- */
+const SPEECH="speechSynthesis" in window&&"SpeechSynthesisUtterance" in window;
+let speechGen=0, LANG="en";
+function voiceFor(lang){
+  const vs=SPEECH?speechSynthesis.getVoices():[], want=lang==="es"?["es-US","es-MX","es-ES","es"]:["en-US","en-GB","en"];
+  for(const w of want){ const v=vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())&&v.localService)||vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())); if(v) return v; }
+  return null;
+}
+function sentences(text){ return String(text).replace(/\s+/g," ").match(/[^.!?;:]+[.!?;:]+["”’)]*|[^.!?;:]+$/g)||[text]; }
+/* Speak text; calls done() after the last sentence unless something else spoke or stopped first. */
+function speak(text,done){
+  if(!SPEECH) return false;
+  speechSynthesis.cancel(); const gen=++speechGen, parts=sentences(text).map(x=>x.trim()).filter(Boolean), v=voiceFor(LANG);
+  parts.forEach((t,i)=>{ const u=new SpeechSynthesisUtterance(t); u.lang=LANG==="es"?"es-US":"en-US"; if(v) u.voice=v; u.rate=.92;
+    if(i===parts.length-1) u.onend=()=>{ if(gen===speechGen&&done) done(); }; speechSynthesis.speak(u); });
+  return true;
+}
+function stopSpeech(){ speechGen++; if(SPEECH) speechSynthesis.cancel(); }
+
 function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } }
 
 /* =====================================================================
@@ -17,6 +36,7 @@ function showTab(name){
   tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===name?"true":"false"));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on",v.id==="view-"+name));
   store("ave-tab",name);
+  if(typeof stopSpeech==="function"){ stopSpeech(); }
   try{ history.replaceState(null,"","#"+name); }catch(e){}
   if(name==="booklets") renderBooklet();
 }
@@ -68,10 +88,10 @@ const todaySet=()=>{ const d=new Date().getDay(); return Object.keys(SETS).find(
 
 const KEY="rosary-v1";
 const FS=[16,17.5,19,21,23.5,26];
-const S={set:todaySet(),cur:0,fatima:true,words:true,wake:true,fs:2,t:0,seen:false};
+const S={set:todaySet(),cur:0,fatima:true,words:true,wake:true,fs:2,t:0,seen:false,voice:false,auto:false};
 let resumed=false;
 (function(){ const o=store(KEY); if(o){
-  ["fatima","words","wake","fs","seen"].forEach(k=>{ if(k in o) S[k]=o[k]; });
+  ["fatima","words","wake","fs","seen","voice","auto"].forEach(k=>{ if(k in o) S[k]=o[k]; });
   if(o.cur>0 && SETS[o.set] && Date.now()-o.t<6*3600e3){ S.set=o.set; S.cur=o.cur; resumed=true; }
 }})();
 function save(){ S.t=Date.now(); store(KEY,S); }
@@ -209,15 +229,30 @@ function render(){
     $("nextBtn").setAttribute("aria-label","Next: "+nx.main+(nx.sub?", "+nx.sub:""));
   }
   $("backBtn").disabled=S.cur===0; lastCur=S.cur;
+  if(S.voice&&voiceArmed&&$("view-rosary").classList.contains("on")) speakStep();
+}
+/* Speech can only start after a tap, so read-aloud arms on the first tap of Next or Back. */
+let voiceArmed=false, autoTimer=null;
+function stepText(){
+  const set=SETS[S.set];
+  if(S.cur>=steps.length) return "The rosary is complete. Go in peace.";
+  const st=steps[S.cur];
+  if(st.key==="mystery"){ const m=set.m[st.d]; return `The ${ORD[st.d]} ${set.adj} mystery. ${m[0]}. ${m[3]} Fruit of the mystery: ${m[2]}.`; }
+  const pr=PR[st.key]; return pr.x+(pr.vr?" "+pr.vr.map(v=>v[1]).join(" "):"");
+}
+function speakStep(){
+  clearTimeout(autoTimer);
+  speak(stepText(),()=>{ if(S.auto&&S.cur<steps.length) autoTimer=setTimeout(()=>{ if(S.voice&&S.auto) next(); },900); });
 }
 function buzz(ms){ try{ navigator.vibrate&&navigator.vibrate(ms); }catch(e){} }
 function next(){
+  voiceArmed=true;
   if(S.cur>=steps.length){ S.cur=0; lastCur=-1; render(); save(); return; }
   const st=steps[S.cur]; S.cur++;
   buzz(st.key==="hail"&&st.n===10?[12,60,12]:(S.cur>=steps.length?[20,80,20,80,40]:10));
   render(); save(); wakeOn();
 }
-function back(){ if(S.cur>0){ S.cur--; lastCur=S.cur+1; buzz(6); render(); save(); } }
+function back(){ voiceArmed=true; clearTimeout(autoTimer); if(S.cur>0){ S.cur--; lastCur=S.cur+1; buzz(6); render(); save(); } }
 $("nextBtn").addEventListener("click",next);
 $("backBtn").addEventListener("click",back);
 $("stage").addEventListener("click",next);
@@ -255,7 +290,8 @@ function renderSheet(){
     b.querySelector(".n").textContent=cap(SETS[k].adj); b.querySelector(".d").textContent=SETS[k].days;
     b.addEventListener("click",()=>{ S.set=k; renderSheet(); render(); save(); }); box.appendChild(b);
   });
-  setSwitch("swFatima",S.fatima); setSwitch("swWords",S.words); setSwitch("swWake",S.wake);
+  setSwitch("swFatima",S.fatima); setSwitch("swWords",S.words); setSwitch("swWake",S.wake); setSwitch("swVoice",S.voice); setSwitch("swAuto",S.auto);
+  $("swAuto").disabled=!S.voice||!SPEECH; $("swVoice").disabled=!SPEECH; if(!SPEECH) $("voiceNote").textContent="This browser cannot read aloud";
   $("fsVal").textContent=S.fs+1;
   if(!("wakeLock" in navigator)){ $("wakeNote").textContent="This browser cannot keep the screen on"; $("swWake").disabled=true; }
 }
@@ -270,6 +306,8 @@ $("swFatima").addEventListener("click",()=>{
 });
 $("swWords").addEventListener("click",()=>{ S.words=!S.words; renderSheet(); render(); save(); });
 $("swWake").addEventListener("click",()=>{ S.wake=!S.wake; S.wake?wakeOn():wakeOff(); renderSheet(); save(); });
+$("swVoice").addEventListener("click",()=>{ S.voice=!S.voice; if(!S.voice){ S.auto=false; stopSpeech(); clearTimeout(autoTimer); } else { voiceArmed=true; speakStep(); } renderSheet(); save(); });
+$("swAuto").addEventListener("click",()=>{ if(!S.voice) return; S.auto=!S.auto; clearTimeout(autoTimer); if(S.auto){ voiceArmed=true; speakStep(); } renderSheet(); save(); });
 $("fsDown").addEventListener("click",()=>{ S.fs=Math.max(0,S.fs-1); renderSheet(); render(); save(); });
 $("fsUp").addEventListener("click",()=>{ S.fs=Math.min(FS.length-1,S.fs+1); renderSheet(); render(); save(); });
 $("restartBtn").addEventListener("click",()=>{ S.cur=0; lastCur=-1; sheet.close(); render(); save(); });
@@ -391,7 +429,7 @@ const fmtLong=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"
 /* Verse number to show: the Lectionary's (4th field, "ch:v" or "v") when present, else the World English Bible's. */
 function shownNum(e){ const n=e[3]; if(n==null) return [e[0],e[1]]; const m=String(n).split(":"); return m.length>1?[+m[0]||m[0],m[1]]:[e[0],m[0]]; }
 function txt(tag,cls,text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
-function goDay(n){ const i=DAYS.indexOf(mDay)+n; if(i>=0&&i<DAYS.length){ mDay=DAYS[i]; renderMass(); $("massScroll").scrollTop=0; } }
+function goDay(n){ stopSpeech();  const i=DAYS.indexOf(mDay)+n; if(i>=0&&i<DAYS.length){ mDay=DAYS[i]; renderMass(); $("massScroll").scrollTop=0; } }
 $("dPrev").addEventListener("click",()=>goDay(-1));
 $("dNext").addEventListener("click",()=>goDay(1));
 $("dToday").addEventListener("click",()=>{ const t=iso(new Date()); if(TITLES[t]){ mDay=t; renderMass(); } });
@@ -399,6 +437,7 @@ $("segR").addEventListener("click",()=>{ mPart="r"; renderMass(); });
 $("segO").addEventListener("click",()=>{ mPart="o"; renderMass(); });
 swipe($("massScroll"),()=>goDay(1),()=>goDay(-1));
 
+function resetListen(){ document.querySelectorAll(".listen-btn,.listen-all").forEach(x=>{ delete x.dataset.on; x.textContent=x.classList.contains("listen-all")?"▶ Listen to all the readings":"▶ Listen"; }); }
 function usccbUrl(k){ const [y,m,d]=k.split("-"); return "https://bible.usccb.org/bible/readings/"+m+d+y.slice(2)+".cfm"; }
 let massSeq=0;
 async function renderMass(){
@@ -437,8 +476,19 @@ async function renderMass(){
   box.appendChild(intro);
 
   /* readings */
+  const spoken=r=>`${r.l.replace("Reading 1","First reading").replace("Reading 2","Second reading").replace("Alleluia","Gospel acclamation")}. ${r.c.split(/\s\d/)[0].replace(/^(Cf\.|See)\s+/,"")}. `+r.t.map(e=>e[2]).join(" ");
+  const withText=day.r.filter(r=>r.t.length);
+  if(SPEECH&&withText.length){
+    const all=txt("button","listen-all","▶ Listen to all the readings"); all.type="button";
+    all.addEventListener("click",()=>{ if(all.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); all.dataset.on="1"; all.textContent="■ Stop";
+      let i=0; const go=()=>{ if(i>=withText.length){ resetListen(); return; } speak(spoken(withText[i++]),go); }; go(); });
+    box.appendChild(all);
+  }
   day.r.forEach(r=>{
     const b=txt("section","block");
+    if(SPEECH&&r.t.length){ const lb=txt("button","listen-btn","▶ Listen"); lb.type="button";
+      lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent="■ Stop"; speak(spoken(r),resetListen); });
+      b.appendChild(lb); }
     b.appendChild(txt("p","blabel",r.l.replace("Reading 1","First reading").replace("Reading 2","Second reading").replace("Alleluia","Gospel acclamation")));
     b.appendChild(txt("h2","bcite",r.c));
     if(BOOK[r.b] && !/Alleluia/.test(r.l)) b.appendChild(txt("p","about",BOOK[r.b]));
@@ -786,15 +836,28 @@ function bkNote(){
     ?"Print double-sided, flip on long edge, at 100% scale. Staple the corner."
     :"Print double-sided, flip on short edge, at 100% scale (turn off “fit to page”). Fold the stack in half. The pages come out in folding order.";
 }
-$("orderBtn").addEventListener("click",()=>{
-  const spec=`${BK.day},${BK.ed},${BK.ly}`, m=BK.day.slice(0,7);
+/* Ready-made PDFs are built daily by GitHub Actions (scripts/pdfs.mjs) and published on GitHub Pages. */
+const PDF_BASE="https://ccscroggin.github.io/ave/";
+let pdfManifest=null;
+function loadPdfs(){ if(!pdfManifest) pdfManifest=fetch(PDF_BASE+"manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{files:[]}).catch(()=>({files:[]})); return pdfManifest; }
+$("orderBtn").addEventListener("click",async()=>{
+  const spec=`${BK.day},${BK.ed},${BK.ly}`, m=BK.day.slice(0,7), mName=fmtMonth.format(fromIso(m+"-01"));
   const month=daysFor(BK.ed).filter(d=>d.startsWith(m)&&(BK.ed!=="readings"||fromIso(d).getDay()===0||OBL[d]));
-  const t=encodeURIComponent(`${fmtMonth.format(fromIso(m+"-01"))}`);
-  let h=`<a class="btn-quiet plink" href="?print=${spec}" target="_blank" rel="noopener">Print-ready pages for ${esc(fmtShort.format(fromIso(BK.day)))}</a>`;
-  if(LY[BK.ly].size==="half") h+=`<a class="btn-quiet plink" href="?print=${spec}&order=fold" target="_blank" rel="noopener">Sheets to fold at home</a>`;
-  if(month.length>1) h+=`<a class="btn-quiet plink" href="?print=${month.join("|")},${BK.ed},${BK.ly}&title=${t}" target="_blank" rel="noopener">All of ${esc(fmtMonth.format(fromIso(m+"-01")))} in one booklet (${month.length} days)</a>`;
-  $("printLinks").innerHTML=h;
+  const link=(href,label,note)=>`<a class="btn-quiet plink" href="${href}" target="_blank" rel="noopener">${label}${note?`<small>${note}</small>`:""}</a>`;
+  const render=files=>{
+    let h="";
+    const day=files.filter(f=>f.date===BK.day&&f.ed===BK.ed&&f.layout===BK.ly);
+    const mon=files.filter(f=>f.month===m&&f.ed===BK.ed&&f.layout===BK.ly);
+    for(const f of day) h+=link(PDF_BASE+f.file,f.order==="fold"?`PDF to fold at home, ${esc(fmtShort.format(fromIso(BK.day)))}`:`PDF for a printer, ${esc(fmtShort.format(fromIso(BK.day)))}`,f.order==="fold"?"Letter sheets, print both sides":"5½ × 8½ in pages in order");
+    for(const f of mon) h+=link(PDF_BASE+f.file,f.order==="fold"?`All of ${esc(mName)}, to fold at home`:`All of ${esc(mName)} in one booklet`,`${f.days.length} days · ${f.order==="fold"?"letter sheets":"for a printer"}`);
+    if(!day.length) h+=link(`?print=${spec}`,`Print-ready pages for ${esc(fmtShort.format(fromIso(BK.day)))}`,"Open, then save as PDF");
+    if(!day.length&&LY[BK.ly].size==="half") h+=link(`?print=${spec}&order=fold`,"Sheets to fold at home","Open, then print or save as PDF");
+    if(!mon.length&&month.length>1) h+=link(`?print=${month.join("|")},${BK.ed},${BK.ly}&title=${encodeURIComponent(mName)}`,`All of ${esc(mName)} in one booklet`,`${month.length} days · open, then save as PDF`);
+    $("printLinks").innerHTML=h;
+  };
+  render([]);
   $("orderSheet").showModal();
+  const mf=await loadPdfs(); if($("orderSheet").open) render(mf.files||[]);
 });
 bindSheet($("orderSheet"),"oClose");
 $("supportBtn").addEventListener("click",()=>$("supportSheet").showModal());

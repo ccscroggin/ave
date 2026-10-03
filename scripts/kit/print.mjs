@@ -9,17 +9,18 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 // Playwright prunes old browser builds, so find whichever headless shell is installed (newest first).
-const PW = `${process.env.HOME}/Library/Caches/ms-playwright`;
+const PW = process.env.PLAYWRIGHT_BROWSERS_PATH || (process.platform === "darwin" ? `${process.env.HOME}/Library/Caches/ms-playwright` : `${process.env.HOME}/.cache/ms-playwright`);
+const SUB = process.platform === "darwin" ? ["chrome-headless-shell-mac-arm64", "chrome-headless-shell-mac-x64"] : ["chrome-headless-shell-linux64", "chrome-linux64"];
 const CHROME = process.env.CHROME || (() => {
   const dirs = existsSync(PW) ? readdirSync(PW).filter(d => d.startsWith("chromium_headless_shell-")).sort((a, b) => parseInt(b.split("-")[1]) - parseInt(a.split("-")[1])) : [];
-  for (const d of dirs) { const bin = join(PW, d, "chrome-headless-shell-mac-arm64", "chrome-headless-shell"); if (existsSync(bin)) return bin; }
+  for (const d of dirs) for (const sub of SUB) { const bin = join(PW, d, sub, "chrome-headless-shell"); if (existsSync(bin)) return bin; }
   throw new Error("No Playwright headless shell found. Run: npx playwright install chromium-headless-shell");
 })();
 const PORT = 9400 + Math.floor(Math.random() * 500); // a fresh port each run, so a stray browser cannot answer for this one
 const jobs = JSON.parse(readFileSync(process.argv[2], "utf8"));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", `--remote-debugging-port=${PORT}`,
+const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--no-sandbox", `--remote-debugging-port=${PORT}`,
   `--user-data-dir=${mkdtempSync(join(tmpdir(), "avekit-"))}`, "--no-first-run", "about:blank"], { stdio: "ignore" });
 
 let page;

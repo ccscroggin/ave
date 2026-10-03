@@ -1,0 +1,45 @@
+name: Print-ready PDFs
+
+# Daily: make PDFs of the next eight weeks of booklets from the live site and
+# publish them on GitHub Pages, so people can order prints without saving PDFs
+# themselves. Only approved guides appear (the site serves nothing else).
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pdfs
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install headless Chrome
+        run: npx --yes playwright@1.63.0 install --with-deps chromium-headless-shell
+      - name: Make PDFs
+        run: node scripts/pdfs.mjs --base https://ave-daily.vercel.app --out out --weeks 8
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

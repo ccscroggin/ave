@@ -162,6 +162,8 @@ try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") docu
     <div class="row"><span class="l">Fatima prayer<span class="s">Say it after each Glory Be</span></span><button class="switch" role="switch" id="swFatima" aria-label="Fatima prayer"></button></div>
     <div class="row"><span class="l">Show prayer words<span class="s">Turn off when you know them by heart</span></span><button class="switch" role="switch" id="swWords" aria-label="Show prayer words"></button></div>
     <div class="row"><span class="l">Keep screen on<span class="s" id="wakeNote">The screen stays on while you pray</span></span><button class="switch" role="switch" id="swWake" aria-label="Keep screen on"></button></div>
+    <div class="row"><span class="l">Read aloud<span class="s" id="voiceNote">Your phone reads each prayer to you</span></span><button class="switch" role="switch" id="swVoice" aria-label="Read aloud"></button></div>
+    <div class="row"><span class="l">Hands-free<span class="s">Moves to the next bead by itself after each prayer</span></span><button class="switch" role="switch" id="swAuto" aria-label="Hands-free"></button></div>
     <div class="row" style="border-bottom:0"><span class="l">Text size<span class="s">Also changes the readings</span></span>
       <span class="stepper"><button id="fsDown" aria-label="Smaller text">A−</button><span id="fsVal">3</span><button id="fsUp" aria-label="Larger text">A+</button></span></div>
     <div class="sheet-actions">
@@ -176,13 +178,25 @@ try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") docu
   <div class="sheet-in">
     <div class="grip"></div>
     <h2>Get it printed</h2>
-    <p class="mail-p">Every booklet is free. Ave takes no money and has no deal with any printer.</p>
-    <div class="plan-opts">
-      <div class="opt"><span class="n">At home</span><span class="d">Tap “Print this booklet.” Print both sides, flip on the short edge, then fold. One sheet makes a Sunday.</span></div>
-      <div class="opt"><span class="n">At a print shop</span><span class="d">Open the print-ready pages, save them as a PDF, and take it to FedEx Office, Staples, your parish office, or any print shop. Ask for a 5½ × 8½ inch booklet, printed both sides and stapled on the fold.</span></div>
-      <div class="opt"><span class="n">Online, mailed to you</span><span class="d">Upload the same PDF to a print-on-demand service such as <a href="https://www.lulu.com/create" target="_blank" rel="noopener">Lulu</a>. Choose 5½ × 8½ in, saddle stitch. You pay the printer directly.</span></div>
-    </div>
+    <p class="mail-p">Every booklet is free. Ave takes no money and has no deal with any printer; you pay the printer directly.</p>
+
+    <h3 class="sub">1. Get the PDF</h3>
     <div class="print-links" id="printLinks"></div>
+
+    <h3 class="sub">2. Choose a printer</h3>
+    <ul class="printers">
+      <li><a href="https://www.lulu.com/create" target="_blank" rel="noopener">Lulu</a> <span class="pt">Online, mailed to you, one copy or many</span>
+        <span class="pd">Upload the PDF and choose: booklet with saddle stitch, 5½ × 8½ in (digest), color.</span></li>
+      <li><a href="https://www.vistaprint.com/marketing-materials/booklets" target="_blank" rel="noopener">Vistaprint</a> <span class="pt">Online, mailed to you, from one copy</span>
+        <span class="pd">Saddle-stitch booklets need at least 8 pages, so use a month or season booklet. Upload the PDF.</span></li>
+      <li><a href="https://mixam.com/booklets" target="_blank" rel="noopener">Mixam</a> <span class="pt">Online, good for a parish order</span>
+        <span class="pd">Choose stapled booklet, 5½ × 8½ in, and upload the PDF.</span></li>
+      <li><a href="https://www.office.fedex.com/" target="_blank" rel="noopener">FedEx Office</a> or <a href="https://www.staples.com/services/printing/" target="_blank" rel="noopener">Staples</a> <span class="pt">Local, often same day</span>
+        <span class="pd">Upload the PDF for pickup, or bring it in. Ask for a booklet, printed both sides, folded and stapled.</span></li>
+      <li>At home <span class="pt">Free</span>
+        <span class="pd">Tap “Print this booklet,” print both sides, flip on the short edge, and fold.</span></li>
+    </ul>
+    <p class="small-note">Ave is not affiliated with these printers and earns nothing from them.</p>
     <div class="sheet-actions"><button class="btn-gold" id="oClose">Done</button></div>
   </div>
 </dialog>
