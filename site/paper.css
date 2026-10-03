@@ -56,3 +56,9 @@
 .pg .oom-mini .off{text-decoration:line-through;color:#A39C8A}
 .pg .lines{height:100%;background:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,#E3DCCB 27px,#E3DCCB 28px)}
 .pg .notes-h{font-style:italic;font-size:1.2em;color:#8C8677;margin:0 0 .3em}
+.pg .cv-inside{margin-top:1.1em;display:grid;gap:.15em;font-size:.95em}
+.pg .cv-inside b{font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.75em;letter-spacing:.14em;text-transform:uppercase;color:#A3192B;font-weight:700}
+.pg .cv-inside span{display:grid;grid-template-columns:8.5em 1fr;gap:.6em}
+.pg .cv-inside em{font-style:normal;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.85em;color:#5E5949;padding-top:.1em}
+.pg .cv-toc span{grid-template-columns:4.2em 1fr auto}
+.pg .cv-toc i{font-style:normal;font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:.85em;color:#5E5949;font-variant-numeric:tabular-nums}

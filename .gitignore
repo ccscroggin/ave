@@ -5,3 +5,4 @@ scripts/readings/cache/
 .DS_Store
 node_modules/
 site/robots.txt
+scripts/kit/jobs*.json

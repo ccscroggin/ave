@@ -557,7 +557,9 @@ function coverHtml(day,ed){
   const o=coverParts(day,ed);
   return `<div class="cv"><div class="cv-date">${o.date}</div>${o.title?`<div class="cv-title">${esc(o.title)}</div>`:""}<div class="cv-rule"></div>
   <div class="cv-ed">${o.ed}</div><div class="cv-head">${esc(o.head)}</div>${o.intro?`<p class="cv-intro">${esc(o.intro)}</p>`:""}
-  ${o.listen?`<div class="cv-listen"><b>Listen for</b><i>${esc(o.listen)}</i></div>`:""}<div class="cv-meta">${o.meta}</div>${SOURCE_LINE}</div>`;
+  ${o.listen?`<div class="cv-listen"><b>Listen for</b><i>${esc(o.listen)}</i></div>`:""}
+  <div class="cv-inside"><b>Inside</b>${readingsOf(day).map(r=>`<span><em>${labelOf(r)}</em>${esc(r.c)}</span>`).join("")}</div>
+  <div class="cv-meta">${o.meta}</div>${SOURCE_LINE}</div>`;
 }
 function mastItems(day,ed){
   const o=coverParts(day,ed), out=[];
@@ -778,6 +780,39 @@ function bkNote(){
 }
 $("orderBtn").addEventListener("click",()=>$("orderSheet").showModal());
 bindSheet($("orderSheet"),"oClose");
+
+/* ---------- print view: ?print=DATE[|DATE...],ED,LY[&order=read|fold][&title=...] ----------
+   Replaces the app with the booklet's pages, sized for the printer. "read" gives
+   trim-size pages in reading order (what a print service takes); "fold" gives
+   letter sheets imposed for home printing. Several dates make one bound booklet. */
+async function printView(spec){
+  const [dates,ed,ly]=spec.split(","), days=dates.split("|"), order=QP.get("order")||"read";
+  const size=LY[ly].size, [pw,ph]=PAGE_PX[size];
+  let pages=[];
+  if(days.length===1){ pages=(await getBooklet(days[0],ed,ly)).html.slice(); }
+  else {
+    const title=QP.get("title")||"Sundays and holy days", starts=[];
+    for(const d of days){ const r=await getBooklet(d,ed,ly); starts.push(pages.length+2); pages.push(...r.html.filter(h=>!h.includes('class="notes-h"'))); }
+    const toc=days.map((d,i)=>`<span><em>${esc(fmtShort.format(fromIso(d)))}</em>${esc(TITLES[d]||"")}<i>${starts[i]}</i></span>`).join("");
+    pages.unshift(`<div class="pg ${size}"><div class="pg-body"><div class="cv"><div class="cv-date">${esc(fmtShort.format(fromIso(days[0])))} to ${esc(fmtShort.format(fromIso(days[days.length-1])))}</div><div class="cv-rule"></div><div class="cv-ed">${ED[ed]}</div><div class="cv-head">${esc(title)}</div><p class="cv-intro">${days.length} Sundays and holy days, each with its readings and a guide in plain words.</p><div class="cv-inside cv-toc"><b>Inside</b>${toc}</div><div class="cv-meta"></div>${SOURCE_LINE}</div></div><div class="pg-foot"><span></span><span></span></div></div>`);
+    pages=pages.map((h,i)=>i===0?h:h.replace(/(<div class="pg-foot"><span>[^<]*<\/span><span>)\d+(<\/span>)/,`$1${i+1}$2`));
+    if(size==="half"){ host.textContent=""; while(pages.length%4) pages.push(notesPage(size).pg.outerHTML); host.textContent=""; }
+  }
+  let body="";
+  if(order==="fold"&&size==="half"){ const N=pages.length; for(let i=0;i<N/4;i++) body+=`<div class="sheet">${pages[N-1-2*i]}${pages[2*i]}</div><div class="sheet">${pages[2*i+1]}${pages[N-2-2*i]}</div>`; }
+  else body=pages.map(h=>`<div class="leaf">${h}</div>`).join("");
+  const pageSize=order==="fold"&&size==="half"?"11in 8.5in":size==="half"?"5.5in 8.5in":"8.5in 11in";
+  document.body.innerHTML=body;
+  document.body.className="print-view";
+  const st=document.createElement("style");
+  st.textContent=`@page{size:${pageSize};margin:0}html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0}:root{padding:0!important}
+    .print-view .sheet{width:1056px;height:816px;display:flex;break-after:page}
+    .print-view .leaf{width:${pw}px;height:${ph}px;break-after:page}.print-view .pg{background:#fff}`;
+  document.head.appendChild(st);
+  document.title="READY "+pages.length;
+}
+const QP=new URLSearchParams(location.search);
+if(QP.get("print")){ await printView(QP.get("print")); return; }
 
 /* =====================================================================
    START
