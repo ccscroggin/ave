@@ -1,0 +1,22 @@
+name: Guide correction
+description: Something in a Plain, Kids or Family guide is wrong, unclear, or not faithful to Church teaching.
+labels: ["guide", "needs review"]
+body:
+  - type: input
+    id: date
+    attributes: { label: Date, description: "The Sunday or holy day, for example 2026-12-08", placeholder: "2026-12-08" }
+    validations: { required: true }
+  - type: dropdown
+    id: edition
+    attributes: { label: Edition, options: ["Plain", "Kids", "Family", "More than one"] }
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes: { label: What is wrong, description: "Quote the words if you can." }
+    validations: { required: true }
+  - type: textarea
+    id: fix
+    attributes: { label: What it should say, description: "Optional. A suggested wording or a reference (for example a Catechism paragraph)." }
+  - type: dropdown
+    id: role
+    attributes: { label: You are, description: "Optional. Helps reviewers weigh the note.", options: ["Priest", "Deacon", "Religious", "Catechist or teacher", "Parent", "Other"] }

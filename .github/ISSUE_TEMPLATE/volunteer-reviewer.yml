@@ -1,0 +1,23 @@
+name: Volunteer to review guides
+description: Priests, deacons, religious and catechists who would like to review guides.
+labels: ["reviewer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Try the review page first in practice mode: https://ave-daily.vercel.app/review?practice
+        Please do not post your email here. The maintainer will contact you through GitHub to send your personal review link.
+  - type: input
+    id: name
+    attributes: { label: Name as it should appear, description: "For example Fr. John Smith. You can also choose to appear without a name." }
+    validations: { required: true }
+  - type: dropdown
+    id: role
+    attributes: { label: You are, options: ["Priest", "Deacon", "Religious", "Catechist", "Other"] }
+    validations: { required: true }
+  - type: input
+    id: diocese
+    attributes: { label: Diocese, description: "Optional." }
+  - type: dropdown
+    id: amount
+    attributes: { label: How much can you take on, options: ["One Sunday a month", "Two or three Sundays a month", "A whole month now and then", "Not sure yet"] }

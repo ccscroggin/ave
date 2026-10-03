@@ -1,0 +1,8 @@
+name: Idea
+description: Suggest something that would help people pray or understand the Mass.
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes: { label: Your idea, description: "Who would it help, and how?" }
+    validations: { required: true }

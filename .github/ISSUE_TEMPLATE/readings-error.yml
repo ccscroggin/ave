@@ -1,0 +1,15 @@
+name: Readings error
+description: A day shows the wrong readings, wrong verses, or the wrong title.
+labels: ["readings"]
+body:
+  - type: input
+    id: date
+    attributes: { label: Date, placeholder: "2027-05-09" }
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes: { label: What is wrong, description: "For example: the first reading should be Acts 18:1-8, or verse 22:20 should not be included." }
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes: { label: Where you checked, description: "Optional. For example the USCCB page for that day.", placeholder: "https://bible.usccb.org/bible/readings/..." }
