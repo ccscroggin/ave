@@ -35,6 +35,8 @@
 
 <p class="small">Ave has no ads and keeps no information about the people who use it. It is not affiliated with the USCCB and does not speak for the Church. Printed booklets by mail are planned; after printing, shipping and card fees, profits go to Catholic charities.</p>
 
-<p class="sig">With thanks,<br>Clark Scroggin<br><span class="small"></span></p>
+<p class="sig">With thanks,<br><span id="sender">Clark Scroggin</span><br><span class="small" id="contact"></span></p>
+<script>/* Contact details are added at print time (?contact=...) and never stored in the repo. */
+const q=new URLSearchParams(location.search); if(q.get("contact")) document.getElementById("contact").textContent=q.get("contact"); if(q.get("sender")) document.getElementById("sender").textContent=q.get("sender");</script>
 <script>document.fonts.ready.then(()=>{document.title="READY letter"})</script>
 </body></html>
