@@ -4,13 +4,18 @@
 // Each page must set document.title to start with `ready` (default "READY")
 // when it has finished laying out; static pages can use "" to print on load.
 import { spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CHROME = process.env.CHROME ||
-  `${process.env.HOME}/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell`;
-const PORT = 9333;
+// Playwright prunes old browser builds, so find whichever headless shell is installed (newest first).
+const PW = `${process.env.HOME}/Library/Caches/ms-playwright`;
+const CHROME = process.env.CHROME || (() => {
+  const dirs = existsSync(PW) ? readdirSync(PW).filter(d => d.startsWith("chromium_headless_shell-")).sort((a, b) => parseInt(b.split("-")[1]) - parseInt(a.split("-")[1])) : [];
+  for (const d of dirs) { const bin = join(PW, d, "chrome-headless-shell-mac-arm64", "chrome-headless-shell"); if (existsSync(bin)) return bin; }
+  throw new Error("No Playwright headless shell found. Run: npx playwright install chromium-headless-shell");
+})();
+const PORT = 9400 + Math.floor(Math.random() * 500); // a fresh port each run, so a stray browser cannot answer for this one
 const jobs = JSON.parse(readFileSync(process.argv[2], "utf8"));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 

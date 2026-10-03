@@ -73,7 +73,7 @@ function renderHome(){
   }
   for(const s of Q.schedule){
     const ds=byMonth[s.month]||[], st=monthStats(ds);
-    h+=`<div class="month"><h2>${fmtMonth.format(D(s.month+"-01"))}</h2><span class="meta">Due ${fmtDay.format(D(s.due))} · ${st.done}/${st.total}</span></div>`;
+    h+=`<div class="month"><h2>${fmtMonth.format(D(s.month+"-01"))}</h2><span class="meta">${s.due<today?"Past due":"Due"} ${fmtDay.format(D(s.due))} · ${st.done}/${st.total}</span></div>`;
     for(const d of ds){
       const claim=d.claims.length?`<span class="claimed">Claimed by ${d.claims.map(c=>esc(c.name)).join(", ")}</span>`:"";
       h+=`<button class="day" data-open="${d.date}" type="button"><span><span class="d">${fmtDay.format(D(d.date))}${d.flagged?` · ${d.flagged} flagged line${d.flagged>1?"s":""}`:""}</span><br><span class="t" data-title="${d.date}"></span></span>
@@ -201,7 +201,7 @@ $("calBtn").addEventListener("click",()=>{
       <a class="quiet" href="https://${host}/api/calendar?t=${encodeURIComponent(TOKEN)}">Download the calendar file</a></div>
       <p class="meta" style="margin-top:8px">The calendar updates itself when new months are added.</p>`;
   } else b.innerHTML=`<p class="meta">With your personal review link, one tap adds these deadlines to your phone’s calendar. Here is what you would see:</p>`;
-  $("calDues").innerHTML=(Q?.schedule||[]).map(s=>`<li><span>${fmtMonth.format(D(s.month+"-01"))} guides</span><span>due ${fmtDay.format(D(s.due))}</span></li>`).join("");
+  $("calDues").innerHTML=(Q?.schedule||[]).filter(s=>s.due>=today).map(s=>`<li><span>${fmtMonth.format(D(s.month+"-01"))} guides</span><span>due ${fmtDay.format(D(s.due))}</span></li>`).join("");
   $("calSheet").showModal();
 });
 $("calClose").addEventListener("click",()=>$("calSheet").close());
@@ -241,6 +241,8 @@ $("teamBtn").addEventListener("click",async()=>{
 $("teamClose").addEventListener("click",()=>$("teamSheet").close());
 
 /* ---------- start ---------- */
+const setBar=()=>document.documentElement.style.setProperty("--barh",document.querySelector(".bar").offsetHeight+"px");
+addEventListener("resize",setBar); setBar();
 (async()=>{
   try{ await loadQueue(); renderHome(); }
   catch(e){

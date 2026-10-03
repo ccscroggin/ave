@@ -67,7 +67,7 @@ p{margin:0 0 10px}
 .flags{border-color:var(--warn)}
 .flags ul{margin:4px 0 0;padding-left:20px}
 .flags li{margin:0 0 6px;font-size:17px}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin:12px 0 14px;position:sticky;top:58px;z-index:4}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin:12px 0 14px;position:sticky;top:calc(var(--barh,58px) + 6px);z-index:4}
 .tabs button{border:0;background:transparent;border-radius:10px;padding:8px 4px;font:600 16px "Alegreya Sans",sans-serif;display:flex;flex-direction:column;align-items:center;gap:2px}
 .tabs button small{font-weight:500;font-size:12px;color:var(--soft)}
 .tabs button[aria-selected="true"]{background:var(--gold);color:var(--on-gold)}
