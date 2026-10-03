@@ -24,6 +24,10 @@ I am asking for a license covering:
    themselves, or have printed by a print shop of their choosing. Ave takes
    no money and sells nothing.
 
+Ave is also being translated into Spanish. If your office can license the
+Spanish Lectionary used in the United States for the same uses, or tell me
+who holds those rights, I would be grateful.
+
 Please tell me the terms, fees and any review you require. I am glad to
 send sample pages.
 
