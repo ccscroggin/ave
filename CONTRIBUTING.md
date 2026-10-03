@@ -42,6 +42,10 @@ Look for issues labeled `good first issue` or `help wanted`. The app is
 plain HTML, CSS and JavaScript with no framework and no build step beyond
 `node scripts/build.mjs`, so it is easy to read.
 
+Working with an AI coding agent is welcome. Have it read
+[AGENTS.md](AGENTS.md) first; it lists the rules that must not change and
+the checks to run. You open the pull request and answer for it.
+
 ## Rules for guide text
 
 These apply to every edit in `content/companion/`, by people or tools.

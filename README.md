@@ -7,7 +7,9 @@ pointed to Catholic charities.
 
 **Use it:** https://ave-daily.vercel.app
 **Help with it:** see [CONTRIBUTING.md](CONTRIBUTING.md). Priests, deacons,
-catechists, teachers, parents and developers are all welcome.
+catechists, teachers, parents and developers are all welcome, and so are
+pull requests made with AI coding agents; point your agent at
+[AGENTS.md](AGENTS.md) first.
 
 ## What it does
 
