@@ -1,7 +1,9 @@
 # Ave
 
 Pray the rosary, read the day’s Mass readings, and print a small missalette
-with a guide in plain words. Free, with no ads and no tracking.
+with a guide in plain words. Free, with no ads and no tracking. Ave takes
+no money: people print booklets themselves, and anyone who wants to give is
+pointed to Catholic charities.
 
 **Use it:** https://ave-daily.vercel.app
 **Help with it:** see [CONTRIBUTING.md](CONTRIBUTING.md). Priests, deacons,

@@ -7,26 +7,26 @@ made by the owner in the design session on 2026-10-01 and 2026-10-02.
 ## What it is
 
 A free phone-first web app for Catholics: a guided rosary, the daily Mass
-readings, and printable missalettes. Missalettes pair the readings with a
+readings, and printable missalettes. Ave handles no money. Missalettes pair the readings with a
 guide in plain words, in three companion editions (Plain, Kids, Family),
-plus a readings-only booklet for every day. Paid printed booklets come
-later, through print on demand.
+plus a readings-only booklet for every day. Anyone may print them at home
+or through a print shop or online printer of their choosing, paying the
+printer directly.
 
 ## Decisions
 
 | Topic | Decision |
 |---|---|
-| Delivery | Free print-at-home booklets every week; paid printed copies later |
+| Delivery | Free print-at-home booklets; print-ready PDFs for any print shop or online printer (2026-10-03: no paid printing by Ave) |
 | Bible text | World English Bible (public domain) now; apply to the USCCB for NABRE |
 | Editions | Plain, Kids, Family companions; Readings only |
-| Authorship | Claude drafts companion text in Claude Code sessions; a human reviewer approves |
+| Authorship | Claude drafts companion text in Claude Code sessions; a priest approves. Every guide says it was written with AI help, and drafts say they are not yet reviewed by a priest |
 | Review rule | A companion text is shown to the public only when `review.status == "approved"` |
 | Days | Companion: Sundays and US holy days of obligation. Readings only: every day |
 | Layouts | Pocket (5.5 x 8.5 folded), Side by side (letter), Facing (5.5 x 8.5 folded) |
-| Paid units | Monthly subscription (one bound booklet a month) and season bundles |
-| Printing | Lulu Print API, one copy per order, shipped to the buyer |
-| Order cutoff | 10 days before the first Sunday the booklet covers |
-| Hosting | Vercel, static site plus serverless functions; Stripe for payment |
+| Money | Ave takes no money. People who want to give are pointed to Catholic charities (CRS, Catholic Charities USA, St. Vincent de Paul, their parish) |
+| Printing | People print themselves or upload the PDF to a printer such as Lulu; Ave has no deal with any printer |
+| Hosting | Vercel, static site plus serverless functions |
 | Paid API | No Anthropic API calls anywhere in the app or its jobs (owner rule) |
 
 ## Architecture
@@ -42,8 +42,8 @@ later, through print on demand.
   Unapproved companion text never reaches `site/`.
 - `site/`: the app. Static HTML, CSS, JS. Installable (manifest, service
   worker). Print uses the browser's print dialog on imposed sheets.
-- `api/`: Vercel functions. Stripe checkout and webhook, and a cron that
-  sends orders to Lulu at each cutoff. Inactive until keys exist.
+- `api/`: Vercel functions for the review service: queue and decisions,
+  team admin, calendar feed, and the public list of approved guides.
 
 ## Phases
 
@@ -51,12 +51,11 @@ later, through print on demand.
 2. Public app: rosary, Mass, booklets (readings only until a reviewer
    approves companion text), print at home. Deploy to Vercel.
 3. Companion drafts for each month, ready for review six weeks ahead.
-4. Review page for the reviewer.
-5. Stripe and Lulu, behind the owner's keys.
+4. Review page for the reviewer (done 2026-10-02).
+5. Open source (done 2026-10-03, github.com/ccscroggin/ave).
 
 ## Needs from the owner
 
-1. A reviewer's name and email.
-2. Stripe keys (phase 5).
-3. A Lulu developer account and keys (phase 5).
-4. Approval to send the NABRE license request, drafted for him.
+1. Reviewers (he invites them from his owner link).
+2. Approval to send the NABRE license request, drafted for him.
+3. A domain name, if he wants one.

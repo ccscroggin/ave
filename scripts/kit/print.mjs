@@ -46,14 +46,23 @@ try {
     for (let i = 0; i < 300; i++) {
       await sleep(200);
       title = await evaluate("document.title") || "";
-      if (ready === "" ? (await evaluate("document.readyState")) === "complete" : title.startsWith(ready)) { ok = true; break; }
+      if (ready === "" ? (await evaluate("document.readyState")) === "complete" : (title.startsWith(ready) || await evaluate("!!document.documentElement.dataset.ready"))) { ok = true; break; }
     }
     if (!ok) { console.error(`TIMEOUT ${job.url} (title: ${title})`); failed++; continue; }
     await evaluate("document.fonts.ready.then(() => true)");
     await sleep(300);
-    const pdf = await send("Page.printToPDF", { preferCSSPageSize: true, printBackground: true, marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 });
-    if (!pdf.result?.data) { console.error(`PRINT FAILED ${job.url}`, JSON.stringify(pdf.error)); failed++; continue; }
-    writeFileSync(job.out, Buffer.from(pdf.result.data, "base64"));
+    let out;
+    if (job.out.endsWith(".png")) {
+      // Screenshot at the job's size (default 1200x630, a share-card size).
+      const [w, h] = job.size || [1200, 630];
+      await send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+      await sleep(300);
+      out = await send("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: w, height: h, scale: 1 } });
+    } else {
+      out = await send("Page.printToPDF", { preferCSSPageSize: true, printBackground: true, marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 });
+    }
+    if (!out.result?.data) { console.error(`PRINT FAILED ${job.url}`, JSON.stringify(out.error)); failed++; continue; }
+    writeFileSync(job.out, Buffer.from(out.result.data, "base64"));
     console.log(`wrote ${job.out} (${title || "static"})`);
   }
 } finally { ws.close(); chrome.kill(); }

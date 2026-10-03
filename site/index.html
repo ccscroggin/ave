@@ -14,10 +14,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:title" content="Ave">
 <meta property="og:description" content="Pray the rosary, read the day’s Mass readings, and print a free missalette.">
-<meta property="og:image" content="icons/icon-512.png">
+<meta property="og:image" content="https://ave-daily.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://ave-daily.vercel.app/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<script>/* Appearance: "light", "dark", or unset for the phone's setting. */
+try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") document.documentElement.dataset.theme=t; }catch(e){}</script>
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="paper.css">
 </head>
@@ -90,7 +97,7 @@
         <h1>Booklets</h1>
         <p>The readings, with a guide in plain words</p>
       </div>
-      <button class="btn-pill" id="orderBtn" aria-haspopup="dialog">By mail</button>
+      <button class="btn-pill" id="orderBtn" aria-haspopup="dialog">Get it printed</button>
     </header>
 
     <p class="pick-label" id="lblDate">Sunday</p>
@@ -123,7 +130,7 @@
             <button class="btn-gold" id="bkPrint">Print this booklet</button>
     </div>
     <p class="bk-note" id="bkNote"></p>
-    <a class="about-link" href="about.html">About Ave</a>
+    <p class="about-link"><button class="linkish" id="supportBtn" type="button">Support Ave</button> · <a href="about.html">About</a> · <a href="https://github.com/ccscroggin/ave" target="_blank" rel="noopener">Open source</a></p>
   </div>
 </section>
 
@@ -139,6 +146,9 @@
   <button class="tab" role="tab" data-tab="booklets" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5L4 3.5v15l8 2 8-2v-15z"/><path d="M12 5.5v15"/><path d="M6.5 7.5l3 .7M6.5 10.5l3 .7M14.5 8.2l3-.7M14.5 11.2l3-.7"/></svg>
     <span class="tl">Booklets</span></button>
+  <button class="tab theme-tab" id="themeBtn" type="button" aria-label="Appearance: automatic">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M12 4.5a7.5 7.5 0 0 1 0 15z" fill="currentColor" stroke="none"/></svg>
+    <span class="tl" id="themeLbl">Auto</span></button>
 </nav>
 </div>
 
@@ -161,18 +171,45 @@
   </div>
 </dialog>
 
-<!-- by mail -->
-<dialog class="sheet" id="orderSheet" aria-label="Booklets by mail">
+<!-- get it printed -->
+<dialog class="sheet" id="orderSheet" aria-label="Get it printed">
   <div class="sheet-in">
     <div class="grip"></div>
-    <h2>Booklets by mail</h2>
-    <p class="mail-p">Printed, stapled booklets mailed to your door are coming. Two ways to get them:</p>
+    <h2>Get it printed</h2>
+    <p class="mail-p">Every booklet is free. Ave takes no money and has no deal with any printer.</p>
     <div class="plan-opts">
-      <div class="opt"><span class="n">Monthly</span><span class="d">One booklet a month with every Sunday and holy day, mailed before the first Sunday.</span></div>
-      <div class="opt"><span class="n">A season</span><span class="d">All of Advent and Christmas, or all of Lent, in one booklet that ships once.</span></div>
+      <div class="opt"><span class="n">At home</span><span class="d">Tap “Print this booklet.” Print both sides, flip on the short edge, then fold. One sheet makes a Sunday.</span></div>
+      <div class="opt"><span class="n">At a print shop</span><span class="d">Open the print-ready pages, save them as a PDF, and take it to FedEx Office, Staples, your parish office, or any print shop. Ask for a 5½ × 8½ inch booklet, printed both sides and stapled on the fold.</span></div>
+      <div class="opt"><span class="n">Online, mailed to you</span><span class="d">Upload the same PDF to a print-on-demand service such as <a href="https://www.lulu.com/create" target="_blank" rel="noopener">Lulu</a>. Choose 5½ × 8½ in, saddle stitch. You pay the printer directly.</span></div>
     </div>
-    <p class="mail-p">Until then, every booklet here is free to print at home.</p>
+    <div class="print-links" id="printLinks"></div>
     <div class="sheet-actions"><button class="btn-gold" id="oClose">Done</button></div>
+  </div>
+</dialog>
+
+<!-- support -->
+<dialog class="sheet" id="supportSheet" aria-label="Support Ave">
+  <div class="sheet-in">
+    <div class="grip"></div>
+    <h2>Support Ave</h2>
+    <p class="mail-p">Ave is free and will stay free. It does not take donations.</p>
+    <h3 class="sub">If it helps you</h3>
+    <ul class="help">
+      <li>Pray for the people who use it and the people who make it.</li>
+      <li>Tell your parish, your school, or your RCIA class.</li>
+      <li>Priests, deacons and catechists: review the guides. <a href="review?practice">See how it works</a>.</li>
+      <li>Translate, design, or code with us on <a href="https://github.com/ccscroggin/ave" target="_blank" rel="noopener">GitHub</a>.</li>
+    </ul>
+    <h3 class="sub">If you want to give money</h3>
+    <p class="mail-p">Give it to people in need. These Catholic charities do that work:</p>
+    <ul class="charities">
+      <li><a href="https://www.crs.org/donate" target="_blank" rel="noopener">Catholic Relief Services</a><span>Relief and development for the poor overseas</span></li>
+      <li><a href="https://www.catholiccharitiesusa.org/ways-to-give/give-now/" target="_blank" rel="noopener">Catholic Charities USA</a><span>Food, shelter and help for families in the United States</span></li>
+      <li><a href="https://ssvpusa.org/" target="_blank" rel="noopener">Society of St. Vincent de Paul</a><span>Person-to-person help for neighbors in need</span></li>
+      <li>Your own parish<span>It knows the needs closest to you</span></li>
+    </ul>
+    <p class="small-note">Ave has no connection to these charities and receives nothing from them.</p>
+    <div class="sheet-actions"><button class="btn-gold" id="sClose">Done</button></div>
   </div>
 </dialog>
 

@@ -6,10 +6,12 @@
 <title>About Ave</title>
 <meta name="description" content="What Ave is, where its text comes from, and what it keeps about you.">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<script>try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") document.documentElement.dataset.theme=t; }catch(e){}</script>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F1F4FB;--ink:#16214D;--soft:#56608A;--gold:#A97B1E;--line:rgba(22,33,77,.13);color-scheme:light}
-@media (prefers-color-scheme: dark){:root{--bg:#0E1A45;--ink:#EFE9DA;--soft:#A7AECD;--gold:#D9B45A;--line:rgba(239,233,218,.13);color-scheme:dark}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0E1A45;--ink:#EFE9DA;--soft:#A7AECD;--gold:#D9B45A;--line:rgba(239,233,218,.13);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1A45;--ink:#EFE9DA;--soft:#A7AECD;--gold:#D9B45A;--line:rgba(239,233,218,.13);color-scheme:dark}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"EB Garamond","Iowan Old Style",Palatino,Georgia,serif;font-size:18px;line-height:1.6}
 main{max-width:36em;margin:0 auto;padding:28px 18px 48px}
 h1{font-style:italic;font-weight:500;font-size:34px;margin:0 0 6px}
@@ -29,7 +31,8 @@ a{color:var(--gold)}
   <h2>Where the words come from</h2>
   <p>The Bible text is the World English Bible, which is in the public domain. At Mass in the United States you will hear a different translation, so some words differ.</p>
   <p>The choice of readings for each day follows the Lectionary for Mass used in the United States. Ave is not affiliated with the United States Conference of Catholic Bishops. Their site has the <a href="https://bible.usccb.org/daily-bible-reading" rel="noopener" target="_blank">official readings</a>.</p>
-  <p>The Plain, Kids and Family guides are written to explain the readings in everyday words. A person reviews each guide before it appears in Ave.</p>
+  <h2>How the guides are made</h2>
+  <p>The Plain, Kids and Family guides explain the readings in everyday words. They are written with the help of an AI system. That is why a priest reviews every guide, and why a guide appears in Ave only after he approves it. Each approved guide names its reviewer. Until there are reviewers, Ave shows the readings only.</p>
 
   <h2>What Ave keeps about you</h2>
   <p>Nothing leaves your phone. Ave has no accounts, no ads and no tracking. Your rosary progress and settings are saved in your browser on your own device.</p>
@@ -37,7 +40,14 @@ a{color:var(--gold)}
   <h2>Install it</h2>
   <p>On iPhone, open Ave in Safari, tap Share, then Add to Home Screen. On Android, open it in Chrome and choose Install app. It then opens like an app and the rosary works without a connection.</p>
 
-  <p class="small">Printed booklets by mail are coming. Every booklet in Ave is free to print at home.</p>
+  <h2>Printing</h2>
+  <p>Every booklet is free. Print it at home, or save the print-ready pages as a PDF and take them to a print shop or an online printer such as Lulu. You pay the printer directly. Ave takes no money and has no deal with any printer.</p>
+
+  <h2>Support Ave</h2>
+  <p>Ave does not take donations. If it helps you, pray for it, tell your parish, or help build it. Priests, deacons and catechists can review the guides. If you want to give money, give it to people in need through <a href="https://www.crs.org/donate" rel="noopener" target="_blank">Catholic Relief Services</a>, <a href="https://www.catholiccharitiesusa.org/ways-to-give/give-now/" rel="noopener" target="_blank">Catholic Charities USA</a>, the <a href="https://ssvpusa.org/" rel="noopener" target="_blank">Society of St. Vincent de Paul</a>, or your own parish. Ave has no connection to these charities.</p>
+
+  <h2>Open source</h2>
+  <p>Ave’s code and guides are open for anyone to read, use and improve, at <a href="https://github.com/ccscroggin/ave" rel="noopener" target="_blank">github.com/ccscroggin/ave</a>. Corrections from priests, catechists, teachers and parents are especially welcome.</p>
 </main>
 </body>
 </html>

@@ -10,7 +10,7 @@ function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getIt
 /* =====================================================================
    TABS
    ===================================================================== */
-const tabs=[...document.querySelectorAll(".tab")];
+const tabs=[...document.querySelectorAll(".tab[data-tab]")];
 const TABS=["rosary","mass","booklets"];
 function showTab(name){
   if(!TABS.includes(name)) name="rosary";
@@ -514,7 +514,7 @@ function renderOrder(box,day){
 const CDAYS=Object.keys(COMP).sort();
 if(CDAYS.some(k=>COMP[k].review&&COMP[k].review.status!=="approved")){
   const b=document.createElement("div"); b.className="preview-bar"; b.setAttribute("role","note");
-  b.textContent="Reviewer preview. Guides marked Draft are not yet approved.";
+  b.textContent="Reviewer preview. These guides were written with AI help and have not yet been reviewed by a priest.";
   document.body.prepend(b); document.documentElement.classList.add("is-preview");
 }
 const HAS_COMP=CDAYS.length>0;
@@ -561,7 +561,12 @@ function coverHtml(day,ed){
   <div class="cv-ed">${o.ed}</div><div class="cv-head">${esc(o.head)}</div>${o.intro?`<p class="cv-intro">${esc(o.intro)}</p>`:""}
   ${o.listen?`<div class="cv-listen"><b>Listen for</b><i>${esc(o.listen)}</i></div>`:""}
   <div class="cv-inside"><b>Inside</b>${readingsOf(day).map(r=>`<span><em>${labelOf(r)}</em>${esc(r.c)}</span>`).join("")}</div>
-  <div class="cv-meta">${o.meta}</div>${SOURCE_LINE}</div>`;
+  <div class="cv-meta">${o.meta}</div>${guideLine(day,ed)}${SOURCE_LINE}</div>`;
+}
+function guideLine(day,ed){
+  if(ed==="readings") return "";
+  const r=COMP[day]&&COMP[day].review, by=r&&(r.by||(r[ed]&&r[ed].by));
+  return `<p class="ftn">${by?`Guide written with AI help and reviewed by ${esc(by)}.`:"Guide written with AI help. Not yet reviewed by a priest."}</p>`;
 }
 function mastItems(day,ed){
   const o=coverParts(day,ed), out=[];
@@ -676,7 +681,7 @@ function spreads(pairs,size,pages){
 }
 function notesPage(size){ const p=newPage(size); p.body.innerHTML=`<p class="notes-h">Notes</p><div class="lines" style="height:calc(100% - 2.2em)"></div>`; return p; }
 function edApproved(day,ed){ const r=COMP[day]&&COMP[day].review; if(!r) return false; if(r.status) return r.status==="approved"; return !!(r[ed]&&r[ed].status==="approved"); }
-function stamp(page){ page.pg.insertAdjacentHTML("beforeend",`<div class="stamp">Draft · not reviewed</div>`); }
+function stamp(page){ page.pg.insertAdjacentHTML("beforeend",`<div class="stamp">AI draft · not yet reviewed by a priest</div>`); }
 
 function buildBooklet(day,ed,ly){
   host.textContent="";
@@ -743,10 +748,10 @@ function renderBkControls(){
   document.querySelectorAll("#edSeg button").forEach(b=>{ if(b.dataset.ed!=="readings") b.disabled=!daysFor(b.dataset.ed).length; });
   const rv0=COMP[BK.day]&&COMP[BK.day].review, rv=rv0&&(rv0.status?rv0:rv0[BK.ed]);
   $("draftNote").textContent=!HAS_COMP
-    ?"Plain, Kids and Family guides are on the way. A person reviews each one before it appears here."
+    ?"Plain, Kids and Family guides are written with AI help. Each one appears here only after a priest reviews it."
     :BK.ed==="readings"?"The day’s readings, for any day."
-    :rv&&rv.by?`Guide reviewed by ${rv.by}.`
-    :rv&&rv.status==="draft"?"Draft guide for review. It is not yet approved.":"";
+    :rv&&rv.by?`Guide written with AI help and reviewed by ${rv.by}.`
+    :rv&&rv.status==="draft"?"AI draft. Not yet reviewed by a priest.":"";
   $("pvSize").textContent=LY[BK.ly].dim; bkNote();
   store("ave-bk",BK);
 }
@@ -781,8 +786,19 @@ function bkNote(){
     ?"Print double-sided, flip on long edge, at 100% scale. Staple the corner."
     :"Print double-sided, flip on short edge, at 100% scale (turn off “fit to page”). Fold the stack in half. The pages come out in folding order.";
 }
-$("orderBtn").addEventListener("click",()=>$("orderSheet").showModal());
+$("orderBtn").addEventListener("click",()=>{
+  const spec=`${BK.day},${BK.ed},${BK.ly}`, m=BK.day.slice(0,7);
+  const month=daysFor(BK.ed).filter(d=>d.startsWith(m)&&(BK.ed!=="readings"||fromIso(d).getDay()===0||OBL[d]));
+  const t=encodeURIComponent(`${fmtMonth.format(fromIso(m+"-01"))}`);
+  let h=`<a class="btn-quiet plink" href="?print=${spec}" target="_blank" rel="noopener">Print-ready pages for ${esc(fmtShort.format(fromIso(BK.day)))}</a>`;
+  if(LY[BK.ly].size==="half") h+=`<a class="btn-quiet plink" href="?print=${spec}&order=fold" target="_blank" rel="noopener">Sheets to fold at home</a>`;
+  if(month.length>1) h+=`<a class="btn-quiet plink" href="?print=${month.join("|")},${BK.ed},${BK.ly}&title=${t}" target="_blank" rel="noopener">All of ${esc(fmtMonth.format(fromIso(m+"-01")))} in one booklet (${month.length} days)</a>`;
+  $("printLinks").innerHTML=h;
+  $("orderSheet").showModal();
+});
 bindSheet($("orderSheet"),"oClose");
+$("supportBtn").addEventListener("click",()=>$("supportSheet").showModal());
+bindSheet($("supportSheet"),"sClose");
 
 /* ---------- print view: ?print=DATE[|DATE...],ED,LY[&order=read|fold][&title=...] ----------
    Replaces the app with the booklet's pages, sized for the printer. "read" gives
@@ -797,7 +813,7 @@ async function printView(spec){
     const title=QP.get("title")||"Sundays and holy days", starts=[];
     for(const d of days){ const r=await getBooklet(d,ed,ly); starts.push(pages.length+2); pages.push(...r.html.filter(h=>!h.includes('class="notes-h"'))); }
     const toc=days.map((d,i)=>`<span><em>${esc(fmtShort.format(fromIso(d)))}</em>${esc(TITLES[d]||"")}<i>${starts[i]}</i></span>`).join("");
-    pages.unshift(`<div class="pg ${size}"><div class="pg-body"><div class="cv"><div class="cv-date">${esc(fmtShort.format(fromIso(days[0])))} to ${esc(fmtShort.format(fromIso(days[days.length-1])))}</div><div class="cv-rule"></div><div class="cv-ed">${ED[ed]}</div><div class="cv-head">${esc(title)}</div><p class="cv-intro">${days.length} Sundays and holy days, each with its readings and a guide in plain words.</p><div class="cv-inside cv-toc"><b>Inside</b>${toc}</div><div class="cv-meta"></div>${SOURCE_LINE}</div></div><div class="pg-foot"><span></span><span></span></div></div>`);
+    pages.unshift(`<div class="pg ${size}"><div class="pg-body"><div class="cv"><div class="cv-date">${esc(fmtShort.format(fromIso(days[0])))} to ${esc(fmtShort.format(fromIso(days[days.length-1])))}</div><div class="cv-rule"></div><div class="cv-ed">${ED[ed]}</div><div class="cv-head">${esc(title)}</div><p class="cv-intro">${days.length} ${ed==="readings"?"days, each with its readings.":"Sundays and holy days, each with its readings and a guide in plain words."}</p><div class="cv-inside cv-toc"><b>Inside</b>${toc}</div><div class="cv-meta"></div>${SOURCE_LINE}</div></div><div class="pg-foot"><span></span><span></span></div></div>`);
     pages=pages.map((h,i)=>i===0?h:h.replace(/(<div class="pg-foot"><span>[^<]*<\/span><span>)\d+(<\/span>)/,`$1${i+1}$2`));
     if(size==="half"){ host.textContent=""; while(pages.length%4) pages.push(notesPage(size).pg.outerHTML); host.textContent=""; }
   }
@@ -805,17 +821,43 @@ async function printView(spec){
   if(order==="fold"&&size==="half"){ const N=pages.length; for(let i=0;i<N/4;i++) body+=`<div class="sheet">${pages[N-1-2*i]}${pages[2*i]}</div><div class="sheet">${pages[2*i+1]}${pages[N-2-2*i]}</div>`; }
   else body=pages.map(h=>`<div class="leaf">${h}</div>`).join("");
   const pageSize=order==="fold"&&size==="half"?"11in 8.5in":size==="half"?"5.5in 8.5in":"8.5in 11in";
-  document.body.innerHTML=body;
+  const how=order==="fold"&&size==="half"
+    ?"Print both sides, flip on the short edge, at 100% scale. Stack the sheets and fold them in half."
+    :size==="half"?"Pages in reading order, 5½ × 8½ in. Save as a PDF and give it to a print shop or upload it to an online printer: booklet, saddle stitch."
+    :"Letter pages. Print both sides and staple the corner.";
+  document.body.innerHTML=`<div class="pv-toolbar"><b>Ave</b> · ${pages.length} pages<br>${how}<br><button type="button" onclick="window.print()">Print or save as PDF</button></div>`+body;
   document.body.className="print-view";
   const st=document.createElement("style");
   st.textContent=`@page{size:${pageSize};margin:0}html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0}:root{padding:0!important}
     .print-view .sheet{width:1056px;height:816px;display:flex;break-after:page}
-    .print-view .leaf{width:${pw}px;height:${ph}px;break-after:page}.print-view .pg{background:#fff}`;
+    .print-view .leaf{width:${pw}px;height:${ph}px;break-after:page}.print-view .pg{background:#fff}
+    .pv-toolbar{font:15px/1.5 system-ui,sans-serif;background:#16214D;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:2}
+    .pv-toolbar button{margin-top:8px;font:600 15px system-ui,sans-serif;padding:8px 14px;border-radius:18px;border:0;background:#D9B45A;color:#0E1A45;cursor:pointer}
+    @media screen{.print-view .leaf,.print-view .sheet{margin:16px auto;box-shadow:0 4px 18px rgba(0,0,0,.18)}html,body{background:#E9E5DA!important}}
+    @media print{.pv-toolbar{display:none}}`;
   document.head.appendChild(st);
-  document.title="READY "+pages.length;
+  // Phones: shrink the pages to the screen width (screen only; printing is unaffected).
+  const pageW=order==="fold"&&size==="half"?1056:pw, fit=Math.min(1,(innerWidth-16)/pageW);
+  if(fit<1){ const z=document.createElement("style"); z.textContent=`@media screen{.print-view .leaf,.print-view .sheet{zoom:${fit.toFixed(3)}}}`; document.head.appendChild(z); }
+  document.title=`${days.length>1?(QP.get("title")||"Booklet"):fmtShort.format(fromIso(days[0]))} · ${ED[ed]} · Ave`;
+  document.documentElement.dataset.ready=String(pages.length);
 }
 const QP=new URLSearchParams(location.search);
 if(QP.get("print")){ await printView(QP.get("print")); return; }
+
+/* ---------- appearance ---------- */
+const THEMES=["auto","light","dark"], TLBL={auto:"Auto",light:"Light",dark:"Dark"};
+function applyTheme(t){
+  if(t==="light"||t==="dark") document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
+  $("themeLbl").textContent=TLBL[t]; $("themeBtn").setAttribute("aria-label",`Appearance: ${TLBL[t].toLowerCase()}. Tap to change.`);
+}
+let theme=(()=>{ try{ return localStorage.getItem("ave-theme")||"auto"; }catch(e){ return "auto"; } })();
+applyTheme(theme);
+$("themeBtn").addEventListener("click",()=>{
+  theme=THEMES[(THEMES.indexOf(theme)+1)%3];
+  try{ theme==="auto"?localStorage.removeItem("ave-theme"):localStorage.setItem("ave-theme",theme); }catch(e){}
+  applyTheme(theme); toast(theme==="auto"?"Appearance follows your phone":`${TLBL[theme]} mode`);
+});
 
 /* =====================================================================
    START
