@@ -29,17 +29,23 @@ for (const f of jsonFiles(join(CONTENT, "readings"))) {
 for (const [m, days] of Object.entries(months)) writeFileSync(join(DATA, "readings", `${m}.json`), JSON.stringify(days));
 writeFileSync(join(DATA, "days.json"), JSON.stringify(titles));
 
-// Companion text: approved only.
+// Companion text: approved only, except in a reviewer preview build
+// (AVE_INCLUDE_DRAFTS=1), where drafts are included and stamped as drafts.
+const PREVIEW = process.env.AVE_INCLUDE_DRAFTS === "1";
 const companion = {};
 let drafts = 0;
 for (const f of jsonFiles(join(CONTENT, "companion"))) {
   const c = readJSON(join(CONTENT, "companion", f));
   const date = f.slice(0, 10);
-  if (c.review?.status !== "approved") { drafts++; continue; }
+  const approved = c.review?.status === "approved";
+  if (!approved) { drafts++; if (!PREVIEW) continue; }
   if (!titles[date]) throw new Error(`companion ${date}: no readings for this date`);
-  companion[date] = { plain: c.plain, kids: c.kids, family: c.family, review: { status: "approved", by: c.review.by, at: c.review.at } };
+  companion[date] = { plain: c.plain, kids: c.kids, family: c.family,
+    review: approved ? { status: "approved", by: c.review.by, at: c.review.at } : { status: "draft" } };
 }
 writeFileSync(join(DATA, "companion.json"), JSON.stringify(companion));
+// A preview build must never be indexed.
+writeFileSync(join(SITE, "robots.txt"), PREVIEW ? "User-agent: *\nDisallow: /\n" : "User-agent: *\nAllow: /\n");
 
 // Service worker version: hash of the shell and data.
 const h = createHash("sha256");
@@ -48,4 +54,4 @@ h.update(JSON.stringify(titles)); h.update(JSON.stringify(companion));
 const version = h.digest("hex").slice(0, 12);
 writeFileSync(join(SITE, "sw.js"), readFileSync(join(SITE, "sw.js.tpl"), "utf8").replace("__VERSION__", version));
 
-console.log(`days ${Object.keys(titles).length} · months ${Object.keys(months).length} · companion approved ${Object.keys(companion).length}, drafts held back ${drafts} · sw ${version}`);
+console.log(`${PREVIEW ? "PREVIEW (drafts included) · " : ""}days ${Object.keys(titles).length} · months ${Object.keys(months).length} · companion approved ${Object.values(companion).filter(c => c.review.status === "approved").length}, drafts ${PREVIEW ? "included" : "held back"} ${drafts} · sw ${version}`);

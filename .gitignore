@@ -4,3 +4,4 @@ scripts/readings/cache/
 .vercel
 .DS_Store
 node_modules/
+site/robots.txt

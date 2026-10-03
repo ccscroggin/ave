@@ -510,6 +510,11 @@ function renderOrder(box,day){
    Half-letter pages fold: a sheet of letter paper holds four pages.
    ===================================================================== */
 const CDAYS=Object.keys(COMP).sort();
+if(CDAYS.some(k=>COMP[k].review&&COMP[k].review.status!=="approved")){
+  const b=document.createElement("div"); b.className="preview-bar"; b.setAttribute("role","note");
+  b.textContent="Reviewer preview. Guides marked Draft are not yet approved.";
+  document.body.prepend(b); document.documentElement.classList.add("is-preview");
+}
 const HAS_COMP=CDAYS.length>0;
 const ED={plain:"Plain edition",kids:"Kids edition",family:"Family edition",readings:"Daily readings"};
 const LY={pocket:{size:"half",dim:"5½ × 8½ in, folded"},side:{size:"letter",dim:"8½ × 11 in, stapled"},facing:{size:"half",dim:"5½ × 8½ in, folded"}};
@@ -735,7 +740,8 @@ function renderBkControls(){
   $("draftNote").textContent=!HAS_COMP
     ?"Plain, Kids and Family guides are on the way. A person reviews each one before it appears here."
     :BK.ed==="readings"?"The day’s readings, for any day."
-    :rv&&rv.by?`Guide reviewed by ${rv.by}.`:"";
+    :rv&&rv.by?`Guide reviewed by ${rv.by}.`
+    :rv&&rv.status==="draft"?"Draft guide for review. It is not yet approved.":"";
   $("pvSize").textContent=LY[BK.ly].dim; bkNote();
   store("ave-bk",BK);
 }

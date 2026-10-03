@@ -248,3 +248,8 @@ dialog.sheet[open]{animation:rise .28s ease-out}
   #printArea .sheet{width:1056px;height:816px;display:flex;break-after:page;page-break-after:always}
   #printArea .sheet1{width:816px;height:1056px;break-after:page;page-break-after:always}
 }
+
+/* reviewer preview */
+.preview-bar{position:fixed;top:0;left:0;right:0;z-index:20;padding:calc(4px + env(safe-area-inset-top,0px)) 12px 4px;background:var(--rose);color:var(--bg2);font-size:14px;text-align:center;line-height:1.3}
+.is-preview .app{padding-top:26px}
+@media print{.preview-bar{display:none}}
