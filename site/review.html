@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E1A45">
+<title>Ave Review</title>
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+<div class="practice" id="practiceBar" hidden>Practice. Nothing you do here is saved, and nothing is published.</div>
+<header class="bar">
+  <a class="brand" href="./" aria-label="Back to Ave">Ave <span>Review</span></a>
+  <div class="who" id="who"></div>
+  <nav class="bar-actions">
+    <button class="pill" id="calBtn" type="button">Reminders</button>
+    <button class="pill" id="teamBtn" type="button">Team</button>
+  </nav>
+</header>
+
+<main id="main"><p class="loading">Loading the guides…</p></main>
+
+<div class="actionbar" id="actionbar" hidden>
+  <div class="ab-notes" id="abNotes" hidden>
+    <label for="notes">What needs to change?</label>
+    <textarea id="notes" rows="3" placeholder="For example: the Kids Gospel box should mention…"></textarea>
+  </div>
+  <div class="ab-row">
+    <button class="btn quiet" id="sendBack" type="button">Send back</button>
+    <button class="btn gold" id="approve" type="button">Approve</button>
+  </div>
+  <button class="linkbtn" id="reject" type="button">Reject this edition</button>
+</div>
+
+<dialog class="sheet" id="calSheet" aria-label="Reminders">
+  <div class="sheet-in">
+    <h2>Reminders</h2>
+    <p>Ave puts each month’s deadline in your phone’s calendar, with an alert a week before and a day before. Tap the alert to open your review page.</p>
+    <div id="calBody"></div>
+    <ul class="dues" id="calDues"></ul>
+    <div class="sheet-actions"><button class="btn gold" id="calClose" type="button">Done</button></div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="teamSheet" aria-label="Team">
+  <div class="sheet-in">
+    <h2>The review team</h2>
+    <div id="teamBody"></div>
+    <div class="sheet-actions"><button class="btn gold" id="teamClose" type="button">Done</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="review.js"></script>
+</body>
+</html>

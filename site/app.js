@@ -287,6 +287,8 @@ function loadMonth(m){
 async function ensureDay(k){ if(!RD[k]&&TITLES[k]) await loadMonth(k.slice(0,7)); return RD[k]||null; }
 try{ Object.assign(TITLES,await getJSON("data/days.json")); DAYS=Object.keys(TITLES).sort(); }catch(e){}
 try{ COMP=await getJSON("data/companion.json"); }catch(e){ COMP={}; }
+/* Approved guides come from the review service when it answers; the static file is the fallback. */
+try{ const live=await getJSON("api/companion"); if(live&&typeof live==="object"&&!live.error) COMP=live; }catch(e){}
 try{ await loadMonth(iso(new Date()).slice(0,7)); }catch(e){}
 const BOOK={
   GEN:"Genesis tells of creation, the fall, and God\u2019s first promises to Abraham and his family.",
@@ -521,7 +523,7 @@ const LY={pocket:{size:"half",dim:"5½ × 8½ in, folded"},side:{size:"letter",d
 const PAGE_PX={half:[528,816],letter:[816,1056]};
 const PSALM_NOTE="At Mass the cantor sings the verses, and everyone sings the response from your parish booklet.";
 const BK=Object.assign({day:iso(new Date()),ed:HAS_COMP?"plain":"readings",ly:"pocket"},store("ave-bk")||{});
-if(!HAS_COMP) BK.ed="readings";
+if(!HAS_COMP||(BK.ed!=="readings"&&!daysFor(BK.ed).length)) BK.ed="readings";
 if(!TITLES[BK.day]||BK.day<iso(new Date())) BK.day=iso(new Date());
 const fmtFull=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
 const fmtShort=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric"});
@@ -673,19 +675,19 @@ function spreads(pairs,size,pages){
   }
 }
 function notesPage(size){ const p=newPage(size); p.body.innerHTML=`<p class="notes-h">Notes</p><div class="lines" style="height:calc(100% - 2.2em)"></div>`; return p; }
-function approved(day){ const r=COMP[day]&&COMP[day].review; return !!(r&&r.status==="approved"); }
+function edApproved(day,ed){ const r=COMP[day]&&COMP[day].review; if(!r) return false; if(r.status) return r.status==="approved"; return !!(r[ed]&&r[ed].status==="approved"); }
 function stamp(page){ page.pg.insertAdjacentHTML("beforeend",`<div class="stamp">Draft · not reviewed</div>`); }
 
 function buildBooklet(day,ed,ly){
   host.textContent="";
   const size=LY[ly].size, pages=[], folded=size==="half";
   if(folded){
-    const cv=newPage(size); pages.push(cv); cv.body.innerHTML=coverHtml(day,ed); if(ed!=="readings"&&!approved(day)) stamp(cv);
+    const cv=newPage(size); pages.push(cv); cv.body.innerHTML=coverHtml(day,ed); if(ed!=="readings"&&!edApproved(day,ed)) stamp(cv);
     if(ly==="facing") spreads(pairItems(day,ed),size,pages); else flow(flowItems(day,ed),size,pages);
     flow(backItems(day,ed),size,pages,ly==="facing"?null:pages[pages.length-1]);
     while(pages.length%4) pages.push(notesPage(size));
   } else {
-    const p1=newPage(size); pages.push(p1); if(ed!=="readings"&&!approved(day)) stamp(p1);
+    const p1=newPage(size); pages.push(p1); if(ed!=="readings"&&!edApproved(day,ed)) stamp(p1);
     let cur=flow(mastItems(day,ed),size,pages,p1);
     cur=ed==="readings"?flow(flowItems(day,ed),size,pages,cur):rows(pairItems(day,ed),size,pages,cur);
     flow(backItems(day,ed),size,pages,cur);
@@ -722,7 +724,8 @@ function renderPreview(res){
     pv.appendChild(txt("p","pv-num",g.length===1?"Page "+(g[0]+1):`Pages ${g[0]+1}–${g[1]+1}`));
   });
 }
-function allowedDays(){ const t=iso(new Date()), A=(BK.ed==="readings"?DAYS:CDAYS).filter(k=>k>=t); return A.length?A:(BK.ed==="readings"?DAYS:CDAYS); }
+function daysFor(ed){ return ed==="readings"?DAYS:CDAYS.filter(d=>COMP[d]&&COMP[d][ed]); }
+function allowedDays(){ const t=iso(new Date()), all=daysFor(BK.ed), A=all.filter(k=>k>=t); return A.length?A:all; }
 function renderBkControls(){
   const A=allowedDays();
   if(!A.includes(BK.day)) BK.day=A.find(k=>k>=BK.day)||A[A.length-1];
@@ -737,8 +740,8 @@ function renderBkControls(){
     if(b.dataset.ly==="facing") b.disabled=BK.ed==="readings";
     if(b.dataset.ly==="side") b.textContent=BK.ed==="readings"?"Letter":"Side by side";
   });
-  document.querySelectorAll("#edSeg button").forEach(b=>{ if(b.dataset.ed!=="readings") b.disabled=!HAS_COMP; });
-  const rv=COMP[BK.day]&&COMP[BK.day].review;
+  document.querySelectorAll("#edSeg button").forEach(b=>{ if(b.dataset.ed!=="readings") b.disabled=!daysFor(b.dataset.ed).length; });
+  const rv0=COMP[BK.day]&&COMP[BK.day].review, rv=rv0&&(rv0.status?rv0:rv0[BK.ed]);
   $("draftNote").textContent=!HAS_COMP
     ?"Plain, Kids and Family guides are on the way. A person reviews each one before it appears here."
     :BK.ed==="readings"?"The day’s readings, for any day."
