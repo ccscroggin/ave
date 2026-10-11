@@ -9,6 +9,22 @@ window.AVE_I18N={es:{}};
 es.same=["Ave","A−","A+","3","·",".","Lulu","Vistaprint","Mixam","FedEx Office","Staples","GitHub","English","Español","Gloria","Catholic Relief Services","Catholic Charities USA"];
 es.ui={};
 Object.assign(es.ui,{
+/* reading cards that turn over */
+"Tap for the explanation":"Toque para ver la explicación",
+"Tap to turn back":"Toque para volver",
+"Explain for":"Explicar para",
+"Grown-ups":"Adultos",
+"Children":"Niños",
+"Ask:":"Pregunte:",
+"One of the readings from Scripture, heard before the Gospel.":"Una de las lecturas de la Escritura, que se escucha antes del Evangelio.",
+"This reading is usually from the Old Testament, the part of the Bible written before Jesus was born. It helps us get ready for the Gospel.":"Esta lectura suele ser del Antiguo Testamento, la parte de la Biblia escrita antes de que naciera Jesús. Nos ayuda a prepararnos para el Evangelio.",
+"The Psalms are songs and prayers from the Bible. We answer God by singing his own words back to him.":"Los Salmos son cantos y oraciones de la Biblia. Le respondemos a Dios cantándole sus propias palabras.",
+"This reading comes from a letter written by one of the apostles, the first friends of Jesus who told everyone about him.":"Esta lectura viene de una carta escrita por uno de los apóstoles, los primeros amigos de Jesús, que hablaron de él a todos.",
+"We stand up and sing Alleluia, which means \u201cpraise God!\u201d Jesus is about to speak to us in the Gospel.":"Nos ponemos de pie y cantamos Aleluya, que quiere decir \u201c¡alaben a Dios!\u201d Jesús nos va a hablar en el Evangelio.",
+"The Gospel tells us what Jesus said and did. We stand up to listen to him.":"El Evangelio nos cuenta lo que Jesús dijo e hizo. Nos ponemos de pie para escucharlo.",
+"This is another reading from the Bible. We listen to it before the Gospel.":"Esta es otra lectura de la Biblia. La escuchamos antes del Evangelio.",
+});
+Object.assign(es.ui,{
 /* rosary */
 "{Ord} mystery":"{Ord} misterio",
 "{n} of {of}":"{n} de {of}",

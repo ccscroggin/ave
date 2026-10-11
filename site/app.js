@@ -617,14 +617,17 @@ async function renderMass(){
       speakSeq(list.flatMap(spoken),resetListen); });
     box.appendChild(all);
   }
+  let backEd=store("ave-back-ed")==="kids"?"kids":"plain";
+  const flips=[];
   day.r.forEach(r=>{
-    const b=txt("section","block");
+    const card=txt("section","flip"), inner=txt("div","flip-inner"), b=txt("div","block face face-front"), bk=txt("div","block face face-back hide");
+    card.tabIndex=0; card.setAttribute("role","button"); card.setAttribute("aria-pressed","false");
+    card.setAttribute("aria-label",readingLabel(r.l)+". "+t("Tap for the explanation"));
     if(SPEECH&&(es||r.t.length)){ const lb=txt("button","listen-btn",t("\u25b6 Listen")); lb.type="button";
       lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent=t("\u25a0 Stop"); speakSeq(spoken(r),resetListen); });
       b.appendChild(lb); }
     b.appendChild(txt("p","blabel",readingLabel(r.l)));
     b.appendChild(txt("h2","bcite",cite(r)));
-    if(bookAbout(r.b) && !/Alleluia/.test(r.l)) b.appendChild(txt("p","about",bookAbout(r.b)));
     if(r.t.length&&withEn){
       const p=txt("p","rtext"); if(es) p.lang="en"; let lastCh=null;
       r.t.forEach(e=>{ const [ch,v]=shownNum(e), vt=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(vt+" ")); });
@@ -633,7 +636,23 @@ async function renderMass(){
     } else if(r.b==="PSA"&&(!r.t.length||es)){
       b.appendChild(txt("p","psalm-note",t("The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response.")));
     }
-    box.appendChild(b);
+    b.appendChild(txt("p","flip-hint",t("Tap for the explanation")));
+    const fill=()=>{ bk.textContent=""; buildBack(bk,r,backEd,ed=>{ backEd=ed; store("ave-back-ed",ed); flips.forEach(f=>f()); }); };
+    fill(); flips.push(fill);
+    inner.appendChild(b); inner.appendChild(bk); card.appendChild(inner);
+    const turn=()=>{
+      const toBack=!card.classList.contains("turned"), show=toBack?bk:b, hide=toBack?b:bk;
+      show.classList.remove("hide"); card.classList.toggle("turned",toBack); card.setAttribute("aria-pressed",toBack?"true":"false");
+      const done=()=>{ if(card.classList.contains("turned")===toBack) hide.classList.add("hide"); };
+      if(matchMedia("(prefers-reduced-motion: reduce)").matches) done(); else setTimeout(done,450);
+    };
+    card.addEventListener("click",e=>{
+      if(e.target.closest("button,a,input,label,select,textarea")) return;
+      const sel=getSelection&&getSelection(); if(sel&&!sel.isCollapsed&&card.contains(sel.anchorNode)) return;
+      turn();
+    });
+    card.addEventListener("keydown",e=>{ if(e.target!==card) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); turn(); } });
+    box.appendChild(card);
   });
   const f=txt("p","foot");
   if(es){
@@ -644,6 +663,60 @@ async function renderMass(){
     f.querySelector("a").href=usccbUrl(mDay);
   }
   box.appendChild(f);
+}
+
+
+/* The back of a reading card: the approved guide's box for that reading when there is one
+   (English only), else a note on the book and on the reading's place at Mass. */
+function readingRole(l){
+  if(l==="Reading 1"||l==="Reading") return "First Reading";
+  if(l==="Reading 2"||l==="Epistle") return "Second Reading";
+  if(l==="Alleluia") return "Gospel Acclamation";
+  if(l==="Responsorial Psalm"||l==="Gospel") return l;
+  return null;
+}
+function orderText(name){
+  const flat=ORDER.flatMap(x=>x[1]), i=flat.findIndex(p=>p[0]===name);
+  if(i<0) return null;
+  return LANG==="es"?ES.order.flatMap(x=>x[1])[i][2]:flat[i][2];
+}
+function kidsText(role){
+  switch(role){
+    case "First Reading": return t("This reading is usually from the Old Testament, the part of the Bible written before Jesus was born. It helps us get ready for the Gospel.");
+    case "Responsorial Psalm": return t("The Psalms are songs and prayers from the Bible. We answer God by singing his own words back to him.");
+    case "Second Reading": return t("This reading comes from a letter written by one of the apostles, the first friends of Jesus who told everyone about him.");
+    case "Gospel Acclamation": return t("We stand up and sing Alleluia, which means \u201cpraise God!\u201d Jesus is about to speak to us in the Gospel.");
+    case "Gospel": return t("The Gospel tells us what Jesus said and did. We stand up to listen to him.");
+  }
+  return t("This is another reading from the Bible. We listen to it before the Gospel.");
+}
+function buildBack(bk,r,ed,setEd){
+  const sw=txt("div","ed-switch"); sw.setAttribute("role","group"); sw.setAttribute("aria-label",t("Explain for"));
+  [["plain",t("Grown-ups")],["kids",t("Children")]].forEach(([k,lab])=>{
+    const bt=txt("button","ed-opt",lab); bt.type="button"; bt.setAttribute("aria-pressed",ed===k?"true":"false");
+    bt.addEventListener("click",()=>{ if(ed!==k) setEd(k); }); sw.appendChild(bt);
+  });
+  bk.appendChild(sw);
+  bk.appendChild(txt("p","blabel",readingLabel(r.l)));
+  bk.appendChild(txt("h2","bcite",cite(r)));
+  const c=LANG==="es"?null:COMP[mDay], g=c&&c[ed]&&c[ed].readings&&c[ed].readings[r.l];
+  if(g&&g.box){
+    bk.appendChild(txt("p","back-text",g.box));
+    if(ed==="kids"&&r.l==="Gospel"){
+      const k=c.kids;
+      if(k.word&&k.word.term) { const w=txt("p","back-extra"); w.appendChild(txt("b","",k.word.term+": ")); w.appendChild(document.createTextNode(k.word.meaning||"")); bk.appendChild(w); }
+      if(k.ask) bk.appendChild(txt("p","back-extra",t("Ask:")+" "+k.ask));
+    }
+  } else {
+    const role=readingRole(r.l);
+    if(ed==="kids") bk.appendChild(txt("p","back-text",kidsText(role)));
+    else {
+      if(bookAbout(r.b)&&role!=="Gospel Acclamation") bk.appendChild(txt("p","back-text",bookAbout(r.b)));
+      const o=role&&orderText(role);
+      bk.appendChild(txt("p","back-text",o||t("One of the readings from Scripture, heard before the Gospel.")));
+    }
+  }
+  bk.appendChild(txt("p","flip-hint",t("Tap to turn back")));
 }
 
 const ORDER=[
