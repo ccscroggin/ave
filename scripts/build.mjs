@@ -52,6 +52,6 @@ const h = createHash("sha256");
 for (const f of ["index.html", "app.css", "paper.css", "i18n.js", "app.js", "about.html", "about-es.html", "manifest.webmanifest"]) h.update(readFileSync(join(SITE, f)));
 h.update(JSON.stringify(titles)); h.update(JSON.stringify(companion));
 const version = h.digest("hex").slice(0, 12);
-writeFileSync(join(SITE, "sw.js"), readFileSync(join(SITE, "sw.js.tpl"), "utf8").replace("__VERSION__", version));
+writeFileSync(join(SITE, "sw.js"), readFileSync(join(SITE, "sw.js.tpl"), "utf8").replaceAll("__VERSION__", version));
 
 console.log(`${PREVIEW ? "PREVIEW (drafts included) · " : ""}days ${Object.keys(titles).length} · months ${Object.keys(months).length} · companion approved ${Object.values(companion).filter(c => c.review.status === "approved").length}, drafts ${PREVIEW ? "included" : "held back"} ${drafts} · sw ${version}`);
