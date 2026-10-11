@@ -44,6 +44,8 @@ python3 scripts/check_companion.py DATE
 ```bash
 node scripts/build.mjs
 node --import ./scripts/test/register.mjs scripts/test/review.test.mjs
+node scripts/test/i18n.test.mjs
+node --import ./scripts/test/register.mjs scripts/test/voice.test.mjs
 python3 scripts/check_companion.py
 python3 scripts/readings/validate.py --no-report
 ```

@@ -298,3 +298,4 @@ dialog.sheet[open]{animation:rise .28s ease-out}
 .back-text{margin:8px 0 0;font-size:17px;line-height:1.5}
 .back-extra{margin:10px 0 0;font-size:16px;line-height:1.45;color:var(--ink-soft)}
 @media (prefers-reduced-motion: reduce){ .flip-inner{transition:none} }
+.voice-note{margin:-6px 0 14px;text-align:center;font-size:13px;color:var(--ink-soft)}

@@ -162,7 +162,7 @@ try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") docu
     <div class="row"><span class="l">Fatima prayer<span class="s">Say it after each Glory Be</span></span><button class="switch" role="switch" id="swFatima" aria-label="Fatima prayer"></button></div>
     <div class="row"><span class="l">Show prayer words<span class="s">Turn off when you know them by heart</span></span><button class="switch" role="switch" id="swWords" aria-label="Show prayer words"></button></div>
     <div class="row"><span class="l">Keep screen on<span class="s" id="wakeNote">The screen stays on while you pray</span></span><button class="switch" role="switch" id="swWake" aria-label="Keep screen on"></button></div>
-    <div class="row"><span class="l">Read aloud<span class="s" id="voiceNote">Your phone reads each prayer to you</span></span><button class="switch" role="switch" id="swVoice" aria-label="Read aloud"></button></div>
+    <div class="row"><span class="l">Read aloud<span class="s" id="voiceNote">Read in an AI voice (ElevenLabs)</span></span><button class="switch" role="switch" id="swVoice" aria-label="Read aloud"></button></div>
     <div class="row"><span class="l">Hands-free<span class="s">Moves to the next bead by itself after each prayer</span></span><button class="switch" role="switch" id="swAuto" aria-label="Hands-free"></button></div>
     <div class="row" style="border-bottom:0"><span class="l">Text size<span class="s">Also changes the readings</span></span>
       <span class="stepper"><button id="fsDown" aria-label="Smaller text">A−</button><span id="fsVal">3</span><button id="fsUp" aria-label="Larger text">A+</button></span></div>
@@ -254,6 +254,7 @@ try{ const t=localStorage.getItem("ave-theme"); if(t==="light"||t==="dark") docu
 <div id="printArea"></div>
 
 <script src="i18n.js"></script>
+<script src="aloud.js"></script>
 <script src="app.js"></script>
 <script>if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>

@@ -5,7 +5,8 @@ const QP=new URLSearchParams(location.search);
 
 /* ---------- language ----------
    English is the source text. t("English") returns the Spanish entry from
-   site/i18n.js when Spanish is chosen; {name} placeholders are filled from vars.
+   site/i18n.js when Spanish is chosen; {name} placeholders are filled from vars
+   (the function itself is in site/aloud.js, shared with the voice server).
    scripts/test/i18n.test.mjs fails if a string passed to t() has no Spanish entry,
    so always pass t() a literal string. */
 const ES=(window.AVE_I18N&&window.AVE_I18N.es)||{ui:{}};
@@ -16,12 +17,8 @@ function pickLang(){
 }
 let LANG=pickLang();
 document.documentElement.lang=LANG;
-function t(s,vars){
-  let o=LANG==="es"&&ES.ui[s]!=null?ES.ui[s]:s;
-  if(vars) o=o.replace(/\{(\w+)\}/g,(m,k)=>k in vars?vars[k]:m);
-  return o;
-}
-const capFirst=s=>s?s.charAt(0).toLocaleUpperCase(LANG)+s.slice(1):s;
+function t(s,vars){ return window.AVE_ALOUD.forLang(LANG).t(s,vars); }
+const capFirst=s=>window.AVE_ALOUD.forLang(LANG).capFirst(s);
 /* Static text in index.html: each text node and aria-label is looked up by its
    English text, captured once before anything else writes to the page. */
 const STATIC=(()=>{
@@ -42,27 +39,101 @@ applyStatic();
 /* ---------- toast ---------- */
 let toastT;
 function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),3200); }
-/* ---------- read aloud (the device's own voices; free, works offline) ---------- */
+/* ---------- read aloud ----------
+   Two voices. First choice is an AI voice (ElevenLabs), fetched from /api/voice
+   one piece at a time. The server speaks only Ave's own texts (built in
+   site/aloud.js) and keeps each piece once made. When a piece fails (offline,
+   refused, over the monthly limit, or no reply within 8 seconds), that piece is
+   read by the device's own voice instead, which is free and works offline.
+   ?devicevoice skips the AI voice. */
 const SPEECH="speechSynthesis" in window&&"SpeechSynthesisUtterance" in window;
+const AI_VOICE=!!(window.crypto&&crypto.subtle&&window.fetch&&window.Audio&&window.TextEncoder)&&!QP.has("devicevoice");
 let speechGen=0;
 function voiceFor(lang){
   const vs=SPEECH?speechSynthesis.getVoices():[], want=lang==="es"?["es-US","es-MX","es-ES","es"]:["en-US","en-GB","en"];
   for(const w of want){ const v=vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())&&v.localService)||vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(w.toLowerCase())); if(v) return v; }
   return null;
 }
-function sentences(text){ return String(text).replace(/\s+/g," ").match(/[^.!?;:]+[.!?;:]+["”’)]*|[^.!?;:]+$/g)||[text]; }
-/* Speak a list of [text, lang] parts, each in its own language's voice; calls done()
-   after the last sentence unless something else spoke or stopped first. */
+const sentences=window.AVE_ALOUD.sentences;
+/* The device voice: speak [text, lang] parts, each in its own language's voice, and
+   call done() after the last sentence unless something else spoke or stopped first. */
+function deviceSpeak(list,gen,done){
+  const all=[];
+  list.forEach(([text,lang])=>{ const v=voiceFor(lang); sentences(text).map(x=>x.trim()).filter(Boolean).forEach(x=>all.push([x,lang,v])); });
+  if(!all.length){ if(gen===speechGen&&done) done(); return; }
+  all.forEach(([x,lang,v],i)=>{ const u=new SpeechSynthesisUtterance(x); u.lang=lang==="es"?"es-US":"en-US"; if(v) u.voice=v; u.rate=.92;
+    if(i===all.length-1) u.onend=u.onerror=()=>{ if(gen===speechGen&&done){ const d=done; done=null; d(); } }; speechSynthesis.speak(u); });
+}
 function speakSeq(list,done){
   if(!SPEECH) return false;
-  speechSynthesis.cancel(); const gen=++speechGen, all=[];
-  list.forEach(([text,lang])=>{ const v=voiceFor(lang); sentences(text).map(x=>x.trim()).filter(Boolean).forEach(x=>all.push([x,lang,v])); });
-  all.forEach(([x,lang,v],i)=>{ const u=new SpeechSynthesisUtterance(x); u.lang=lang==="es"?"es-US":"en-US"; if(v) u.voice=v; u.rate=.92;
-    if(i===all.length-1) u.onend=()=>{ if(gen===speechGen&&done) done(); }; speechSynthesis.speak(u); });
-  return true;
+  speechSynthesis.cancel(); deviceSpeak(list,++speechGen,done); return true;
 }
-function speak(text,done){ return speakSeq([[text,LANG]],done); }
-function stopSpeech(){ speechGen++; if(SPEECH) speechSynthesis.cancel(); }
+
+/* iPhone Safari lets a page start sound only inside a tap. The AI voice starts
+   later: after a fetch, or when hands-free moves on by itself. So one <audio>
+   element is unlocked on the first tap anywhere on the page: it plays a 0.1 s
+   silent clip inside that tap (capture phase, before any button's own handler),
+   and Safari then lets that same element play later without a tap. Every AI
+   piece plays through it, by swapping its src. */
+const AUD=AI_VOICE?new Audio():null;
+const SILENT="data:audio/mpeg;base64,//NAxAAAAANIAAAAAExBTUU0LjBVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEWwAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80DEpAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsSjAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==";
+let audUnlocked=false;
+function unlockAudio(){
+  if(!AUD||audUnlocked) return; audUnlocked=true;
+  AUD.src=SILENT; const p=AUD.play(); if(p&&p.catch) p.catch(()=>{ audUnlocked=false; });
+}
+if(AUD) ["pointerdown","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
+/* A piece's address is the SHA-256 of the voice, its language and its exact text
+   (site/aloud.js keyInput), so the request carries no text at all. */
+async function voiceKey(lang,text){
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(window.AVE_ALOUD.keyInput(lang,text)));
+  return [...new Uint8Array(b)].slice(0,16).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+/* After a failure that will repeat (offline, server down, over the limit), use the
+   device voice for a while rather than waiting on every piece. */
+let voiceDownUntil=0;
+const VOICE_WAIT=8000;
+async function fetchVoice(lang,text,signal){
+  if(Date.now()<voiceDownUntil) throw new Error("voice resting");
+  const h=await voiceKey(lang,text), ctl=new AbortController(), stop=()=>ctl.abort();
+  const timer=setTimeout(stop,VOICE_WAIT); signal.addEventListener("abort",stop);
+  try{
+    const r=await fetch("/api/voice?h="+h,{signal:ctl.signal}); clearTimeout(timer);
+    if(!r.ok){ if(r.status===429||r.status>=500) voiceDownUntil=Date.now()+(r.status===429?6*3600e3:60e3); throw new Error("voice "+r.status); }
+    return URL.createObjectURL(await r.blob());
+  }catch(e){ if(!signal.aborted&&(e.name==="AbortError"||e instanceof TypeError)) voiceDownUntil=Date.now()+60e3; throw e; }
+  finally{ clearTimeout(timer); signal.removeEventListener("abort",stop); }
+}
+let voiceStop=null;
+/* Read [text, lang] parts aloud in order, then call done() unless something else
+   spoke or stopped first (speechGen). Returns false when nothing can speak. */
+function say(list,done){
+  if(!AI_VOICE) return speakSeq(list,done);
+  stopSpeech(); const gen=speechGen, ctl=new AbortController(), urls=[];
+  voiceStop=ctl; ctl.signal.addEventListener("abort",()=>urls.forEach(u=>URL.revokeObjectURL(u)));
+  const items=window.AVE_ALOUD.pieces(list), got=[];
+  const get=i=>{ if(!got[i]){ got[i]=fetchVoice(items[i][1],items[i][0],ctl.signal).then(u=>{ urls.push(u); return u; }); got[i].catch(()=>{}); } return got[i]; };
+  const device=i=>{ if(gen!==speechGen) return; if(i+1<items.length) get(i+1);
+    if(SPEECH) deviceSpeak([items[i]],gen,()=>step(i+1)); else step(i+1); };
+  const step=i=>{
+    if(gen!==speechGen) return;
+    if(i>=items.length){ if(done) done(); return; }
+    get(i).then(url=>{
+      if(gen!==speechGen) return;
+      if(i+1<items.length) get(i+1); /* fetch the next piece while this one plays */
+      let over=false; const fail=()=>{ if(over||gen!==speechGen) return; over=true; AUD.onended=AUD.onerror=null; device(i); };
+      AUD.onended=()=>{ if(over) return; over=true; AUD.onended=AUD.onerror=null; step(i+1); };
+      AUD.onerror=fail; AUD.src=url; const p=AUD.play(); if(p&&p.catch) p.catch(fail);
+    },()=>device(i));
+  };
+  step(0); return true;
+}
+function speak(text,done){ return say([[text,LANG]],done); }
+function stopSpeech(){
+  speechGen++; if(SPEECH) speechSynthesis.cancel();
+  if(voiceStop){ voiceStop.abort(); voiceStop=null; }
+  if(AUD){ AUD.onended=AUD.onerror=null; AUD.pause(); }
+}
 
 function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } }
 
@@ -85,51 +156,11 @@ tabs.forEach(t=>t.addEventListener("click",()=>showTab(t.dataset.tab)));
 /* =====================================================================
    ROSARY
    ===================================================================== */
-const PR = {
-  sign:{t:"Sign of the Cross", x:"In the name of the Father, and of the Son, and of the Holy Spirit. Amen."},
-  creed:{t:"Apostles\u2019 Creed", x:"I believe in God, the Father almighty, Creator of heaven and earth; and in Jesus Christ, his only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried. He descended into hell; the third day he rose again from the dead; he ascended into heaven, and sits at the right hand of God, the Father almighty; from thence he shall come to judge the living and the dead. I believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen."},
-  our:{t:"Our Father", x:"Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen."},
-  hail:{t:"Hail Mary", x:"Hail Mary, full of grace, the Lord is with thee. Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen."},
-  glory:{t:"Glory Be", x:"Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen."},
-  fatima:{t:"Fatima Prayer", x:"O my Jesus, forgive us our sins, save us from the fires of hell; lead all souls to heaven, especially those in most need of thy mercy."},
-  queen:{t:"Hail, Holy Queen", x:"Hail, holy Queen, Mother of mercy, our life, our sweetness, and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious advocate, thine eyes of mercy toward us; and after this our exile, show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary.",
-    vr:[["V.","Pray for us, O holy Mother of God."],["R.","That we may be made worthy of the promises of Christ."]]},
-  closing:{t:"Closing Prayer", x:"Let us pray. O God, whose only-begotten Son, by his life, death, and resurrection, has purchased for us the rewards of eternal life; grant, we beseech thee, that meditating upon these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen."}
-};
-const SETS = {
-  joyful:{name:"Joyful mysteries", adj:"joyful", days:"Mondays and Saturdays", dow:[1,6], m:[
-    ["The Annunciation","Luke 1:26\u201338","humility","The angel Gabriel brings God\u2019s message, and Mary answers yes."],
-    ["The Visitation","Luke 1:39\u201356","love of neighbor","Mary hurries to help her cousin Elizabeth, and the child in Elizabeth leaps for joy."],
-    ["The Nativity","Luke 2:1\u201320","poverty of spirit","Jesus is born in Bethlehem and laid in a manger."],
-    ["The Presentation in the Temple","Luke 2:22\u201338","obedience","Mary and Joseph bring the child to the Temple, and old Simeon knows him."],
-    ["The Finding in the Temple","Luke 2:41\u201352","joy in finding Jesus","After three days of searching, they find Jesus among the teachers."]]},
-  sorrowful:{name:"Sorrowful mysteries", adj:"sorrowful", days:"Tuesdays and Fridays", dow:[2,5], m:[
-    ["The Agony in the Garden","Matthew 26:36\u201346","sorrow for sin","Jesus prays in Gethsemane: not my will, but yours be done."],
-    ["The Scourging at the Pillar","John 19:1","purity","Jesus is bound and whipped, and he bears it in silence."],
-    ["The Crowning with Thorns","Matthew 27:27\u201331","courage","The soldiers mock Jesus as a king and press thorns onto his head."],
-    ["The Carrying of the Cross","Luke 23:26\u201332","patience","Jesus carries the cross to Calvary, and Simon helps him."],
-    ["The Crucifixion","Luke 23:33\u201346","perseverance","Jesus forgives, gives us his mother, and gives up his spirit."]]},
-  glorious:{name:"Glorious mysteries", adj:"glorious", days:"Wednesdays and Sundays", dow:[3,0], m:[
-    ["The Resurrection","Matthew 28:1\u201310","faith","The tomb is empty. Christ is risen, as he said."],
-    ["The Ascension","Acts 1:6\u201311","hope","Jesus blesses his friends and goes up to the Father."],
-    ["The Descent of the Holy Spirit","Acts 2:1\u201313","love of God","Tongues of fire rest on the apostles, and they speak with boldness."],
-    ["The Assumption of Mary","Revelation 11:19\u201312:1","the grace of a holy death","Mary is taken up, body and soul, into heaven."],
-    ["The Coronation of Mary","Revelation 12:1","trust in Mary\u2019s prayers","Mary is crowned Queen of heaven and earth."]]},
-  luminous:{name:"Luminous mysteries", adj:"luminous", days:"Thursdays", dow:[4], m:[
-    ["The Baptism in the Jordan","Matthew 3:13\u201317","openness to the Holy Spirit","The heavens open, and the Father says: this is my beloved Son."],
-    ["The Wedding at Cana","John 2:1\u201311","to Jesus through Mary","Mary says, do whatever he tells you, and the water becomes wine."],
-    ["The Proclamation of the Kingdom","Mark 1:14\u201315","conversion","Jesus calls all people to turn back to God and believe."],
-    ["The Transfiguration","Luke 9:28\u201336","desire for holiness","On the mountain, Jesus shines with the glory of God."],
-    ["The Institution of the Eucharist","Luke 22:14\u201320","adoration","At the Last Supper, Jesus gives us his Body and Blood."]]}
-};
-const ORD=["first","second","third","fourth","fifth"];
-const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-/* Localized prayers, mysteries and ordinals. Spanish ordinals agree with the noun:
-   misterio is masculine (primer, segundo...), decena feminine (primera, segunda...). */
-/* A Spanish prayer left empty (awaiting review) falls back to the English text. */
-const pr=k=>LANG==="es"&&ES.prayers&&ES.prayers[k]&&ES.prayers[k].x?ES.prayers[k]:PR[k];
-const setOf=k=>LANG==="es"?ES.sets[k]:Object.assign({Adj:cap(SETS[k].adj)},SETS[k]);
-const ordM=d=>LANG==="es"?ES.ord.m[d]:ORD[d], ordF=d=>LANG==="es"?ES.ord.f[d]:ORD[d];
+/* Prayers, mysteries, and every text read aloud live in site/aloud.js, shared with the voice server. */
+const {PR,SETS,ORD,cap}=window.AVE_ALOUD;
+const AL=()=>window.AVE_ALOUD.forLang(LANG);
+/* Localized prayers, mysteries and ordinals (site/aloud.js). */
+const pr=k=>AL().pr(k), setOf=k=>AL().setOf(k), ordM=d=>AL().ordM(d), ordF=d=>AL().ordF(d);
 /* "The Annunciation" -> "the Annunciation"; "La Anunciación" -> "la Anunciación" */
 const lowerArt=s=>s.replace(/^(The|El|La|Los|Las) /,m=>m.toLowerCase());
 const todaySet=()=>{ const d=new Date().getDay(); return Object.keys(SETS).find(k=>SETS[k].dow.includes(d)); };
@@ -282,13 +313,7 @@ function render(){
 }
 /* Speech can only start after a tap, so read-aloud arms on the first tap of Next or Back. */
 let voiceArmed=false, autoTimer=null;
-function stepText(){
-  const set=setOf(S.set);
-  if(S.cur>=steps.length) return t("The rosary is complete. Go in peace.");
-  const st=steps[S.cur];
-  if(st.key==="mystery"){ const m=set.m[st.d]; return `${capFirst(t("The {ord} {adj} mystery",{ord:ordM(st.d),adj:set.adj}))}. ${m[0]}. ${m[3]} ${t("Fruit of the mystery:")} ${m[2]}.`; }
-  const P=pr(st.key); return P.x+(P.vr?" "+P.vr.map(v=>v[1]).join(" "):"");
-}
+function stepText(){ return AL().stepText(S.set,S.cur<steps.length?steps[S.cur]:null); }
 function speakStep(){
   clearTimeout(autoTimer);
   speak(stepText(),()=>{ if(S.auto&&S.cur<steps.length) autoTimer=setTimeout(()=>{ if(S.voice&&S.auto) next(); },900); });
@@ -340,7 +365,7 @@ function renderSheet(){
     b.addEventListener("click",()=>{ S.set=k; renderSheet(); render(); save(); }); box.appendChild(b);
   });
   setSwitch("swFatima",S.fatima); setSwitch("swWords",S.words); setSwitch("swWake",S.wake); setSwitch("swVoice",S.voice); setSwitch("swAuto",S.auto);
-  $("swAuto").disabled=!S.voice||!SPEECH; $("swVoice").disabled=!SPEECH; if(!SPEECH) $("voiceNote").textContent=t("This browser cannot read aloud");
+  $("swAuto").disabled=!S.voice||!SPEECH; $("swVoice").disabled=!SPEECH; if(!SPEECH) $("voiceNote").textContent=t("This browser cannot read aloud"); else if(!AI_VOICE) $("voiceNote").textContent=t("Your phone reads each prayer to you");
   $("fsVal").textContent=S.fs+1;
   if(!("wakeLock" in navigator)){ $("wakeNote").textContent=t("This browser cannot keep the screen on"); $("swWake").disabled=true; }
 }
@@ -516,24 +541,8 @@ function esTitle(en){
   return en;
 }
 const titleFor=en=>LANG==="es"?esTitle(en):en;
-/* Reading labels in the data are English keys ("Reading 1"); Mass-tab labels. */
-function readingLabel(l){
-  switch(l){
-    case "Reading 1": return t("First reading"); case "Reading 2": return t("Second reading"); case "Reading 3": return t("Third reading");
-    case "Reading 4": return t("Fourth reading"); case "Reading 5": return t("Fifth reading"); case "Reading 6": return t("Sixth reading");
-    case "Reading 7": return t("Seventh reading"); case "Reading": return t("Reading"); case "Epistle": return t("Epistle");
-    case "Responsorial Psalm": return t("Responsorial Psalm"); case "Alleluia": return t("Gospel acclamation"); case "Gospel": return t("Gospel");
-  }
-  return l;
-}
-/* "Isaiah 5:1-7" -> "Isaías 5, 1-7": Spanish book name, comma after the chapter,
-   a period between verse groups. The Lectionary's numbers are kept as they are. */
-function esCite(r){
-  const m=String(r.c).replace(/\u00a0/g," ").match(/^((?:Cf\.|See)\s+)?((?:[1-3]\s)?[A-Z][A-Za-z]*(?:\s(?:of\s)?[A-Z][a-z]+)*)\s+(.+)$/);
-  if(!m) return r.c;
-  const pre=m[1]?"Cf. ":"", book=ES.bookName[r.b]||m[2];
-  return pre+book+" "+m[3].replace(/, /g,". ").replace(/(\w+):/g,"$1, ").replace(/ or /g," o ");
-}
+/* Reading labels and Spanish citations (site/aloud.js). */
+const readingLabel=l=>AL().readingLabel(l), esCite=r=>window.AVE_ALOUD.esCite(r);
 const cite=r=>LANG==="es"?esCite(r):r.c;
 /* Verse number to show: the Lectionary's (4th field, "ch:v" or "v") when present, else the World English Bible's. */
 function shownNum(e){ const n=e[3]; if(n==null) return [e[0],e[1]]; const m=String(n).split(":"); return m.length>1?[+m[0]||m[0],m[1]]:[e[0],m[0]]; }
@@ -602,20 +611,15 @@ async function renderMass(){
 
   /* readings */
   const withEn=!es||showEn;
-  /* Read aloud reads what is on the screen in its own language: in Spanish the label
-     and citation, then the English text in an English voice when it is shown. */
-  const spoken=r=>{
-    if(!es) return [[`${readingLabel(r.l)}. ${r.c.split(/\s\d/)[0].replace(/^(Cf\.|See)\s+/,"")}. `+r.t.map(e=>e[2]).join(" "),"en"]];
-    const parts=[[`${readingLabel(r.l)}. ${esCite(r).replace(/[-\u2013\u2014]/g," al ").replace(/^Cf\. /,"")}.`,"es"]];
-    if(showEn&&r.t.length) parts.push([r.t.map(e=>e[2]).join(" "),"en"]);
-    return parts;
-  };
+  /* Read aloud reads what is on the screen in its own language (site/aloud.js). */
+  const spoken=r=>AL().readingParts(r,showEn);
   if(SPEECH&&(es||day.r.some(r=>r.t.length))){
     const list=es?day.r:day.r.filter(r=>r.t.length);
     const all=txt("button","listen-all",t("\u25b6 Listen to all the readings")); all.type="button";
     all.addEventListener("click",()=>{ if(all.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); all.dataset.on="1"; all.textContent=t("\u25a0 Stop");
-      speakSeq(list.flatMap(spoken),resetListen); });
+      say(list.flatMap(spoken),resetListen); });
     box.appendChild(all);
+    if(AI_VOICE) box.appendChild(txt("p","voice-note",t("AI voice (ElevenLabs)")));
   }
   let backEd=store("ave-back-ed")==="kids"?"kids":"plain";
   const flips=[];
@@ -624,7 +628,7 @@ async function renderMass(){
     card.tabIndex=0; card.setAttribute("role","button"); card.setAttribute("aria-pressed","false");
     card.setAttribute("aria-label",readingLabel(r.l)+". "+t("Tap for the explanation"));
     if(SPEECH&&(es||r.t.length)){ const lb=txt("button","listen-btn",t("\u25b6 Listen")); lb.type="button";
-      lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent=t("\u25a0 Stop"); speakSeq(spoken(r),resetListen); });
+      lb.addEventListener("click",()=>{ if(lb.dataset.on){ stopSpeech(); resetListen(); return; } resetListen(); lb.dataset.on="1"; lb.textContent=t("\u25a0 Stop"); say(spoken(r),resetListen); });
       b.appendChild(lb); }
     b.appendChild(txt("p","blabel",readingLabel(r.l)));
     b.appendChild(txt("h2","bcite",cite(r)));

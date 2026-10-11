@@ -58,12 +58,23 @@ Run the tests:
 ```bash
 node --import ./scripts/test/register.mjs scripts/test/review.test.mjs
 node scripts/test/i18n.test.mjs
+node --import ./scripts/test/register.mjs scripts/test/voice.test.mjs
 python3 scripts/check_companion.py
 python3 scripts/readings/validate.py --no-report
 ```
 
 The review service needs a Vercel Blob store; without one the app falls back
 to approved guides in `site/data/companion.json`.
+
+Read aloud uses an AI voice (ElevenLabs, labelled in the app) through
+`api/voice.js`. The server speaks only Ave's own texts: `site/aloud.js` builds
+every prayer and reading the app reads, and the server builds its list of
+allowed pieces from that same file. Each recording is made the first time
+someone presses play, kept in the Blob store under `voice/`, and counted against
+a monthly ceiling (`MONTHLY_CHARS` in `api/_voice.js`). A cron on Saturday night
+(`api/voice-sunday.js`) makes Sunday's readings ahead of time. It needs
+`ELEVENLABS_API_KEY` and `CRON_SECRET`; without them, or offline, the device's
+own voice reads instead.
 
 ## Licenses
 

@@ -59,6 +59,8 @@ Object.assign(es.ui,{
 "Next: {step}":"Siguiente: {step}",
 "The rosary is complete. Go in peace.":"El rosario ha terminado. Vaya en paz.",
 "Today":"Hoy",
+"Read in an AI voice (ElevenLabs)":"Se lee con una voz de IA (ElevenLabs)",
+"AI voice (ElevenLabs)":"Voz de IA (ElevenLabs)",
 "This browser cannot read aloud":"Este navegador no puede leer en voz alta",
 "This browser cannot keep the screen on":"Este navegador no puede mantener la pantalla encendida",
 "You continue from where you stopped":"Continúa donde se quedó",

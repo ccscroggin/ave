@@ -49,7 +49,7 @@ writeFileSync(join(SITE, "robots.txt"), PREVIEW ? "User-agent: *\nDisallow: /\n"
 
 // Service worker version: hash of the shell and data.
 const h = createHash("sha256");
-for (const f of ["index.html", "app.css", "paper.css", "i18n.js", "app.js", "about.html", "about-es.html", "manifest.webmanifest"]) h.update(readFileSync(join(SITE, f)));
+for (const f of ["index.html", "app.css", "paper.css", "i18n.js", "aloud.js", "app.js", "about.html", "about-es.html", "manifest.webmanifest"]) h.update(readFileSync(join(SITE, f)));
 h.update(JSON.stringify(titles)); h.update(JSON.stringify(companion));
 const version = h.digest("hex").slice(0, 12);
 writeFileSync(join(SITE, "sw.js"), readFileSync(join(SITE, "sw.js.tpl"), "utf8").replaceAll("__VERSION__", version));

@@ -1,6 +1,6 @@
 // Checks the Spanish translation layer. Plain node, no dependencies.
 // Run from the repo root: node scripts/test/i18n.test.mjs   (add --list to print missing keys)
-// Fails if a string passed to t() in site/app.js, or a static text in
+// Fails if a string passed to t() in site/app.js or site/aloud.js, or a static text in
 // site/index.html, has no Spanish entry; if a Spanish prayer is empty; or if the
 // Spanish mysteries, Order of Mass or notes do not match the English shape.
 import { readFileSync } from "node:fs";
@@ -10,7 +10,8 @@ import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const read = p => readFileSync(join(ROOT, p), "utf8");
-const app = read("site/app.js");
+// app.js and aloud.js (prayers, mysteries and read-aloud text) share t().
+const app = read("site/app.js") + "\n" + read("site/aloud.js");
 const html = read("site/index.html");
 
 const sandbox = { window: {} };

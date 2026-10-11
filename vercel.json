@@ -46,8 +46,18 @@
   ],
   "functions": {
     "api/*.js": {
-      "includeFiles": "content/companion/**",
-      "maxDuration": 30
+      "includeFiles": "{content/companion/**,content/readings/**,site/aloud.js,site/i18n.js}",
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/voice-sunday",
+      "schedule": "0 4 * * 0"
+    },
+    {
+      "path": "/api/voice-sunday",
+      "schedule": "30 4 * * 0"
+    }
+  ]
 }

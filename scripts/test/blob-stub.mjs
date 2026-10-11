@@ -2,7 +2,7 @@
 const store = globalThis.__blobStore ||= new Map();
 export async function put(pathname, body, opts = {}) {
   if (store.has(pathname) && !opts.allowOverwrite) throw new Error(`Blob already exists: ${pathname}`);
-  store.set(pathname, String(body)); return { pathname, url: "mem://" + pathname };
+  store.set(pathname, typeof body === "string" ? body : Buffer.from(body)); return { pathname, url: "mem://" + pathname };
 }
 export async function get(pathname) {
   if (!store.has(pathname)) return null;
