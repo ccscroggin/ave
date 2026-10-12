@@ -416,7 +416,7 @@ const BOOK={
   SNG:"The Song of Songs is a love poem. The Church reads it as a picture of God\u2019s love for his people.",
   WIS:"Wisdom was written shortly before Christ. It praises God\u2019s wisdom and speaks of life after death.",
   SIR:"Sirach is a book of practical wisdom from a teacher in Jerusalem, about two centuries before Christ.",
-  ISA:"Isaiah is the great prophet of hope. Advent listens to him closely because he speaks of the Messiah.",
+  ISA:"Isaiah is the great prophet of hope. He speaks of a coming king and a servant of God, and Christians hear in him the promise of the Messiah.",
   JER:"Jeremiah is a prophet who suffers for telling the truth, and who promises a new covenant.",
   EZK:"Ezekiel is a prophet in exile who sees the glory of God and promises a new heart.",
   ZEP:"Zephaniah warns of the day of the Lord and promises joy to a humble, faithful remnant.",

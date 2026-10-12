@@ -355,7 +355,7 @@ es.book={
   SNG:"El Cantar de los Cantares es un poema de amor. La Iglesia lo lee como imagen del amor de Dios por su pueblo.",
   WIS:"El libro de la Sabiduría se escribió poco antes de Cristo. Alaba la sabiduría de Dios y habla de la vida después de la muerte.",
   SIR:"El Eclesiástico (Sirácide) es un libro de sabiduría práctica de un maestro de Jerusalén, unos dos siglos antes de Cristo.",
-  ISA:"Isaías es el gran profeta de la esperanza. El Adviento lo escucha con atención porque habla del Mesías.",
+  ISA:"Isaías es el gran profeta de la esperanza. Habla de un rey que ha de venir y de un siervo de Dios, y los cristianos escuchan en él la promesa del Mesías.",
   JER:"Jeremías es un profeta que sufre por decir la verdad y que promete una alianza nueva.",
   EZK:"Ezequiel es un profeta en el destierro que ve la gloria de Dios y promete un corazón nuevo.",
   ZEP:"Sofonías anuncia el día del Señor y promete alegría a un resto humilde y fiel.",
