@@ -23,6 +23,16 @@ Object.assign(es.ui,{
 "We stand up and sing Alleluia, which means \u201cpraise God!\u201d Jesus is about to speak to us in the Gospel.":"Nos ponemos de pie y cantamos Aleluya, que quiere decir \u201c¡alaben a Dios!\u201d Jesús nos va a hablar en el Evangelio.",
 "The Gospel tells us what Jesus said and did. We stand up to listen to him.":"El Evangelio nos cuenta lo que Jesús dijo e hizo. Nos ponemos de pie para escucharlo.",
 "This is another reading from the Bible. We listen to it before the Gospel.":"Esta es otra lectura de la Biblia. La escuchamos antes del Evangelio.",
+/* the edition switch on the Mass tab */
+"Waiting for review":"En espera de revisión",
+"{list}: waiting for review.":"{list}: en espera de revisión.",
+"Each guide is written with AI help and appears here only after a priest reviews it.":"Cada guía se escribe con ayuda de IA y aparece aquí solo después de que un sacerdote la revise.",
+"Sundays and holy days":"Domingos y días de precepto",
+"Plain, Kids and Family guides are made for Sundays and holy days.":"Las guías Sencilla, Niños y Familia se preparan para los domingos y los días de precepto.",
+"English only":"Solo en inglés",
+"Plain, Kids and Family are in English only for now.":"Por ahora, las guías Sencilla, Niños y Familia están solo en inglés.",
+"To read the guide for this day, choose English in Settings.":"Para leer la guía de este día, elija inglés en Ajustes.",
+"The English guides for this day are waiting for review.":"Las guías en inglés de este día están en espera de revisión.",
 });
 Object.assign(es.ui,{
 /* rosary */

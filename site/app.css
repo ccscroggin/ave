@@ -299,3 +299,28 @@ dialog.sheet[open]{animation:rise .28s ease-out}
 .back-extra{margin:10px 0 0;font-size:16px;line-height:1.45;color:var(--ink-soft)}
 @media (prefers-reduced-motion: reduce){ .flip-inner{transition:none} }
 .voice-note{margin:-6px 0 14px;text-align:center;font-size:13px;color:var(--ink-soft)}
+
+/* Mass: the edition switch (Readings, Plain, Kids, Family) and the guide editions */
+.mass-ed{margin:0 0 12px}
+.mass-ed .pick-label{margin:0 4px 4px}
+.seg.ed-seg{margin:0}
+.seg.ed-seg button{height:48px;font-size:16.5px}
+.seg.ed-seg button.waiting{opacity:.5;border:1px dashed var(--ink-soft);cursor:default}
+.ed-note{margin:6px 4px 0;font-size:15px;color:var(--rose);font-style:italic;line-height:1.4}
+.guide-head .guide-stamp{display:inline-block;margin:0 0 8px;padding:2px 8px;border:1.5px solid var(--rose);border-radius:4px;color:var(--rose);font:700 12px/1.4 "Alegreya Sans","Gill Sans",Calibri,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.guide-head .guide-ed{margin:0;color:var(--rose);font:700 13px/1.4 "Alegreya Sans","Gill Sans",Calibri,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.guide-head h2{margin:2px 0 8px;font-size:25px;font-style:italic;line-height:1.15;text-wrap:balance}
+.guide-note{margin:10px 0 0;font-size:14px;color:var(--ink-soft);line-height:1.4}
+.guide-head .guide-note{margin:10px 0 0;font-size:14px}
+.pw{margin:8px 0 14px;padding:8px 12px 10px;border-left:3px solid var(--gold);border-radius:0 12px 12px 0;background:var(--line);
+  font-family:"Alegreya Sans","Gill Sans",Calibri,sans-serif;font-size:calc(var(--fs) - 1px);line-height:1.5;text-wrap:pretty}
+.pw-l{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:2px}
+.guide-end h2{margin:0 0 6px;font-size:21px;font-weight:500;font-style:italic;color:var(--rose)}
+.guide-end h2:not(:first-child){margin-top:16px}
+.guide-end h3{margin:14px 0 4px;font:700 13px/1.4 "Alegreya Sans","Gill Sans",Calibri,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.guide-end h2+h3{margin-top:4px}
+.guide-end p{margin:0;font-size:17.5px;line-height:1.55}
+.guide-end p b{font-style:italic;font-weight:500;font-size:1.1em}
+.guide-end ol{margin:0;padding-left:22px;font-size:17.5px;line-height:1.5}
+.guide-end li{margin:0 0 6px}
+.flip.now .flip-inner{transition:none}

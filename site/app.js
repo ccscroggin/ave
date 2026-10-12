@@ -499,6 +499,14 @@ const SEASON_NOTE={
 };
 let mDay=iso(new Date()); if(!TITLES[mDay]) mDay=DAYS.find(k=>k>=mDay)||DAYS[DAYS.length-1]||mDay;
 let mPart="r";
+/* The Mass tab's edition: the readings, or the Plain, Kids or Family guide (BOOKLETS).
+   It is one stored choice, and it also picks who the back of each reading card speaks
+   to: Kids gives Children, every other edition Grown-ups. A day without that guide
+   shows the readings. The old back-of-card setting (ave-back-ed) carries over once. */
+const MASS_EDS=["readings","plain","kids","family"];
+let massEd=(()=>{ const s=store("ave-mass-ed"); if(MASS_EDS.includes(s)) return s; return store("ave-back-ed")==="kids"?"kids":"readings"; })();
+const audienceOf=ed=>ed==="kids"?"kids":"plain";
+function setMassEd(ed){ massEd=ed; store("ave-mass-ed",ed); try{ localStorage.removeItem("ave-back-ed"); }catch(e){} }
 /* Interface dates follow the chosen language; booklet pages stay English (see BOOKLETS). */
 let fmtLong, fmtShortUI, fmtMonthUI;
 function makeFormatters(){
@@ -564,7 +572,10 @@ function usccbEsUrl(k){ const [y,m,d]=k.split("-"); return "https://bible.usccb.
    English text on request. */
 let showEn=!!store("ave-es-en");
 let massSeq=0;
-async function renderMass(){
+/* keep (optional) holds what to restore after a re-render: scroll (scrollTop), focusEd (the
+   edition button to focus), or turned + top (a reading card to show turned over, at the
+   same height on screen it had before). */
+async function renderMass(keep){
   const seq=++massSeq, date=fromIso(mDay), today=iso(new Date()), es=LANG==="es";
   let day=null; try{ day=await ensureDay(mDay); }catch(e){}
   if(seq!==massSeq) return;
@@ -586,18 +597,25 @@ async function renderMass(){
   head.appendChild(meta); box.appendChild(head);
   if(mPart==="o"){ renderOrder(box,day); return; }
 
-  /* before Mass */
-  const intro=txt("div","block intro"); intro.appendChild(txt("h2","",t("Before Mass")));
-  const note=noteFor(mDay);
-  if(note){
-    intro.appendChild(txt("p","",note[0]));
-    const l=txt("p","listen"); l.appendChild(document.createTextNode(t("Listen for")+" ")); l.appendChild(txt("i","",note[1])); intro.appendChild(l);
-  } else {
-    const sn=seasonNote(mDay); intro.appendChild(txt("p","",sn[1]));
-    const saint=day.title.match(/^(Memorial|Feast|Solemnity) of (.+)$/);
-    if(saint) intro.appendChild(txt("p","",t("Today the Church also remembers {name}.",{name:saint[2]})));
+  /* The edition shown: the stored choice when this day has that guide, else the readings. */
+  const ed=edOn(mDay,massEd)?massEd:"readings", gd=ed==="readings"?null:compText(mDay,ed);
+  box.appendChild(massEdSwitch(ed,box));
+
+  if(gd) box.appendChild(guideHead(mDay,ed));
+  else {
+    /* before Mass */
+    const intro=txt("div","block intro"); intro.appendChild(txt("h2","",t("Before Mass")));
+    const note=noteFor(mDay);
+    if(note){
+      intro.appendChild(txt("p","",note[0]));
+      const l=txt("p","listen"); l.appendChild(document.createTextNode(t("Listen for")+" ")); l.appendChild(txt("i","",note[1])); intro.appendChild(l);
+    } else {
+      const sn=seasonNote(mDay); intro.appendChild(txt("p","",sn[1]));
+      const saint=day.title.match(/^(Memorial|Feast|Solemnity) of (.+)$/);
+      if(saint) intro.appendChild(txt("p","",t("Today the Church also remembers {name}.",{name:saint[2]})));
+    }
+    box.appendChild(intro);
   }
-  box.appendChild(intro);
 
   /* Spanish: where the readings are, and the English text on request */
   if(es){
@@ -621,9 +639,34 @@ async function renderMass(){
     box.appendChild(all);
     if(AI_VOICE) box.appendChild(txt("p","voice-note",t("AI voice (ElevenLabs)")));
   }
-  let backEd=store("ave-back-ed")==="kids"?"kids":"plain";
-  const flips=[];
-  day.r.forEach(r=>{
+  /* Who the backs of the cards speak to follows the one stored choice (massEd). */
+  let backEd=audienceOf(massEd);
+  const flips=[], turns=[];
+  /* Tapping Grown-ups or Children on a card's back is the same choice as the edition
+     switch: Children is Kids; Grown-ups is Plain while a guide shows, else the readings.
+     When that changes the edition shown, the page is set again with this card still turned. */
+  const chooseAudience=(aud,card,i)=>{
+    const next=aud==="kids"?"kids":ed==="readings"?"readings":"plain";
+    setMassEd(next);
+    if((edOn(mDay,next)?next:"readings")!==ed){ stopSpeech(); renderMass({turned:i,top:card.getBoundingClientRect().top}); return; }
+    backEd=audienceOf(massEd); flips.forEach(f=>f());
+    const fb=card.querySelector('.ed-opt[aria-pressed="true"]'); if(fb) fb.focus();
+  };
+  /* One paragraph of verses, numbered as the Lectionary numbers them. */
+  const verseP=list=>{
+    const p=txt("p","rtext"); if(es) p.lang="en"; let lastCh=null;
+    list.forEach(e=>{ const [ch,v]=shownNum(e), vt=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(vt+" ")); });
+    return p;
+  };
+  const wholeReading=(b,r)=>{
+    if(r.t.length&&withEn){
+      b.appendChild(verseP(r.t));
+      if(r.l==="Responsorial Psalm"&&r===day.r.find(x=>x.l==="Responsorial Psalm")) b.appendChild(txt("p","psalm-note",t("At Mass the cantor sings these verses, and everyone sings the response from your parish booklet.")));
+    } else if(r.b==="PSA"&&(!r.t.length||es)){
+      b.appendChild(txt("p","psalm-note",t("The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response.")));
+    }
+  };
+  day.r.forEach((r,i)=>{
     const card=txt("section","flip"), inner=txt("div","flip-inner"), b=txt("div","block face face-front"), bk=txt("div","block face face-back hide");
     card.tabIndex=0; card.setAttribute("role","button"); card.setAttribute("aria-pressed","false");
     card.setAttribute("aria-label",readingLabel(r.l)+". "+t("Tap for the explanation"));
@@ -632,32 +675,35 @@ async function renderMass(){
       b.appendChild(lb); }
     b.appendChild(txt("p","blabel",readingLabel(r.l)));
     b.appendChild(txt("h2","bcite",cite(r)));
-    if(r.t.length&&withEn){
-      const p=txt("p","rtext"); if(es) p.lang="en"; let lastCh=null;
-      r.t.forEach(e=>{ const [ch,v]=shownNum(e), vt=e[2]; const sup=txt("sup","",(lastCh!==null&&ch!==lastCh?ch+":":"")+v); lastCh=ch; p.appendChild(sup); p.appendChild(document.createTextNode(vt+" ")); });
-      b.appendChild(p);
-      if(r.l==="Responsorial Psalm"&&r===day.r.find(x=>x.l==="Responsorial Psalm")) b.appendChild(txt("p","psalm-note",t("At Mass the cantor sings these verses, and everyone sings the response from your parish booklet.")));
-    } else if(r.b==="PSA"&&(!r.t.length||es)){
-      b.appendChild(txt("p","psalm-note",t("The cantor sings the verses of this psalm, and everyone sings the response. Your parish booklet has the response.")));
-    }
+    /* A guide edition sets the reading out as the side-by-side booklet does (guideRows):
+       a few verses, then the same verses in plain words. */
+    const rows=gd&&withEn?guideRows(r,gd.readings&&gd.readings[r.l]):null;
+    if(rows) rows.forEach((row,j)=>{
+      if(row.whole) wholeReading(b,r); else b.appendChild(verseP(row.verses));
+      const pw=txt("p","pw"); pw.lang="en"; if(j===0) pw.appendChild(txt("span","pw-l","In plain words"));
+      pw.appendChild(document.createTextNode(row.text||"")); b.appendChild(pw);
+    });
+    else wholeReading(b,r);
     b.appendChild(txt("p","flip-hint",t("Tap for the explanation")));
-    const fill=()=>{ bk.textContent=""; buildBack(bk,r,backEd,ed=>{ backEd=ed; store("ave-back-ed",ed); flips.forEach(f=>f()); }); };
+    const fill=()=>{ bk.textContent=""; buildBack(bk,r,backEd,aud=>chooseAudience(aud,card,i)); };
     fill(); flips.push(fill);
     inner.appendChild(b); inner.appendChild(bk); card.appendChild(inner);
-    const turn=()=>{
-      const toBack=!card.classList.contains("turned"), show=toBack?bk:b, hide=toBack?b:bk;
+    const turn=(toBack,now)=>{
+      const show=toBack?bk:b, hide=toBack?b:bk;
       show.classList.remove("hide"); card.classList.toggle("turned",toBack); card.setAttribute("aria-pressed",toBack?"true":"false");
       const done=()=>{ if(card.classList.contains("turned")===toBack) hide.classList.add("hide"); };
-      if(matchMedia("(prefers-reduced-motion: reduce)").matches) done(); else setTimeout(done,450);
+      if(now||matchMedia("(prefers-reduced-motion: reduce)").matches) done(); else setTimeout(done,450);
     };
+    turns.push({card,turn});
     card.addEventListener("click",e=>{
       if(e.target.closest("button,a,input,label,select,textarea")) return;
       const sel=getSelection&&getSelection(); if(sel&&!sel.isCollapsed&&card.contains(sel.anchorNode)) return;
-      turn();
+      turn(!card.classList.contains("turned"));
     });
-    card.addEventListener("keydown",e=>{ if(e.target!==card) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); turn(); } });
+    card.addEventListener("keydown",e=>{ if(e.target!==card) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); turn(!card.classList.contains("turned")); } });
     box.appendChild(card);
   });
+  if(gd){ const end=guideEnd(mDay,ed); if(end) box.appendChild(end); }
   const f=txt("p","foot");
   if(es){
     f.textContent=t("English Bible text: World English Bible (public domain). At Mass you will hear the readings from the Lectionary.")+" ";
@@ -667,11 +713,82 @@ async function renderMass(){
     f.querySelector("a").href=usccbUrl(mDay);
   }
   box.appendChild(f);
+  if(!keep) return;
+  if(keep.scroll!=null) box.scrollTop=keep.scroll;
+  if(keep.focusEd){ const fb=box.querySelector('.ed-seg button[data-ed="'+keep.focusEd+'"]'); if(fb) fb.focus({preventScroll:true}); }
+  const kt=keep.turned!=null&&turns[keep.turned];
+  if(kt){
+    kt.card.classList.add("now"); kt.turn(true,true); void kt.card.offsetWidth; kt.card.classList.remove("now");
+    box.scrollTop+=kt.card.getBoundingClientRect().top-keep.top;
+    const fb=kt.card.querySelector('.ed-opt[aria-pressed="true"]'); if(fb) fb.focus({preventScroll:true});
+  }
+}
+
+/* The edition switch on the Mass tab: Readings, Plain, Kids, Family. A guide this day does
+   not have stays in view, marked unavailable, with the reason under the switch. */
+function massEdSwitch(shown,box){
+  const w=txt("div","mass-ed"), g=txt("div","seg n4 ed-seg"), why=edWhy(mDay);
+  g.setAttribute("role","group"); g.setAttribute("aria-label",t("Edition"));
+  const label={readings:t("Readings"),plain:t("Plain"),kids:t("Kids"),family:t("Family")};
+  w.appendChild(txt("p","pick-label",t("Edition")));
+  MASS_EDS.forEach(k=>{
+    const on=edOn(mDay,k), bt=txt("button","",label[k]); bt.type="button"; bt.dataset.ed=k;
+    bt.setAttribute("aria-pressed",k===shown?"true":"false");
+    if(!on){ bt.classList.add("waiting"); bt.setAttribute("aria-disabled","true"); bt.setAttribute("aria-label",label[k]+", "+why.short); }
+    bt.addEventListener("click",()=>{
+      if(!on){ toast(why.long); return; }
+      if(k===shown) return;
+      stopSpeech(); setMassEd(k); renderMass({scroll:box.scrollTop,focusEd:k});
+    });
+    g.appendChild(bt);
+  });
+  w.appendChild(g);
+  if(MASS_EDS.some(k=>!edOn(mDay,k))) w.appendChild(txt("p","ed-note",why.long));
+  return w;
+}
+/* Why a guide edition is not offered for a day: guides are made for Sundays and holy days,
+   each waits for a priest's review, and they are in English only (see edOn). */
+function edWhy(day){
+  const GUIDES=["plain","kids","family"], any=GUIDES.some(k=>hasGuide(day,k));
+  if(!any&&!isSunday(day)&&!OBL[day]) return {short:t("Sundays and holy days"),long:t("Plain, Kids and Family guides are made for Sundays and holy days.")};
+  if(LANG==="es") return {short:t("English only"),long:t("Plain, Kids and Family are in English only for now.")+" "+(any?t("To read the guide for this day, choose English in Settings."):t("The English guides for this day are waiting for review."))};
+  const names={plain:t("Plain"),kids:t("Kids"),family:t("Family")}, w=GUIDES.filter(k=>!hasGuide(day,k)).map(k=>names[k]);
+  const list=w.length>1?w.slice(0,-1).join(", ")+" and "+w[w.length-1]:w[0]||"";
+  return {short:t("Waiting for review"),long:t("{list}: waiting for review.",{list})+" "+t("Each guide is written with AI help and appears here only after a priest reviews it.")};
+}
+/* The top of a guide edition on the Mass tab: what the booklet's cover says (coverParts),
+   with the same AI-help and review labels as the paper. Guides are English only. */
+function guideHead(day,ed){
+  const o=coverParts(day,ed), h=txt("div","block intro guide-head"); h.lang="en";
+  if(!edApproved(day,ed)) h.appendChild(txt("p","guide-stamp",DRAFT_STAMP));
+  h.appendChild(txt("p","guide-ed",o.ed));
+  h.appendChild(txt("h2","",o.head));
+  if(o.intro) h.appendChild(txt("p","",o.intro));
+  if(o.listen){ const l=txt("p","listen"); l.appendChild(document.createTextNode("Listen for ")); l.appendChild(txt("i","",o.listen)); h.appendChild(l); }
+  h.appendChild(txt("p","guide-note",guideNote(day,ed)));
+  return h;
+}
+/* The end of a guide edition on the Mass tab: the booklet's last page (closingParts), less
+   the Family opener, which the top of the page already shows, and the drawing box. */
+function guideEnd(day,ed){
+  const parts=closingParts(day,ed); if(!parts.length) return null;
+  const e=txt("div","block guide-end"); e.lang="en";
+  parts.forEach(p=>{
+    if(p.h3) e.appendChild(txt("h2","",p.h3));
+    if(p.k==="opener") return;
+    if(p.h) e.appendChild(txt("h3","",p.h));
+    if(p.list){ const ol=txt("ol"); p.list.forEach(q=>ol.appendChild(txt("li","",q))); e.appendChild(ol); }
+    else if(p.k==="word"){ const x=txt("p"); x.appendChild(txt("b","",p.term)); x.appendChild(document.createTextNode(". "+p.text)); e.appendChild(x); }
+    else { const x=txt("p"); if(p.i) x.appendChild(txt("i","",p.text)); else x.textContent=p.text; e.appendChild(x); }
+  });
+  return e;
 }
 
 
-/* The back of a reading card: the approved guide's box for that reading when there is one
-   (English only), else a note on the book and on the reading's place at Mass. */
+/* The back of a reading card: the guide's box for that reading when there is one (English
+   only; approved, or a draft in a reviewer preview), with its AI-help and review line,
+   else a note on the book and on the reading's place at Mass. ed is the audience: "plain"
+   (Grown-ups) or "kids" (Children); setEd(audience) is chooseAudience in renderMass. */
 function readingRole(l){
   if(l==="Reading 1"||l==="Reading") return "First Reading";
   if(l==="Reading 2"||l==="Epistle") return "Second Reading";
@@ -711,6 +828,7 @@ function buildBack(bk,r,ed,setEd){
       if(k.word&&k.word.term) { const w=txt("p","back-extra"); w.appendChild(txt("b","",k.word.term+": ")); w.appendChild(document.createTextNode(k.word.meaning||"")); bk.appendChild(w); }
       if(k.ask) bk.appendChild(txt("p","back-extra",t("Ask:")+" "+k.ask));
     }
+    bk.appendChild(txt("p","guide-note",guideNote(mDay,ed)));
   } else {
     const role=readingRole(r.l);
     if(ed==="kids") bk.appendChild(txt("p","back-text",kidsText(role)));
@@ -789,7 +907,12 @@ const HAS_COMP=CDAYS.length>0;
 const ED={plain:"Plain edition",kids:"Kids edition",family:"Family edition",readings:"Daily readings"};
 const LY={pocket:{size:"half"},side:{size:"letter"},facing:{size:"half"}};
 const lyDim=ly=>LY[ly].size==="half"?t("5\u00bd \u00d7 8\u00bd in, folded"):t("8\u00bd \u00d7 11 in, stapled");
-/* Spanish guides do not exist yet, so in Spanish only the readings booklet is offered. */
+/* A day has an edition's guide when its text is here: approved in the public build, or a
+   draft in a reviewer preview. Family also needs Plain, whose readings guide it prints. */
+function hasGuide(day,ed){ const c=COMP[day]; return ed==="readings"||!!(c&&c[ed]&&(ed!=="family"||c.plain)); }
+/* Spanish guides do not exist yet, so in Spanish only the readings are offered: here for
+   one day (the Mass tab), and below for the booklet tool. */
+function edOn(day,ed){ return ed==="readings"||(LANG!=="es"&&hasGuide(day,ed)); }
 const edAvail=ed=>ed==="readings"||(LANG!=="es"&&daysFor(ed).length>0);
 const PAGE_PX={half:[528,816],letter:[816,1056]};
 const PSALM_NOTE="At Mass the cantor sings the verses, and everyone sings the response from your parish booklet.";
@@ -834,10 +957,14 @@ function coverHtml(day,ed){
   <div class="cv-inside"><b>Inside</b>${readingsOf(day).map(r=>`<span><em>${labelOf(r)}</em>${esc(r.c)}</span>`).join("")}</div>
   <div class="cv-meta">${o.meta}</div>${guideLine(day,ed)}${SOURCE_LINE}</div>`;
 }
+/* How a guide was made, on paper (guideLine) and on screen (guideHead, buildBack). */
+function guideNote(day,ed){
+  const r=COMP[day]&&COMP[day].review, by=r&&(r.by||(r[ed]&&r[ed].by));
+  return by?`Guide written with AI help and reviewed by ${by}.`:"Guide written with AI help. Not yet reviewed by a priest.";
+}
 function guideLine(day,ed){
   if(ed==="readings") return "";
-  const r=COMP[day]&&COMP[day].review, by=r&&(r.by||(r[ed]&&r[ed].by));
-  return `<p class="ftn">${by?`Guide written with AI help and reviewed by ${esc(by)}.`:"Guide written with AI help. Not yet reviewed by a priest."}</p>`;
+  return `<p class="ftn">${esc(guideNote(day,ed))}</p>`;
 }
 function mastItems(day,ed){
   const o=coverParts(day,ed), out=[];
@@ -853,20 +980,36 @@ function atMassHtml(day){
   const rows=[["Gloria","Stand",hasGloria(day,d.title)],["First reading","Sit",true],["Psalm","Sit",true],["Second reading","Sit",r2],["Gospel","Stand",true],["Creed","Stand",hasCreed(day,d.title)],["Eucharistic Prayer","Kneel",true],["Communion","Walk forward",true]];
   return `<h4>At Mass today</h4><div class="oom-mini">${rows.map(([n,p,on])=>`<span class="${on?"":"off"}">${n}</span><span>${on?p:"Not today"}</span>`).join("")}</div>`;
 }
-function backItems(day,ed){
-  const c=COMP[day], b=html=>({cls:"bk-back",html});
+/* What ends each guide, in order: the booklet's last page (backItems), and the end of a
+   guide edition on the Mass tab (guideEnd). h3 opens a section; h names a part in it. */
+function closingParts(day,ed){
+  const c=COMP[day]; if(ed==="readings"||!c) return [];
   if(ed==="kids"){ const k=c.kids; return [
-    b(`<h3>Your page</h3><div class="word"><span class="eyebrow">Word of the day</span><br><b>${esc(k.word.term)}</b>. ${esc(k.word.meaning)}</div>`),
-    b(`<h4>Draw it</h4><p>${esc(k.draw)}</p><div class="draw">draw here</div>`),
-    b(`<h4>Think about it</h4><p>${esc(k.ask)}</p>`)]; }
+    {h3:"Your page",k:"word",h:"Word of the day",term:k.word.term,text:k.word.meaning},
+    {k:"draw",h:"Draw it",text:k.draw},
+    {h:"Think about it",text:k.ask}]; }
   if(ed==="family"){ const f=c.family; return [
-    b(`<h3>Talk about it</h3><p>${esc(f.opener)}</p>`),
-    b(`<h4>Questions for everyone</h4><ol>${f.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol>`),
-    b(`<h4>Try this week</h4><p>${esc(f.try)}</p>`),
-    b(`<h4>Pray together</h4><p><i>${esc(f.pray)}</i></p>`),
-    b(atMassHtml(day))]; }
-  if(ed==="plain") return [b(`<h3>Carry this week</h3><p><i>${esc(c.plain.carry)}</i></p>`),b(atMassHtml(day))];
-  return [b(atMassHtml(day))];
+    {h3:"Talk about it",k:"opener",text:f.opener},
+    {h:"Questions for everyone",list:f.questions},
+    {h:"Try this week",text:f.try},
+    {h:"Pray together",text:f.pray,i:true}]; }
+  return [{h3:"Carry this week",text:c.plain.carry,i:true}];
+}
+function backItems(day,ed){
+  const b=html=>({cls:"bk-back",html});
+  const out=closingParts(day,ed).map(p=>b((p.h3?`<h3>${p.h3}</h3>`:"")+(p.k==="word"
+    ?`<div class="word"><span class="eyebrow">${p.h}</span><br><b>${esc(p.term)}</b>. ${esc(p.text)}</div>`
+    :(p.h?`<h4>${p.h}</h4>`:"")+(p.list?`<ol>${p.list.map(q=>`<li>${esc(q)}</li>`).join("")}</ol>`:`<p>${p.i?`<i>${esc(p.text)}</i>`:esc(p.text)}</p>`)+(p.k==="draw"?`<div class="draw">draw here</div>`:""))));
+  if(ed!=="kids") out.push(b(atMassHtml(day)));
+  return out;
+}
+/* A reading's guide as rows of verses and plain words, in reading order: the side-by-side
+   and facing booklets (pairItems), and the guide editions on the Mass tab. The psalm, and
+   a reading whose guide has no chunks, is one row: all its verses with the guide's box. */
+function guideRows(r,g){
+  if(!g) return null;
+  if(r.l==="Responsorial Psalm"||!(g.chunks&&g.chunks.length)) return [{verses:r.t,text:g.box,whole:true}];
+  return g.chunks.map(ch=>({verses:chunkVerses(r,ch),text:ch.text}));
 }
 /* single-column items: readings with an "in plain words" box after each */
 function flowItems(day,ed){
@@ -884,8 +1027,10 @@ function pairItems(day,ed){
   const c=compText(day,ed), out=[];
   readingsOf(day).forEach(r=>{
     out.push({head:true,L:headHtml(r),R:`<p class="colhd">In plain words</p><p class="cite">${esc(r.c)}</p>`,contL:labelOf(r)+", continued",contR:"In plain words, continued"});
-    if(r.l==="Responsorial Psalm"){ out.push({L:r.t.length?`<p class="vs">${spans(r.t).join("")}</p><p class="psalm">${PSALM_NOTE}</p>`:`<p class="psalm">${PSALM_NOTE}</p>`,R:`<p class="plain">${esc(c.readings[r.l].box)}</p>`}); return; }
-    c.readings[r.l].chunks.forEach(ch=>out.push({L:`<p class="vs">${spans(chunkVerses(r,ch)).join("")}</p>`,R:`<p class="plain">${esc(ch.text)}</p>`}));
+    for(const row of guideRows(r,c.readings[r.l])||[]) out.push({
+      L:row.whole?(row.verses.length?`<p class="vs">${spans(row.verses).join("")}</p>`:"")+(r.l==="Responsorial Psalm"?`<p class="psalm">${PSALM_NOTE}</p>`:"")
+        :`<p class="vs">${spans(row.verses).join("")}</p>`,
+      R:`<p class="plain">${esc(row.text)}</p>`});
   });
   return out;
 }
@@ -952,7 +1097,8 @@ function spreads(pairs,size,pages){
 }
 function notesPage(size){ const p=newPage(size); p.body.innerHTML=`<p class="notes-h">Notes</p><div class="lines" style="height:calc(100% - 2.2em)"></div>`; return p; }
 function edApproved(day,ed){ const r=COMP[day]&&COMP[day].review; if(!r) return false; if(r.status) return r.status==="approved"; return !!(r[ed]&&r[ed].status==="approved"); }
-function stamp(page){ page.pg.insertAdjacentHTML("beforeend",`<div class="stamp">AI draft · not yet reviewed by a priest</div>`); }
+const DRAFT_STAMP="AI draft · not yet reviewed by a priest";
+function stamp(page){ page.pg.insertAdjacentHTML("beforeend",`<div class="stamp">${DRAFT_STAMP}</div>`); }
 
 function buildBooklet(day,ed,ly){
   host.textContent="";
@@ -1000,7 +1146,7 @@ function renderPreview(res){
     pv.appendChild(txt("p","pv-num",g.length===1?t("Page {n}",{n:g[0]+1}):t("Pages {a}\u2013{b}",{a:g[0]+1,b:g[1]+1})));
   });
 }
-function daysFor(ed){ return ed==="readings"?DAYS:CDAYS.filter(d=>COMP[d]&&COMP[d][ed]); }
+function daysFor(ed){ return ed==="readings"?DAYS:CDAYS.filter(d=>hasGuide(d,ed)); }
 function allowedDays(){ const t=iso(new Date()), all=daysFor(BK.ed), A=all.filter(k=>k>=t); return A.length?A:all; }
 function renderBkControls(){
   if(!edAvail(BK.ed)) BK.ed="readings";
